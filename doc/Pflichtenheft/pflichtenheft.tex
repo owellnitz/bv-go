@@ -1,0 +1,156 @@
+\documentclass[a4paper]{scrreprt}
+ 
+\usepackage[german]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{ae}
+\usepackage{graphicx}
+\usepackage[bookmarks,bookmarksnumbered]{hyperref}
+ 
+\begin{document}
+ 
+\title{Grobentwurf f"ur die Umsetzung des Brettspieles 'Go'}
+\author{Harry Flohr (6811837)\\und\\Jan Ole Wellnitz (6796226)}
+\maketitle
+ 
+\chapter{Zielbestimmung}
+ 
+\section{Musskriterien}
+Die Software soll eine vollst"andige Umsetzung des Brettspieles 'Go' enthalten. Das Spielfeld besteht aus 19x19 Feldern. Die Regeln zu diesem Spiel sind unter {\url{https://www.brettspielnetz.de/spielregeln/go.php} zu finden. Ein Spielstand kann mit Hilfe einer Textdatei oder eines Bildes von dem echten Brettspiel in die Software "ubertragen werden. Die genaueren Spezifikationen f"ur die Bilder folgen im Kapitel \nameref{chap:Daten}. Das Spiel kann an zwei verschiedenen Rechnern "uber eine grafische Oberfl"ache gegeneinander gespielt werden. Nach Beendigung des Spieles erfolgt eine Auswertung mit anschlie"sender Mitteilung des Gewinners.
+ 
+\section{Abgrenzungskriterien}
+Die Software wird keine KI enthalten. Somit ist ein Spiel im Single-Player-Modus nicht m"oglich.
+ 
+ \begingroup
+\renewcommand{\cleardoublepage}{}
+\renewcommand{\clearpage}{}
+\chapter{Umgebung}\label{chap:ack}
+\endgroup
+ 
+\section{Software}
+F"ur den Betrieb des Programmes muss die Entwicklungsumgebung DrRacket\footnote{\label{note2}{\url{https://download.racket-lang.org/}}} (Version 6.9) installiert sein. Zudem wird die VigRacket-Bibliothek\footnote{\label{note3}{\url{https://github.com/BSeppke/vigracket/releases/tag/v1.5}}} f"ur die Bildauswertung ben"otigt.
+
+\chapter{Funktionalit"at}
+ 
+\begin{itemize}
+  \item Starten eines neuen Spieles 
+      \begin{itemize}
+      \item{Gemeinsam an einem Rechner}
+      \item{Verteilt an zwei Rechnern}
+    \end{itemize}
+      \item Laden eines Spielstandes aus einem Bild
+      \begin{itemize}
+      \item{Gemeinsam an einem Rechner}
+      \item{Verteilt an zwei Rechnern}
+      \item{Pr"ufung auf nicht entfernte, aber bereits geschlagene Steine}
+    \end{itemize}
+    \item Laden eines Spielstandes aus einer Textdatei
+      \begin{itemize}
+      \item{Gemeinsam an einem Rechner}
+      \item{Verteilt an zwei Rechnern}
+    \end{itemize}
+      \item Anzeigen und Durchf"uhrung des Spieles nach aktuellen Go-Regeln\footnote{\label{note1}{\url{https://www.brettspielnetz.de/spielregeln/go.php}}} mittels grafischer Benutzeroberfl"ache 
+    \item Speichern eines Spielstandes in eine Textdatei
+    \item Auswertung nach aktuellen Go-Regeln$^{\ref{note1}}$
+    \item Ermitteln des Gewinners und Mitteilung an die Spieler
+\end{itemize}
+ 
+ \chapter{Ablauf eines Spieles}
+ \begin{enumerate}
+ \item Auswahl der Art das Spiel zu Starten
+ \begin{enumerate}
+ \item Neues Spiel starten
+  \begin{enumerate}
+ \item Vorgabe\footnote{\label{note1}{\url{https://de.wikipedia.org/wiki/Vorgabe_(Go)}}} eingeben
+ \end{enumerate} 
+ \item Spielstand aus Bild laden
+ \begin{enumerate}
+ \item Bilddatei ausw"ahlen
+ \item Spieler am Zug eingeben
+ \item Anzahl der geschlagenen Steine pro Spieler eingeben
+ \item Passstatus des vorherigen Spielers eingeben
+ \end{enumerate} 
+  \item Spielstand aus Textdatei laden
+ \begin{enumerate}
+ \item Datei ausw"ahlen
+ \end{enumerate} 
+ \end{enumerate} 
+ \item Auswahl der Art des Zusammenspiels (an einem Rechner oder verteilt)
+          \begin{enumerate}
+      \item Ggf. Verbindung zu dem zweiten Spieler
+      \end{enumerate}
+  \item Abwechselndes Setzen der Spielsteine
+            \begin{enumerate}
+  \item Best"atigen eines Zuges nach setzen eines Steines auf dem Spielfeld
+    \item Passen des Zuges 
+      \end{enumerate}
+        \item Speichern eines Spielstandes, wenn Partie unterbrochen werden soll
+    \item Beenden des Spieles, nachdem beide Spieler nacheinander gepasst haben
+        \item Ermittlung und Mitteilung des Gewinners
+    
+ \end{enumerate} 
+ 
+\chapter{Daten}
+\label{chap:Daten}
+\section{Darstellung des Spielfeldes in dem Programm}
+Das Spielfeld wird innerhalb des Programmes als Liste aus Listen dargestellt. Jede Unterliste steht f"ur eine Reihe auf dem Spielfeld. Jeder Wert der Unterlisten steht f"ur eine potentielle Position eines Steines. Wenn die Listenposition mit dem Wert $0$ belegt ist, befindet sich kein Stein auf dem Spielfeld. Der Wert $-1$ repr"asentiert einen schwarzen Stein und der Wert $1$ einen Wei"sen.\\\\
+\section{Spielst"ande}
+Ein Spielstand kann sowohl anhand eines Bildes als auch durch eine Textdatei geladen und weitergespielt werden. Wenn ein Spielstand unterbrochen werden soll, wird der aktuelle Spielstand in einer Textdatei festgehalten und gespeichert.\\\\
+Die Textdatei beinhaltet den aktuellen Spielstand, die geschlagenen Steine und den aktuellen Spieler. Ebenfalls wird festgehalten, ob der vorherige Spieler gepasst hat.\\\\
+Die Bilder m"ussen frontal von oben aufgenommen werden. Das Spielfeld muss parallel zur Bildkante liegen und gut beleuchtet sein. Bei der Entfernung kann varriert werden, jedoch wird ein Freiraum um das Spielfeld vorausgesetzt. Der Hintergrund, auf dem das Spielfeld liegt, muss wei"s sein und es d"urfen keine weitere St"orfaktoren im Hintergrund sichtbar sein. Die Spielsteine k"onnen beliebig nach den Go-Regeln auf dem Spielfeld verteilt werden. \\\\
+
+\newpage
+Beispielbilder:
+ 
+\begin{figure}[ht]
+\centering \includegraphics[width=0.6\textwidth]{images/bsp2.jpg}
+\caption{Positivbeispiel}
+\end{figure}
+
+\begin{figure}[ht]
+\centering \includegraphics[width=0.6\textwidth]{images/bsp1.jpg}
+\caption{Negativbeispiel (St"orfaktoren links und rechts am Bildrand)}
+\end{figure}
+
+ 
+\chapter{Benutzungsoberfl"ache}
+\begin{itemize}
+  \item Men"u mit den verschiedenen Arten das Spiel zu starten
+      \begin{itemize}
+      \item{Neues Spiel}
+      \begin{itemize}
+      \item Eingabefeld einer Vorgabe
+      \end{itemize} 
+      \item{Spielstand aus Bild laden}
+      \begin{itemize}
+      \item Auswahldialog der Bilddatei
+      \item Auswahlfeld des aktuellen Spielers
+      \item Eingabefeld der bereits geschlagenen Steine pro Spieler
+      \item Auswahlfeld, ob der vorherige Spieler gepasst hat
+      \end{itemize}
+      \item{Spielstand aus Textdatei laden}
+      \begin{itemize}
+      \item Auswahldialog der Textdatei
+      \end{itemize}
+    \end{itemize}
+   \item Men"u, ob das Spiel verteilt oder an einem Rechner gespielt werden soll
+         \begin{itemize}
+      \item Ggf. Verbindungsdialog
+      \end{itemize}
+   \item Darstellung des Spieles
+   \begin{itemize}
+      \item{Spielfeld}
+      \item{Anzeige des Spielers am Zug}
+      \item{Anzeige der Anzahl der geschlagenen Steine pro Spieler}
+      \item{Anzeige, ob vorherige Spieler gepasst hat}
+          \item Button zum Best"atigen des Zuges
+    \item Button zum Passen des Zuges 
+    \item Button zum Speichern des Spieles
+       \begin{itemize}
+       \item Speicherdialog
+           \end{itemize}
+    \end{itemize}
+    \item Anzeigen des Gewinners
+\end{itemize}
+
+\end{document}
