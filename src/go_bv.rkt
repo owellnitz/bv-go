@@ -40,7 +40,7 @@
                         (save-image-rel img name)
                         (show-image img name)))
 
-(define img (load-image-rel "IMG_1009.jpg"))
+(define img (load-image-rel "IMG_1006.jpg"))
 (define img_gray (list (car img)))
 (present-image img_gray "image_gray.png")
 
@@ -82,7 +82,7 @@
 
 ;Spielstand auslesen
 
-(define stoneradiusthrough3 3.5)
+(define stoneradiusthrough3 2.5)
 
 (define smoothedImage (image->blue (gsmooth canny_crop stoneradiusthrough3)))
 
@@ -90,15 +90,22 @@
 
 (define (stepsizeX pic)
   (cons
-   (/ (image-width pic) 19.5)
+  ( + 1 (value->pixel (/ (image-width pic) 20)))
     0))
 
 (define (stepsizeY pic)
   (cons
-   -0.05
-   (/ (image-height pic) 19.5)))
+   0
+  (+ 1 (value->pixel (/ (image-height pic) 20)))))
 
 (define empty_board_state (make-list 19 (make-list 19 'empty)))
+
+(define (check-board-state startX startY list count pic)
+  (if(= count 19)
+     list
+     (cons (check-x-coordiantes startX startY '() 0 pic)
+           (check-board-state startX (+ startY (cdr (stepsizeY pic))) list (+ 1 count) pic))
+  ))
 
 (define (check-x-coordiantes startX startY list count pic)
   (if(= count 19)
@@ -106,14 +113,34 @@
   (cons (checkpixel (+ startX (* count (car (stepsizeX pic)))) (+ startY (* count (cdr (stepsizeX pic)))) pic)
         (check-x-coordiantes startX startY list (+ count 1) pic))
   ))
-
-(define (checkpixel x y pic)
-  (cond
-   [(> (car (image-ref pic (value->pixel x) (value->pixel y))) 135) 1]
-   [(< (car (image-ref pic (value->pixel x) (value->pixel y))) 50) -1]
-   [else 0])
-  )
-
 (define (value->pixel value)
   (inexact->exact (round value))
   )
+(define search (value->pixel (/ (car (stepsizeX smoothedImage)) 6)))
+(define border-white 148)
+(define border-black 40)
+
+(define (checkpixel x y pic)
+  (cond
+   [(> (car (image-ref pic (value->pixel x) (value->pixel y))) border-white) 1]
+   [(> (car (image-ref pic (value->pixel x) (- (value->pixel y) search))) border-white) 1]
+   [(> (car (image-ref pic (value->pixel x) (+ search (value->pixel y)))) border-white) 1]
+   [(> (car (image-ref pic (+ (value->pixel x) search) (value->pixel y))) border-white) 1]
+   [(> (car (image-ref pic (- (value->pixel x) search) (value->pixel y))) border-white) 1]
+   [(> (car (image-ref pic (- (value->pixel x) search) (- (value->pixel y) search))) border-white) 1]
+   [(> (car (image-ref pic (- (value->pixel x) search) (+ (value->pixel y) search))) border-white) 1]
+   [(> (car (image-ref pic (+ (value->pixel x) search) (- (value->pixel y) search))) border-white) 1]
+   [(> (car (image-ref pic (+ (value->pixel x) search) (+ (value->pixel y) search))) border-white) 1]
+   [(< (car (image-ref pic (value->pixel x) (value->pixel y))) border-black) -1]
+   [(< (car (image-ref pic (value->pixel x) (- (value->pixel y) search))) border-black) -1]
+   [(< (car (image-ref pic (value->pixel x) (+ search (value->pixel y)))) border-black) -1]
+   [(< (car (image-ref pic (+ (value->pixel x) search) (value->pixel y))) border-black) -1]
+   [(< (car (image-ref pic (- (value->pixel x) search) (value->pixel y))) border-black) -1]
+   [(< (car (image-ref pic (- (value->pixel x) search) (- (value->pixel y) search))) border-black) -1]
+   [(< (car (image-ref pic (- (value->pixel x) search) (+ (value->pixel y) search))) border-black) -1]
+   [(< (car (image-ref pic (+ (value->pixel x) search) (- (value->pixel y) search))) border-black) -1]
+   [(< (car (image-ref pic (+ (value->pixel x) search) (+ (value->pixel y) search))) border-black) -1]
+   [else 0])
+  )
+
+
