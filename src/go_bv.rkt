@@ -5,7 +5,7 @@
                     (image-width  plt-image-width)
                     (image-height plt-image-height)))
 
-
+;Directories
 (define src_dir  (current-directory))
 (define base_dir (build-path src_dir 'up))
 (define img_dir  (build-path base_dir "images"))
@@ -35,15 +35,17 @@
       (cdr res) ;;To remove the leading quote
       )))
 
-;(define present-image void)
+;
 (define present-image (lambda (img name)
                         (save-image-rel img name)
                         (show-image img name)))
 
-(define img (load-image-rel "IMG_0986.jpg"))
+;Laden des Bildes aus dem der Spielstand ausgelesen werden soll
+(define img (load-image-rel "IMG_1006.jpg"))
+
+;Zeige
 (define img_gray (list (car img)))
 (present-image img_gray "image_gray.png")
-
 
 (present-image (cannyedgeimage img_gray 1.0 6.0 255.0) "go-canny.png")
 
@@ -58,6 +60,7 @@
       (when (> y (vector-ref bbox 3))    (vector-set! bbox 3 y))
       (when (< y (vector-ref bbox 1))    (vector-set! bbox 1 y)))))
 
+;Zeichne bBox
 (define (overlay-bboxes img bboxes colors)
   (if (empty? bboxes)
        (image->bitmap img)
@@ -70,58 +73,75 @@
                                  (+ (- (vector-ref bbox 3) (vector-ref bbox 1)) 2)
                                  'outline color)))))
 
+;Erstellen des Canny-Box
 (define canny_bbox (vector (image-width img) (image-height img) 0 0))
 
+;Box zum Bild hinzufügen
 (void (image-for-each-pixel (curryr findBBox canny_bbox)  canny_img))
 
+;Zeigen des Bildes mit Canny-Box
 (present-image (plt-image->image (overlay-bboxes img (list canny_bbox) '(green))) "go-canny-bbox.png")
 
+;Ausschneiden des Spielfeldes
 (define canny_crop (subimage img  (vector-ref canny_bbox 0) (vector-ref canny_bbox 1) (vector-ref canny_bbox 2) (vector-ref canny_bbox 3)))
-                  
+
+;Zeigen des ausgeschnittenen Spielfeldes
 (present-image canny_crop  "go-canny-crop.png")
+
 
 ;Spielstand auslesen
 
-(define stoneradiusthrough3 2.5)
+;Setzen des Smooth-Faktors
+(define smoothFactor 2.5)
 
-(define smoothedImage (image->blue (gsmooth canny_crop stoneradiusthrough3)))
+;"Verwischen" des Bildes, um den Spielstand besser auslesen zu könenn
+(define smoothedImage (image->blue (gsmooth canny_crop smoothFactor)))
 
+;Zeige verwaschenes Bild
 (present-image smoothedImage "go-smoothed.png")
 
+;Größe eines x-Schrittes
 (define (stepsizeX pic)
-  (cons
-  (value->pixel (+ 0 (/ (image-width pic) 19.5)))
-    0))
+  (value->pixel (+ 0 (/ (image-width pic) 19.5))))
 
+;Größe eines y-Schrittes
 (define (stepsizeY pic)
-  (cons
-   0
-  (value->pixel ( + 0 (/ (image-height pic) 19.5)))))
+  (value->pixel ( + 0 (/ (image-height pic) 19.5))))
 
-(define empty_board_state (make-list 19 (make-list 19 'empty)))
-
+;Alle Reihen in y-Richtung durchlaufen
 (define (check-board-state startX startY list count pic)
   (if(= count 19)
      list
      (cons (check-x-coordiantes startX startY '() 0 pic)
-           (check-board-state startX (+ startY (cdr (stepsizeY pic))) list (+ 1 count) pic))
+           (check-board-state startX (+ startY (stepsizeY pic)) list (+ 1 count) pic))
   ))
 
+;Alle Reihe in x-Richtung durchlaufen
 (define (check-x-coordiantes startX startY list count pic)
   (if(= count 19)
   list
-  (cons (checkpixel (+ startX (* count (car (stepsizeX pic)))) (+ startY (* count (cdr (stepsizeX pic)))) pic)
-        (check-x-coordiantes startX startY list (+ count 1) pic))
+  (cons (checkpixel startX startY pic)
+        (check-x-coordiantes (+ startX (stepsizeX pic)) startY list (+ count 1) pic))
   ))
 
+;Einen Wert in einen Pixel-Wert konvertieren
 (define (value->pixel value)
   (inexact->exact (round value))
   )
 
-(define search (value->pixel (/ (car (stepsizeX smoothedImage)) 7)))
+;Definition des Suchradius
+(define search (value->pixel (/ (stepsizeX smoothedImage) 7)))
+
+;Definition des Schwellenwertes für weiße Steine
 (define border-white 148)
+
+;Definition des Schwellenwertes für schwarze Steine
 (define border-black 40)
 
+;Überprüfen eines Steines, quadratisch um den ermittelten Pixel
+;x  x  x
+;x  x  x
+;x  x  x
 (define (checkpixel x y pic)
   (cond
    [(> (car (image-ref pic (value->pixel x) (value->pixel y))) border-white) 1]
@@ -146,10 +166,11 @@
    [else 0])
   )
 
-
+;Ermitteln der Startposition des Spielfeldes
 (define (start pic)
   (cons
-  (value->pixel (* (car (stepsizeX pic)) 0.75))
-  (value->pixel (* (cdr (stepsizeY pic)) 0.75))))
+  (value->pixel (* (stepsizeX pic) 0.75))
+  (value->pixel (* (stepsizeY pic) 0.75))))
 
+;Ermitteln des Spielstandes
 (define bord-state (check-board-state (car (start smoothedImage)) (cdr (start smoothedImage)) '() 0 smoothedImage))
