@@ -90,13 +90,13 @@
 
 (define (stepsizeX pic)
   (cons
-  (value->pixel (+ 1 (/ (image-width pic) 20)))
+  (value->pixel (+ 0 (/ (image-width pic) 19.5)))
     0))
 
 (define (stepsizeY pic)
   (cons
    0
-  (value->pixel ( + 1(/ (image-height pic) 20)))))
+  (value->pixel ( + 0 (/ (image-height pic) 19.5)))))
 
 (define empty_board_state (make-list 19 (make-list 19 'empty)))
 
@@ -113,10 +113,12 @@
   (cons (checkpixel (+ startX (* count (car (stepsizeX pic)))) (+ startY (* count (cdr (stepsizeX pic)))) pic)
         (check-x-coordiantes startX startY list (+ count 1) pic))
   ))
+
 (define (value->pixel value)
   (inexact->exact (round value))
   )
-(define search (value->pixel (/ (car (stepsizeX smoothedImage)) 6)))
+
+(define search (value->pixel (/ (car (stepsizeX smoothedImage)) 7)))
 (define border-white 148)
 (define border-black 40)
 
@@ -131,6 +133,7 @@
    [(> (car (image-ref pic (- (value->pixel x) search) (+ (value->pixel y) search))) border-white) 1]
    [(> (car (image-ref pic (+ (value->pixel x) search) (- (value->pixel y) search))) border-white) 1]
    [(> (car (image-ref pic (+ (value->pixel x) search) (+ (value->pixel y) search))) border-white) 1]
+
    [(< (car (image-ref pic (value->pixel x) (value->pixel y))) border-black) -1]
    [(< (car (image-ref pic (value->pixel x) (- (value->pixel y) search))) border-black) -1]
    [(< (car (image-ref pic (value->pixel x) (+ search (value->pixel y)))) border-black) -1]
