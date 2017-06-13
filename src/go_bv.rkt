@@ -40,7 +40,7 @@
                         (save-image-rel img name)
                         (show-image img name)))
 
-(define img (load-image-rel "IMG_1006.jpg"))
+(define img (load-image-rel "IMG_0986.jpg"))
 (define img_gray (list (car img)))
 (present-image img_gray "image_gray.png")
 
@@ -90,13 +90,13 @@
 
 (define (stepsizeX pic)
   (cons
-  ( + 1 (value->pixel (/ (image-width pic) 20)))
+  (value->pixel (+ 1 (/ (image-width pic) 20)))
     0))
 
 (define (stepsizeY pic)
   (cons
    0
-  (+ 1 (value->pixel (/ (image-height pic) 20)))))
+  (value->pixel ( + 1(/ (image-height pic) 20)))))
 
 (define empty_board_state (make-list 19 (make-list 19 'empty)))
 
@@ -144,3 +144,9 @@
   )
 
 
+(define (start pic)
+  (cons
+  (value->pixel (* (car (stepsizeX pic)) 0.75))
+  (value->pixel (* (cdr (stepsizeY pic)) 0.75))))
+
+(define bord-state (check-board-state (car (start smoothedImage)) (cdr (start smoothedImage)) '() 0 smoothedImage))
