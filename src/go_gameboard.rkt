@@ -33,8 +33,38 @@
 (define game-board (xLines (yLines fieldBasic 1 40) 1 40))
 
 (define (set-stone field x y color)
-  (overlay/offset (circle 10 "solid" color)
-                (- 180 (* 20 x))
-                (- 180 (* 20 y))
-                field)
+  (if (= (string-length color) 0 )
+      field
+      (overlay/offset (circle 10 "solid" color)
+                      (- 180 (* 20 x))
+                      (- 180 (* 20 y))
+                      field)
+      )
   )
+
+(define (board-state->board county field list)
+  (if (empty? list)
+      field
+      (board-state->board (+ 1 county)
+                          (board-list->board county 0 field (car list))
+                          (cdr list))
+      )
+  )
+
+(define (board-list->board county countx field list)
+  (if (empty? list)
+      field
+      (board-list->board county
+                         (+ 1 countx)
+                         (set-stone field countx county (number->color (car list)))
+                         (cdr list))
+      )
+  )
+
+(define (number->color num)
+  (cond
+    [(= num 1) "white"]
+    [(= num -1) "black"]
+    [(= num 0) ""]
+  ))
+
