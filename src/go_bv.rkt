@@ -41,7 +41,7 @@
                         (show-image img name)))
 
 ;Laden des Bildes aus dem der Spielstand ausgelesen werden soll
-(define img (load-image-rel "IMG_1006.jpg"))
+(define img (load-image-rel "IMG_1002.jpg"))
 
 ;Zeige
 (define img_gray (list (car img)))
