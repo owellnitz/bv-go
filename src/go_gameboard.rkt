@@ -30,8 +30,11 @@
       )
   )
 
+(define game-board (xLines (yLines fieldBasic 1 40) 1 40))
 
-
-(overlay/offset (circle 10 "solid" "black")
-                140 -100
-           (xLines (yLines fieldBasic 1 40) 1 40))
+(define (set-stone field x y color)
+  (overlay/offset (circle 10 "solid" color)
+                (- 180 (* 20 x))
+                (- 180 (* 20 y))
+                field)
+  )
