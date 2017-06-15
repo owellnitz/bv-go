@@ -35,7 +35,7 @@
       (cdr res) ;;To remove the leading quote
       )))
 
-;
+;Zeige Originalbild
 (define present-image (lambda (img name)
                         (save-image-rel img name)
                         (show-image img name)))
