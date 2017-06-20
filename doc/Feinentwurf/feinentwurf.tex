@@ -1,0 +1,46 @@
+\documentclass[a4paper]{scrreprt}
+ 
+\usepackage[german]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{ae}
+\usepackage{graphicx}
+ 
+\begin{document}
+ 
+\title{Feinentwurf f"ur die Umsetzung des Brettspieles 'Go'}
+\author{Harry Flohr (6811837)\\und\\Jan Ole Wellnitz (6796226)}
+\maketitle
+ 
+\chapter{Module der Software}
+ 
+\section{Bildverarbeitung (go\_bv.rkt)}
+Das Modul Bildverarbeitung ist f"ur das Auslesen des Spielzustandes eines Bildes zust"andig. Ein Bild wird in das Modul geladen und wird dann verarbeitet. Es wird zuerst das Spielbrett aus dem Bild extrahiert und in ein Blauwerte-Bild konvertiert. In diesem Bild wird die Koordinaten des ersten Spielfeldes (oben links) gesucht. An dieser Koordinate wird geschaut, ob die Schwellenwerte f"ur einen wei"sen oder schwarzen Stein getroffen wird. Diese "Uberpr"ufung wird an insgesamt sieben Stellen pro Koordinate vorgenommen. Es wird quadratisch um die Koordinate kontrolliert (siehe Abb. 1.1). Wird ein schwarzer Stein gefunden, wird in die jeweilige Liste der Wert -1 geschrieben. Wird ein wei"ser Stein gefunden, wird der Wert 1 eingetragen. Wird kein Stein gefunden, wird der Wert 0 in die Liste geschrieben.
+\begin{figure}[ht]
+\centering \includegraphics[width=0.3\textwidth]{images/koordinate}
+\caption{Suchemuster an Koordinate}
+\end{figure}
+\\\\
+Dieser Prozess wird an jeder Koordinate durchgef"uhrt. Die Koordinaten werden anhand zweier Schrtittweiten (in x - und y-Richtung) ermittelt. Ist das ganze Spielfeld durchkontrolliert, hat das Modul den vollst"andigen Spielstand des Bildes projiziert.
+
+\section{Spielbrett zeichnen (go\_draw\_board.rkt)}
+Das Modul Spielbrett zeichnen zeichnet aus einem Spielstand ein Spielbrett mit dem angegeben Spielstand. Zuerst wird das Grundbrett gezeichnet. Anschlie"send werden die Listen des Spielstandes ausgelesen und die ben"otigten Steine auf das Spielfeld gezeichnet. Die Leserichtung der Listen ist die selbe der Leserichtung beim ermitteln des Spielstandes (von links oben bis rechts unten).
+
+\begin{figure}[ht]
+\centering \includegraphics[width=0.3\textwidth]{images/emptyBoard}
+\caption{Leeres Spielfeld}
+\end{figure}
+
+\begin{figure}[ht]
+\centering \includegraphics[width=0.3\textwidth]{images/board}
+\caption{Belegtes Spielfeld}
+\end{figure}
+
+
+\section{Spielclient (go\_client.rkt)}
+
+
+\section{Spielserver (go\_server.rkt)}
+ 
+
+\end{document}
