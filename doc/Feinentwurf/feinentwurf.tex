@@ -38,9 +38,25 @@ Das Modul Spielbrett zeichnen zeichnet aus einem Spielstand ein Spielbrett mit d
 
 
 \section{Spielclient (go\_client.rkt)}
-
+Der Spielclient ist f"ur die Kommunikation des Spielers mit dem Server. Der Spielclient zeigt den aktuellen Spielstand an und teilt den Spielern mit, ob sie an der Reihe sind, sie einen ung"ultigen Zug vorgenommen haben oder wer gewonnen hat. Der Spieler kann "uber den Client seinen Zug vornehmen und dem Server mitteilen, wo er seinen Stein gesetzt hat. Auch kann er seinen Spielzug passen. 
 
 \section{Spielserver (go\_server.rkt)}
+Der Spielserver leitet das Spiel. Er verwaltet den Spielstand und welcher Spieler am Zug ist. Diese Informationen "ubermittelt der Server immer an die Clients.  Auch pr"uft der Server die "ubermittelten Spielz"uge der Spieler auf ihre G"ultigkeit und teilt den Spielern ggf. mit, dass der Spielzug nicht zul"assig ist. Bei zul"assigen Z"ugen passt der Server den Spielstand an und "ubermittelt den neuen Spielstand an die Clients. Nach Beendigung eines Spieles, ermittelt der Server den Gewinner und teilt den Spielern (Clients) den Gewinner mit.
  
+ \chapter{Paketstruktur}
 
+ \chapter{Schnittstellen}
+ \section{Bildverarbeitung}
+Das Modul Bildverarbeitung bietet die Schnittstelle, um aus einem Dateipfad eines Bildes einen Spielstand auszulesen. Dies bietet die Funktion '(define (read\_board path))'. An diese Funktion wird der Dateipfad des Bildes "ubergeben und anschlie"send liefert diese den Spielstand der definierten Struktur zur"uck.
+
+\section{Spielbrett zeichnen}
+Das Modul zum Zeichnen des Spielbrettes bietet eine Funktion, um ein Spielbrett anhand eines Spielstandes in definierter Struktur zu Zeichnen. Diese Funktion lautet (define (draw\_board\_with\_score game\_score)). An diese Funktion wird der Spielstand "ubergeben und es wird dieser Spielstand gezeichnet zur"uckgeliefert. 
+
+\section{Spielclient}
+Der Spielstand hat mehrere Schnittstellen:
+
+\begin{enumerate}
+\item (define (set\_new\_world world)):\\
+Ein neuer Spielstand (= world) kann gesetzt werden. In dieser 'world' sind sowohl der aktuelle Spielstand als auch der Spieler am Zug vermerkt.
+\end{enumerate}
 \end{document}
