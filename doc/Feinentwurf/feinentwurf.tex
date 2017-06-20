@@ -24,7 +24,7 @@ Das Modul Bildverarbeitung ist f"ur das Auslesen des Spielzustandes eines Bildes
 Dieser Prozess wird an jeder Koordinate durchgef"uhrt. Die Koordinaten werden anhand zweier Schrtittweiten (in x - und y-Richtung) ermittelt. Ist das ganze Spielfeld durchkontrolliert, hat das Modul den vollst"andigen Spielstand des Bildes projiziert.
 
 \section{Spielbrett zeichnen (go\_draw\_board.rkt)}
-Das Modul Spielbrett zeichnen zeichnet aus einem Spielstand ein Spielbrett mit dem angegeben Spielstand. Zuerst wird das Grundbrett gezeichnet. Anschlie"send werden die Listen des Spielstandes ausgelesen und die ben"otigten Steine auf das Spielfeld gezeichnet. Die Leserichtung der Listen ist die selbe der Leserichtung beim ermitteln des Spielstandes (von links oben bis rechts unten).
+Das Modul Spielbrett zeichnet aus einem Spielstand ein Spielbrett mit dem angegeben Spielstand. Zuerst wird das Grundbrett gezeichnet. Anschlie"send werden die Listen des Spielstandes ausgelesen und die ben"otigten Steine auf das Spielfeld gezeichnet. Die Leserichtung der Listen ist die selbe der Leserichtung beim ermitteln des Spielstandes (von links oben bis rechts unten).
 
 \begin{figure}[ht]
 \centering \includegraphics[width=0.3\textwidth]{images/emptyBoard}
@@ -57,6 +57,29 @@ Der Spielstand hat mehrere Schnittstellen:
 
 \begin{enumerate}
 \item (define (set\_new\_world world)):\\
-Ein neuer Spielstand (= world) kann gesetzt werden. In dieser 'world' sind sowohl der aktuelle Spielstand als auch der Spieler am Zug vermerkt.
+Ein neuer Spielstand (= world) kann gesetzt werden. In dieser 'world' sind sowohl der aktuelle Spielstand als auch der Spieler am Zug vermerkt. 
 \end{enumerate}
+
+\chapter{Strukturen}
+
+\section{Spielstand}
+
+\section{World}
+Die World setzt sich aus mehreren Informationen zu einer Liste zusammen:
+
+\begin{enumerate}
+\item Spielstand (siehe 4.1)
+\item Weltzustand\\
+Der Weltzustand gibt an, ob der Client ziehen darf, warten muss oder das Spiel beendet wurde (Zustände: wait, play, lost, won).
+\item Geschlagene Steine\\
+Die bereits geschlagenen Steine werden als Pair '(schwarz . weiß) übergeben.
+\item Gepasster Spielzug\\
+Hat der vorherige Spieler in seinem Spielzug gepasst und der Spieler an der Reihe passt ebenfalls, ist das Spiel beendet und die Auswertung startet (Gepasst: true/false). 
+\end{enumerate}
+
+Als Beispiel hier eine mögliche Worlddarstellung bei der der aktuelle Spieler am Zug ist, 5 schwarze und 8 weiße Steine geschlagen wurden und der vorherige Spieler nicht gepasst hat. Der Spielstand ist zur Übersicht vereinfacht:
+\begin{quotation}
+ '(play '(spielstand) '(5 . 8) false)
+\end{quotation}
+
 \end{document}
