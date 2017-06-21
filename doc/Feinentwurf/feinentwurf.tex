@@ -62,13 +62,35 @@ Ein neuer Spielstand (= world) kann gesetzt werden. In dieser 'world' sind sowoh
 
 \chapter{Strukturen}
 
-\section{Spielstand}
+\section{Spielfeld}
+Ein Spielfeld besteht aus 19x19 Felder, auf denen Steine positioniert werden k"onnen. Das Spielfeld wird in dem Programm als eine Liste mit 19 weiteren Listen dargestellt. Diese 19 Listen stehen f"ur die y-Koordinaten des Spielfeldes. Jede dieser 19 Listen enth"alt 19 Positionen, um einen Wert einzutragen. Diese Unterlisten stehen f"ur die x-Koordinaten.\\\\
+Wenn an einer Position eine 0 steht, befindet sich kein Stein auf dem Spielfeld. Befindet sich dort eine 1, liegt an der Position ein wei"ser Stein. Bei einer -1, liegt an der Position ein schwarzer Stein.\\\\
+\\Darstellung des Spielstandes in Abbildung 1.3:\\
+'((0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)\\
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)\\
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)\\
+  (0 0 0 0 0 0 0 1 0 0 -1 0 0 0 0 0 0 0 0)\\
+  (0 0 0 0 0 0 1 -1 0 0 -1 0 0 0 0 0 0 0 0)\\
+  (0 0 0 0 0 0 1 -1 0 1 -1 -1 0 0 0 0 0 0 0)\\
+  (0 0 0 0 0 1 1 -1 0 1 1 -1 -1 1 0 0 0 0 0)\\
+  (0 0 0 0 0 1 -1 -1 0 1 -1 0 0 0 0 0 0 0 0)\\
+  (0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0)\\
+  (0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0)\\
+  (0 0 0 0 0 0 0 0 0 0 0 0 -1 0 0 0 0 0 0)\\
+  (0 0 0 0 0 0 0 0 0 0 -1 -1 -1 0 0 0 0 0 0)\\
+  (0 0 0 0 0 0 0 0 0 -1 1 1 -1 0 0 0 0 0 0)\\
+  (0 0 0 0 1 1 1 1 1 -1 1 1 -1 0 1 1 0 0 0)\\
+  (0 0 0 0 1 -1 -1 -1 -1 1 0 1 0 -1 0 -1 1 0 0)\\
+  (0 0 0 1 -1 0 -1 1 1 0 0 1 -1 -1 -1 1 0 0 0)\\
+  (0 0 0 -1 0 0 -1 1 0 0 0 0 0 0 0 0 0 0 0)\\
+  (0 0 0 0 0 0 -1 1 0 0 0 0 0 0 0 0 0 0 0)\\
+  (0 0 0 0 0 0 -1 1 0 0 0 0 0 0 0 0 0 0 0))\\
 
 \section{World}
 Die World setzt sich aus mehreren Informationen zu einer Liste zusammen:
 
 \begin{enumerate}
-\item Spielstand (siehe 4.1)
+\item Spielfeld (siehe 4.1)
 \item Weltzustand\\
 Der Weltzustand gibt an, ob der Client ziehen darf, warten muss oder das Spiel beendet wurde (Zustände: wait, play, lost, won).
 \item Geschlagene Steine\\
@@ -76,10 +98,9 @@ Die bereits geschlagenen Steine werden als Pair '(schwarz . weiß) übergeben.
 \item Gepasster Spielzug\\
 Hat der vorherige Spieler in seinem Spielzug gepasst und der Spieler an der Reihe passt ebenfalls, ist das Spiel beendet und die Auswertung startet (Gepasst: true/false). 
 \end{enumerate}
-
-Als Beispiel hier eine mögliche Worlddarstellung bei der der aktuelle Spieler am Zug ist, 5 schwarze und 8 weiße Steine geschlagen wurden und der vorherige Spieler nicht gepasst hat. Der Spielstand ist zur Übersicht vereinfacht:
+Als Beispiel hier eine mögliche World-Darstellung bei der der aktuelle Spieler am Zug ist, 5 schwarze und 8 weiße Steine geschlagen wurden und der vorherige Spieler nicht gepasst hat. Der Spielstand ist zur Übersicht vereinfacht:
 \begin{quotation}
- '(play '(spielstand) '(5 . 8) false)
+ '(play '(spielfeld) '(5 . 8) false)
 \end{quotation}
 
 \end{document}
