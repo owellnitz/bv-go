@@ -58,21 +58,23 @@ Ein Spielclient muss in de Lage sein, einen Spielstand (4.2 World) entgegen zu n
 \section{Spielserver}
 Der Server bietet eine Reihe an Schnittstellen an.\\
 \begin{enumerate}
-\item (define (set\_stone posX posY pass)):\\
+\item (define (set\_stone posX posY passed)):\\
 Der Client kann mit dieser Funktion dem Server mitteilen, an welcher Position er einen Stein setzen m"ochte. Der Server pr"uft die Eingabe und erstellt daraus eine neue World (4.2). Wenn der Spieler gepasst hat, wird ein true f"ur das pass "ubergeben.
 
 \item (define start\_new\_game):\\
 Starte ein komplett neue Spiel. Schickt die World an die Clients.
 
-\item (define (start\_game\_picture path 'stones player player\_Passed)):\\
+\item (define (start\_game\_pic pic\_path 'stones player player\_Passed)):\\
 Starte ein Spiel aus einem Bild heraus. Der Server liest das Bild ein und verarbeitet es mit dem Bildverarbeitungsmodul. Um einen g"ultigen Spielstand zu erstellen, braucht dieser noch die Informationen wie viele Steine bereits geschlagen (Darstellung als Pair '(schwarz . wei"s) wurden, welcher Spieler am Zug ist und ob der vorherige Spieler gepasst hat. Daraus erstellt er einen Spielstand und schickt sie zu den Clients.
 
-\item (define (start\_game\_file filepath)):\\
+\item (define (start\_game\_file file\_path)):\\
 Starte ein Spiel aus einem Datei heraus. Der Server liest das Bild ein und verarbeitet es mit dem Dateimodul. Es befinden sich alle n"otigen Informationen in der Datei, sodass keine weiteren Informationen notwendig ist. Schickt anschlie"send die World an die Clients.
 
 \item (define save\_game\_state):\\
 Der Server speichert den aktuellen Spielstand in einer Datei und teilt den Spielern das erfolgreiche Speichern mit.
 \end{enumerate}
+
+ \chapter{Paketstruktur}
 
 \chapter{Strukturen}
 
@@ -99,8 +101,6 @@ Wenn an einer Position eine 0 steht, befindet sich kein Stein auf dem Spielfeld.
   (0 0 0 -1 0 0 -1 1 0 0 0 0 0 0 0 0 0 0 0)\\
   (0 0 0 0 0 0 -1 1 0 0 0 0 0 0 0 0 0 0 0)\\
   (0 0 0 0 0 0 -1 1 0 0 0 0 0 0 0 0 0 0 0))\\
-
- \chapter{Paketstruktur}
 
 \section{World}
 Die World setzt sich aus mehreren Informationen zu einer Liste zusammen:
