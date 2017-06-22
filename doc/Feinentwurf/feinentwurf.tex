@@ -15,16 +15,17 @@
 \chapter{Module der Software}
  
 \section{Bildverarbeitung (go\_bv.rkt)}
-Das Modul Bildverarbeitung ist f"ur das Auslesen des Spielzustandes eines Bildes zust"andig. Ein Bild wird in das Modul geladen und wird dann verarbeitet. Es wird zuerst das Spielbrett aus dem Bild extrahiert und in ein Blauwerte-Bild konvertiert. In diesem Bild wird die Koordinaten des ersten Spielfeldes (oben links) gesucht. An dieser Koordinate wird geschaut, ob die Schwellenwerte f"ur einen wei"sen oder schwarzen Stein getroffen wird. Diese "Uberpr"ufung wird an insgesamt sieben Stellen pro Koordinate vorgenommen. Es wird quadratisch um die Koordinate kontrolliert (siehe Abb. 1.1). Wird ein schwarzer Stein gefunden, wird in die jeweilige Liste der Wert -1 geschrieben. Wird ein wei"ser Stein gefunden, wird der Wert 1 eingetragen. Wird kein Stein gefunden, wird der Wert 0 in die Liste geschrieben.
+Das Modul Bildverarbeitung ist f"ur das Auslesen des Spielzustandes eines Bildes zust"andig. Ein Bild wird in das Modul geladen und wird dann verarbeitet. Es wird zuerst das Spielbrett aus dem Bild extrahiert und in ein Blauwerte-Bild konvertiert.\\
+In diesem Bild wird die Koordinaten des ersten Spielfeldes (oben links) gesucht. An dieser Koordinate wird geschaut, ob die Schwellenwerte f"ur einen wei"sen oder schwarzen Stein getroffen wird. Diese "Uberpr"ufung wird an insgesamt sieben Stellen pro Koordinate vorgenommen. Es wird quadratisch um die Koordinate kontrolliert (siehe Abb. 1.1). Wird ein schwarzer Stein gefunden, wird in die jeweilige Liste der Wert -1 geschrieben. Wird ein wei"ser Stein gefunden, wird der Wert 1 eingetragen. Wird kein Stein gefunden, wird der Wert 0 in die Liste geschrieben.
 \begin{figure}[ht]
 \centering \includegraphics[width=0.3\textwidth]{images/koordinate}
 \caption{Suchemuster an Koordinate}
 \end{figure}
 \\\\
-Dieser Prozess wird an jeder Koordinate durchgef"uhrt. Die Koordinaten werden anhand zweier Schrtittweiten (in x - und y-Richtung) ermittelt. Ist das ganze Spielfeld durchkontrolliert, hat das Modul den vollst"andigen Spielstand des Bildes projiziert.
+Dieser Prozess wird an jeder Koordinate durchgef"uhrt. Die Koordinaten werden anhand zweier Schrittweiten (in x - und y-Richtung) ermittelt. Ist das ganze Spielfeld durchkontrolliert, hat das Modul den vollst"andigen Spielstand des Bildes projiziert.
 
 \section{Spielbrett zeichnen (go\_draw\_board.rkt)}
-Das Modul Spielbrett zeichnet aus einem Spielstand ein Spielbrett mit dem angegeben Spielstand. Zuerst wird das Grundbrett gezeichnet. Anschlie"send werden die Listen des Spielstandes ausgelesen und die ben"otigten Steine auf das Spielfeld gezeichnet. Die Leserichtung der Listen ist die selbe der Leserichtung beim ermitteln des Spielstandes (von links oben bis rechts unten).
+Dieses Modul zeichnet aus einem strukturierten Spielfeld (4.1) das dazugeh"orige belegte Spielbrett. Zuerst wird das Grundbrett gezeichnet. Anschlie"send werden die Listen des Spielstandes ausgelesen und die ben"otigten Steine auf das Spielfeld gezeichnet. Die Leserichtung der Listen erfolgt von links Oben nach rechts Unten.
 
 \begin{figure}[ht]
 \centering \includegraphics[width=0.3\textwidth]{images/emptyBoard}
@@ -37,7 +38,7 @@ Das Modul Spielbrett zeichnet aus einem Spielstand ein Spielbrett mit dem angege
 \end{figure}
 
 \section{Dateiverarbeitung (go\_datei.rkt)}
-Dieses Modul l"adt aus einer Spielstand-Datei den aktuellen Spielstand und gibt diesen als World (4.2) zur"uck. Ebenfalls kann dieses Modul einen Spielstand in die Datei schreiben. Die Datei enth"alt folgende Informationen:\\
+Dieses Modul l"adt aus einer Spielstand-Datei den aktuellen Spielstand und gibt diesen als World (4.2) zur"uck. Ebenfalls kann dieses Modul einen Spielstand in die Datei schreiben. Die Datei enth"alt folgende Informationen:
 
 \begin{enumerate}
 \item Belegung des Spielfeldes (4.1)
@@ -48,19 +49,19 @@ Dieses Modul l"adt aus einer Spielstand-Datei den aktuellen Spielstand und gibt 
 
 \section{Spielclient (go\_client.rkt)}
 Der Spielclient steuert die Kommunikation des Spielers mit dem Server. Mit dem Spielclient kann  auf drei verschiedene Arten ein Spiel gestartet werden. Es kann ein komplett neues Spiel gestartet werden, es kann ein Spielstand mit einem Bild-Spielstand gestartet werden und es kann ein Spielstand aus einer Datei geladen und gespielt werden. Bei dem Start aus einem Bild-Spielstand muss der Client abfragen, wie viele Steine bereits geschlagen wurden, ob ein Spieler gepasst hat und welcher Spieler am Zug ist. Diese Informationen werden dann zu dem Server geschickt und dieser initialisiert den ersten Spielstand (= World (4.2)). \\\\
-Der Spielclient zeigt den Spielern w"ahrend eines Spiels den aktuellen Spielstand an, ob sie an der Reihe sind, die Anzahl der geschlagenen Steine, ob der Gegner gepasst hat, sie einen ung"ultigen Zug vorgenommen haben oder wer gewonnen hat.\\\\ 
+Der Spielclient ist f"ur die Erstellung des Interfaces zust"andig. "Uber diesen zeigt er den Spielern w"ahrend eines Spiels den aktuellen Spielstand an, ob sie an der Reihe sind, die Anzahl der geschlagenen Steine, ob der Gegner gepasst hat, sie einen ung"ultigen Zug vorgenommen haben oder wer gewonnen hat.\\\\ 
 Der Spieler kann "uber den Client seinen Zug vornehmen und dem Server mitteilen, wo er seinen Stein gesetzt hat. Auch kann er seinen Spielzug passen. Der Spielclient kann w"ahrend des Spiels dem Server mitteilen, dass das aktuelle Spiel in einer Datei gespeichert werden soll.
 
 \section{Spielserver (go\_server.rkt)}
-Der Spielserver leitet das Spiel. Zu Beginn erh"alt der Server die Information, ob er ein neues Spiel starten soll oder ein Spiel aus einem Bild oder einer Datei laden soll. Der Server l"adt die das Bild bzw. die Datei und ermittelt den Spielstand. Zus"atzlich schickt der Server eine Abfrage f"ur die weiteren n"otigen Informationen zum Client. Diese sind bei einem neuen Spiel die Vorgabe und bei einem Spielstand aus einem Bild die geschlagene Steine, der Spieler, der am Zug ist, und ob der vorherige Spieler gepasst hat. Anschlie"send sendet der Server den geladenen Spielstand an die Clients.\\\\
-Er verwaltet w"ahrend des ganzen Spieles den Spielstand (4.2 World) und welcher Spieler am Zug ist. Diese Informationen "ubermittelt der Server immer an die Clients.  Auch pr"uft der Server die "ubermittelten Spielz"uge der Spieler auf ihre G"ultigkeit und teilt den Spielern ggf. mit, dass der Spielzug nicht zul"assig ist. Bei zul"assigen Z"ugen passt der Server den Spielstand (4.2 World) an und "ubermittelt den vollst"andig erstellten Spielstand an die Clients und das Spiel wird gestartet.\\\\ 
+Der Spielserver leitet das Spiel. Zu Beginn erh"alt der Server die Information, ob er ein neues Spiel starten soll oder ein Spiel aus einem Bild oder einer Datei laden soll. Der Server l"adt das Bild bzw. die Datei und ermittelt den Spielstand. Zus"atzlich schickt der Server eine Abfrage f"ur die weiteren n"otigen Informationen zu dem Client. Diese sind bei einem neuen Spiel die Vorgabe und bei einem Spielstand aus einem Bild die geschlagene Steine, der Spieler, der am Zug ist, und ob der vorherige Spieler gepasst hat. Anschlie"send sendet der Server den geladenen Spielstand an die Clients.\\\\
+Er verwaltet w"ahrend des ganzen Spieles den Spielstand (4.2 World) und welcher Spieler am Zug ist. Diese Informationen "ubermittelt der Server immer an die Clients.  Auch pr"uft der Server die "ubermittelten Spielz"uge der Spieler auf ihre G"ultigkeit und teilt den Spielern ggf. mit, dass der Spielzug nicht zul"assig ist. Bei zul"assigen Z"ugen passt der Server den Spielstand (4.2 World) an und "ubermittelt den vollst"andig erstellten Spielstand an die Clients.\\\\ 
 Nach Beendigung eines Spieles, ermittelt der Server den Gewinner und teilt den Spielern (Clients) den Gewinner mit. Erh"alt der Server den Befehl, dass das Spiel gespeichert werden soll, erstellt der Server eine Datei und teilt den Clients mit, dass das Spiel gespeichert wurde.
 
  \chapter{Schnittstellen}
  \section{Bildverarbeitung}
 \begin{enumerate}
 \item (read-board path):\\
-Das Modul bietet eine Funktion, um den die Belegung des Spielfeldes auszulesen. An diese Funktion wird der Dateipfad des Bildes "ubergeben und anschlie"send liefert diese die Belegung des Spielfeldes wie in 4.1 beschrieben zur"uck.
+Das Modul bietet eine Funktion, um die Belegung des Spielfeldes auszulesen. An diese Funktion wird der Dateipfad des Bildes "ubergeben und anschlie"send liefert diese die Belegung des Spielfeldes wie in 4.1 beschrieben zur"uck.
 \end{enumerate}
 
 \section{Dateiverarbeitung}
@@ -85,7 +86,7 @@ Die Funktion zeichnet ein Spielbrett anhand eines in 4.1 definierten Spielfeldes
 
 \begin{enumerate}
 \item (receive w m):\\
-Der Spielclient erh"alt "uber die von dem Universe-Paket gelieferten Funktion (receive w m). In dem Parameter w befindet sich der alte Weltzustand und in dem Parameter m der neue Weltzustand. Der neue Weltzustand m wird zuerst "uberpr"uft. Ist er g"ultig wird dieser angezeigt, ist er es nicht, wird der alte Weltzustand gew"ahlt.
+Der Spielclient erh"alt "uber die von dem Universe-Paket gelieferten Funktion seinen Spielstand (World). In dem Parameter w befindet sich der alte Weltzustand und in dem Parameter m der neue Weltzustand. Der neue Weltzustand m wird zuerst "uberpr"uft. Ist er g"ultig wird dieser angezeigt, ist er es nicht, wird der alte Weltzustand gew"ahlt.
 
 \item (make-package w m):\\
 Der Spielclient kann mittels der Funktion (make-package w m) mit dem Server kommunizieren. So kann der Spielclient mit dem Parameter w seine aktuelle Welt senden und in dem Parameter m weitere Informationen verpacken. Zum Beispiel wird dort angegeben an welcher Position der Spieler seinen Stein gesetzt hat.
