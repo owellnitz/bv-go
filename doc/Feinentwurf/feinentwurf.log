@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.4.9)  22 JUN 2017 17:15
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.4.9)  23 JUN 2017 00:17
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -594,21 +594,27 @@ Underfull \hbox (badness 10000) in paragraph at lines 18--26
 
  []
 
-<images/emptyBoard.png, id=10, 403.5075pt x 404.51125pt>
+
+Underfull \hbox (badness 10000) in paragraph at lines 18--26
+
+ []
+
+[2
+
+ <./images/koordinate.png>]
+<images/emptyBoard.png, id=15, 403.5075pt x 404.51125pt>
 File: images/emptyBoard.png Graphic file (type png)
 
 <use images/emptyBoard.png>
 Package pdftex.def Info: images/emptyBoard.png used on input line 31.
 (pdftex.def)             Requested size: 125.47794pt x 125.78604pt.
- <images/board.png, id=11, 401.5pt x 402.50375pt>
+ <images/board.png, id=16, 401.5pt x 402.50375pt>
 File: images/board.png Graphic file (type png)
 
 <use images/board.png>
 Package pdftex.def Info: images/board.png used on input line 36.
 (pdftex.def)             Requested size: 125.47794pt x 125.78825pt.
- [2
 
- <./images/koordinate.png>]
 Underfull \hbox (badness 10000) in paragraph at lines 51--54
 
  []
@@ -679,7 +685,7 @@ Here is how much of TeX's memory you used:
 ic/amsfonts/cm/cmr10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public
 /amsfonts/cm/cmr12.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/a
 msfonts/cm/cmssbx10.pfb>
-Output written on feinentwurf.pdf (9 pages, 151674 bytes).
+Output written on feinentwurf.pdf (9 pages, 151927 bytes).
 PDF statistics:
  55 PDF objects out of 1000 (max. 8388607)
  32 compressed objects within 1 object stream
