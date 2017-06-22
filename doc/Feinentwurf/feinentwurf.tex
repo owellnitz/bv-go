@@ -36,14 +36,14 @@ Das Modul Spielbrett zeichnet aus einem Spielstand ein Spielbrett mit dem angege
 \caption{Belegtes Spielfeld}
 \end{figure}
 
+\section{Spielserver (go\_datei.rkt)}
+Dieses Modul l"adt aus einer Spielstand-Datei den aktuellen Spielstand.
 
 \section{Spielclient (go\_client.rkt)}
-Der Spielclient ist f"ur die Kommunikation des Spielers mit dem Server. Der Spielclient zeigt den aktuellen Spielstand an und teilt den Spielern mit, ob sie an der Reihe sind, sie einen ung"ultigen Zug vorgenommen haben oder wer gewonnen hat. Der Spieler kann "uber den Client seinen Zug vornehmen und dem Server mitteilen, wo er seinen Stein gesetzt hat. Auch kann er seinen Spielzug passen. 
+Der Spielclient steuert die Kommunikation des Spielers mit dem Server. Mit dem Spielclient kann  "uber ein Men"u auf drei verschiedene Arten ein Spiel gestartet werden. Es kann ein komplett neues Spiel gestartet werden, es kann ein Spielstand mit einem Bild-Spielstand gestartet werden und es kann ein Spielstand aus einer Datei geladen und gespielt werden. Bei dem Start aus einem Bild-Spielstand muss der Client abfragen, wie viele Steine bereits geschlagen wurden, ob ein Spieler gepasst hat und welcher Spieler am Zug ist. Diese Informationen werden dann zu dem Server geschickt und dieser initialisiert den ersten Spielstand (= World (4.2)). Weiter zeigt der Spielclient w"ahrend eines Spiels den aktuellen Spielstand an und teilt den Spielern mit, ob sie an der Reihe sind, sie einen ung"ultigen Zug vorgenommen haben oder wer gewonnen hat. Der Spieler kann "uber den Client seinen Zug vornehmen und dem Server mitteilen, wo er seinen Stein gesetzt hat. Auch kann er seinen Spielzug passen. Der Spielclient kann w"ahrend des Spiels dem Server mitteilen, dass das aktuelle Spiel in einer Datei gespeichert werden soll.
 
 \section{Spielserver (go\_server.rkt)}
-Der Spielserver leitet das Spiel. Er verwaltet den Spielstand und welcher Spieler am Zug ist. Diese Informationen "ubermittelt der Server immer an die Clients.  Auch pr"uft der Server die "ubermittelten Spielz"uge der Spieler auf ihre G"ultigkeit und teilt den Spielern ggf. mit, dass der Spielzug nicht zul"assig ist. Bei zul"assigen Z"ugen passt der Server den Spielstand an und "ubermittelt den neuen Spielstand an die Clients. Nach Beendigung eines Spieles, ermittelt der Server den Gewinner und teilt den Spielern (Clients) den Gewinner mit.
- 
- \chapter{Paketstruktur}
+Der Spielserver leitet das Spiel. Zu Beginn erh"alt der Server die Information, ob er ein neues Spiel starten soll oder ein Spiel aus einem Bild oder einer Datei laden soll. Anschlie"send sendet der Server den geladenen Spielstand an die Clients. Er verwaltet den Spielstand (4.2 World) und welcher Spieler am Zug ist. Diese Informationen "ubermittelt der Server immer an die Clients.  Auch pr"uft der Server die "ubermittelten Spielz"uge der Spieler auf ihre G"ultigkeit und teilt den Spielern ggf. mit, dass der Spielzug nicht zul"assig ist. Bei zul"assigen Z"ugen passt der Server den Spielstand (4.2 World) an und "ubermittelt den neuen Spielstand an die Clients. Nach Beendigung eines Spieles, ermittelt der Server den Gewinner und teilt den Spielern (Clients) den Gewinner mit. Erh"alt der Server den Befehl, dass das Spiel gespeichert werden soll, erstellt der Server eine Datei und teilt den Clients mit, dass das Spiel gespeichert wurde.
 
  \chapter{Schnittstellen}
  \section{Bildverarbeitung}
@@ -53,19 +53,33 @@ Das Modul Bildverarbeitung bietet die Schnittstelle, um aus einem Dateipfad eine
 Das Modul zum Zeichnen des Spielbrettes bietet eine Funktion, um ein Spielbrett anhand eines Spielstandes in definierter Struktur zu Zeichnen. Diese Funktion lautet (define (draw\_board\_with\_score game\_score)). An diese Funktion wird der Spielstand "ubergeben und es wird dieser Spielstand gezeichnet zur"uckgeliefert. 
 
 \section{Spielclient}
-Der Spielstand hat mehrere Schnittstellen:
+Ein Spielclient muss in de Lage sein, einen Spielstand (4.2 World) entgegen zu nehmen. Dazu bietes der Client die Schnittstellenfunktion (define (set\_world world)). Diese kann dazu genutzt werden, um den Client einen Spielstand mitzuteilen. Dieser Spielstand wird dann in dem Client dargestellt.
 
+\section{Spielserver}
+Der Server bietet eine Reihe an Schnittstellen an.\\
 \begin{enumerate}
-\item (define (set\_new\_world world)):\\
-Ein neuer Spielstand (= world) kann gesetzt werden. In dieser 'world' sind sowohl der aktuelle Spielstand als auch der Spieler am Zug vermerkt. 
+\item (define (set\_stone posX posY pass)):\\
+Der Client kann mit dieser Funktion dem Server mitteilen, an welcher Position er einen Stein setzen m"ochte. Der Server pr"uft die Eingabe und erstellt daraus eine neue World (4.2). Wenn der Spieler gepasst hat, wird ein true f"ur das pass "ubergeben.
+
+\item (define start\_new\_game):\\
+Starte ein komplett neue Spiel. Schickt die World an die Clients.
+
+\item (define (start\_game\_picture path 'stones player player\_Passed)):\\
+Starte ein Spiel aus einem Bild heraus. Der Server liest das Bild ein und verarbeitet es mit dem Bildverarbeitungsmodul. Um einen g"ultigen Spielstand zu erstellen, braucht dieser noch die Informationen wie viele Steine bereits geschlagen (Darstellung als Pair '(schwarz . wei"s) wurden, welcher Spieler am Zug ist und ob der vorherige Spieler gepasst hat. Daraus erstellt er einen Spielstand und schickt sie zu den Clients.
+
+\item (define (start\_game\_file filepath)):\\
+Starte ein Spiel aus einem Datei heraus. Der Server liest das Bild ein und verarbeitet es mit dem Dateimodul. Es befinden sich alle n"otigen Informationen in der Datei, sodass keine weiteren Informationen notwendig ist. Schickt anschlie"send die World an die Clients.
+
+\item (define save\_game\_state):\\
+Der Server speichert den aktuellen Spielstand in einer Datei und teilt den Spielern das erfolgreiche Speichern mit.
 \end{enumerate}
 
 \chapter{Strukturen}
 
 \section{Spielfeld}
 Ein Spielfeld besteht aus 19x19 Felder, auf denen Steine positioniert werden k"onnen. Das Spielfeld wird in dem Programm als eine Liste mit 19 weiteren Listen dargestellt. Diese 19 Listen stehen f"ur die y-Koordinaten des Spielfeldes. Jede dieser 19 Listen enth"alt 19 Positionen, um einen Wert einzutragen. Diese Unterlisten stehen f"ur die x-Koordinaten.\\\\
-Wenn an einer Position eine 0 steht, befindet sich kein Stein auf dem Spielfeld. Befindet sich dort eine 1, liegt an der Position ein wei"ser Stein. Bei einer -1, liegt an der Position ein schwarzer Stein.\\\\
-\\Darstellung des Spielstandes in Abbildung 1.3:\\
+Wenn an einer Position eine 0 steht, befindet sich kein Stein auf dem Spielfeld. Befindet sich dort eine 1, liegt an der Position ein wei"ser Stein. Bei einer -1, liegt an der Position ein schwarzer Stein.\\
+\\Darstellung des Spielstandes in Abbildung 1.3:\\\\
 '((0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)\\
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)\\
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)\\
@@ -86,6 +100,8 @@ Wenn an einer Position eine 0 steht, befindet sich kein Stein auf dem Spielfeld.
   (0 0 0 0 0 0 -1 1 0 0 0 0 0 0 0 0 0 0 0)\\
   (0 0 0 0 0 0 -1 1 0 0 0 0 0 0 0 0 0 0 0))\\
 
+ \chapter{Paketstruktur}
+
 \section{World}
 Die World setzt sich aus mehreren Informationen zu einer Liste zusammen:
 
@@ -98,7 +114,7 @@ Die bereits geschlagenen Steine werden als Pair '(schwarz . weiß) übergeben.
 \item Gepasster Spielzug\\
 Hat der vorherige Spieler in seinem Spielzug gepasst und der Spieler an der Reihe passt ebenfalls, ist das Spiel beendet und die Auswertung startet (Gepasst: true/false). 
 \end{enumerate}
-Als Beispiel hier eine mögliche World-Darstellung bei der der aktuelle Spieler am Zug ist, 5 schwarze und 8 weiße Steine geschlagen wurden und der vorherige Spieler nicht gepasst hat. Der Spielstand ist zur Übersicht vereinfacht:
+Als Beispiel eine mögliche World-Darstellung bei der der aktuelle Spieler am Zug ist, 5 schwarze und 8 weiße Steine geschlagen wurden und der vorherige Spieler nicht gepasst hat. Der Spielstand ist zur Übersicht vereinfacht:
 \begin{quotation}
  '(play '(spielfeld) '(5 . 8) false)
 \end{quotation}
