@@ -1,5 +1,16 @@
 \BOOKMARK [0][-]{chapter.1}{1 Module der Software}{}% 1
 \BOOKMARK [1][-]{section.1.1}{1.1 Bildverarbeitung \(go\137bv.rkt\)}{chapter.1}% 2
 \BOOKMARK [1][-]{section.1.2}{1.2 Spielbrett zeichnen \(go\137draw\137board.rkt\)}{chapter.1}% 3
-\BOOKMARK [1][-]{section.1.3}{1.3 Spielclient \(go\137client.rkt\)}{chapter.1}% 4
-\BOOKMARK [1][-]{section.1.4}{1.4 Spielserver \(go\137server.rkt\)}{chapter.1}% 5
+\BOOKMARK [1][-]{section.1.3}{1.3 Dateiverarbeitung \(go\137datei.rkt\)}{chapter.1}% 4
+\BOOKMARK [1][-]{section.1.4}{1.4 Spielclient \(go\137client.rkt\)}{chapter.1}% 5
+\BOOKMARK [1][-]{section.1.5}{1.5 Spielserver \(go\137server.rkt\)}{chapter.1}% 6
+\BOOKMARK [0][-]{chapter.2}{2 Schnittstellen}{}% 7
+\BOOKMARK [1][-]{section.2.1}{2.1 Bildverarbeitung}{chapter.2}% 8
+\BOOKMARK [1][-]{section.2.2}{2.2 Dateiverarbeitung}{chapter.2}% 9
+\BOOKMARK [1][-]{section.2.3}{2.3 Spielbrett zeichnen}{chapter.2}% 10
+\BOOKMARK [1][-]{section.2.4}{2.4 Spielclient}{chapter.2}% 11
+\BOOKMARK [1][-]{section.2.5}{2.5 Spielserver}{chapter.2}% 12
+\BOOKMARK [0][-]{chapter.3}{3 Paketstruktur}{}% 13
+\BOOKMARK [0][-]{chapter.4}{4 Strukturen}{}% 14
+\BOOKMARK [1][-]{section.4.1}{4.1 Spielfeld}{chapter.4}% 15
+\BOOKMARK [1][-]{section.4.2}{4.2 World \(Spielzustand\)}{chapter.4}% 16
