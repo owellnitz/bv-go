@@ -61,7 +61,7 @@
                  ])))
 
 
-;;Maus-Interaktionen noch unverändert
+;;Maus-Interaktionen, Restart noch unverändert. Ansonsten wird eine Liste '( 'set ( Y X ) verschickt.
 (define (handle-mouse name)
   (lambda (w x_pos y_pos mouse_event)
     (if(mouse=? mouse_event "button-up")
@@ -69,11 +69,11 @@
                (equal? (car w) 'lost)
                (equal? (car w) 'remis))
            (make-package w 'restart)
-           (let* ((column (quotient x_pos 50))
-                  (row    (quotient y_pos 50))
-                  (index  (+ (* 3 row) column)))
-             (if (< -1 index 9) 
-                 (make-package w (list 'set index))
+           (let* ((column (quotient (- x_pos 10)  20))
+                  (row    (quotient (- y_pos 10) 20))
+                  (index (list row column)))
+             (if (and (< -1 column 19) (< -1 row 19))
+                 (make-package w (cons 'set index))
                  w)))
        w)))
 
@@ -89,6 +89,6 @@
 
 ;;Macht zwei Welten auf
 (launch-many-worlds 
-  (create-world "X")
-  (create-world "O")
-  (create-world "B"))
+  (create-world "1")
+  (create-world "-1"))
+  ;(create-world "B"))

@@ -89,16 +89,16 @@
     ;;          2. Welt gerade spielen darf
     ;;          3. Feld noch frei ist
     ;;TODO      4. Ob Zug gültig ist 
-    [(and (list? m) (= (length m) 2) (equal? (first m) 'set)      ;; 1.
+    [(and (list? m) (= (length m) 3) (equal? (first m) 'set)      ;; 1.
           (iworld=? wrld (world1 univ))                           ;; 2.
-          (equal? (list-ref (current_board univ) (second m)) "")) ;; 3.
+          (equal? (list-ref (list-ref (current_board univ) (second m)) (third m)) 0)) ;; 3.
      (let* ([new_board (append (take (current_board univ) (second m))
-                               (list (iworld-name wrld))
-                               (take-right (current_board univ) (- 8 (second m))))])
+                               (list (list-set (list-ref (current_board univ) (second m)) (third m) (string->number (iworld-name wrld))))
+                              (take-right (current_board univ) (- 18 (second m))))])
        ;;Haben beide Spieler gepasst?    
                       
                ;;Falls nein, ist der andere Spieler dran - alles geht einfach weiter
-               (make-bundle (list 
+              (make-bundle (list 
                              (reverse (current_worlds univ))
                              'play 
                              new_board)
