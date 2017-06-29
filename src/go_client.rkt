@@ -61,20 +61,22 @@
                  ])))
 
 
-;;Maus-Interaktionen, Restart noch unverändert. Ansonsten wird eine Liste '( 'set ( Y X ) verschickt.
+;;Maus-Interaktionen, Restart noch unverändert. Ansonsten wird eine Liste '( 'set  Y X ) verschickt.
 (define (handle-mouse name)
   (lambda (w x_pos y_pos mouse_event)
     (if(mouse=? mouse_event "button-up")
-       (if (or (equal? (car w) 'won)
-               (equal? (car w) 'lost)
-               (equal? (car w) 'remis))
-           (make-package w 'restart)
-           (let* ((column (quotient (- x_pos 10)  20))
-                  (row    (quotient (- y_pos 10) 20))
-                  (index (list row column)))
-             (if (and (< -1 column 19) (< -1 row 19))
-                 (make-package w (cons 'set index))
-                 w)))
+       (if (not (equal? (car w) 'wait))
+           (if (or (equal? (car w) 'won)
+                   (equal? (car w) 'lost)
+                   (equal? (car w) 'remis))
+               (make-package w 'restart)
+               (let* ((column (quotient (- x_pos 10)  20))
+                      (row    (quotient (- y_pos 10) 20))
+                      (index (list row column)))
+                 (if (and (< -1 column 19) (< -1 row 19))
+                     (make-package w (cons 'set index))
+                     w)))
+           w)
        w)))
 
 ;;Erstelle eine Welt und verbinde sie mit dem LOCALHOST Server
@@ -84,7 +86,7 @@
              (to-draw (draw n))
              (on-mouse (handle-mouse n))
              (name n)
-             (state #t)
+             (state #f)
              (register LOCALHOST)))
 
 ;;Macht zwei Welten auf

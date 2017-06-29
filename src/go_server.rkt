@@ -91,7 +91,8 @@
     ;;TODO      4. Ob Zug gültig ist 
     [(and (list? m) (= (length m) 3) (equal? (first m) 'set)      ;; 1.
           (iworld=? wrld (world1 univ))                           ;; 2.
-          (equal? (list-ref (list-ref (current_board univ) (second m)) (third m)) 0)) ;; 3.
+          (equal? (get-field-state univ (second m) (third m)) 0)  ;;3.
+          (check-turn univ (string->number (iworld-name wrld)) (second m) (third m))) ;; 4.
      (let* ([new_board (append (take (current_board univ) (second m))
                                (list (list-set (list-ref (current_board univ) (second m)) (third m) (string->number (iworld-name wrld))))
                               (take-right (current_board univ) (- 18 (second m))))])
@@ -108,7 +109,42 @@
     ;;Sonstige Anfragen verändern das Universum nicht
     [else (make-bundle univ '() '())]))
              
-    
+;;Zugprüfung auf Gültigkeit
+(define (check-turn univ player y x)
+  [not (and
+        (or (equal? x 0) (equal? (inverse-player player) (get-field-state univ y (- x 1))))
+        (or (equal? x 18) (equal? (inverse-player player) (get-field-state univ y (+ x 1))))
+        (or (equal? y 0) (equal? (inverse-player player) (get-field-state univ (- y 1) x)))
+        (or (equal? y 18) (equal? (inverse-player player) (get-field-state univ (+ y 1) x))))]
+  )
+
+;;Gebe anderen Spieler zurück
+(define (inverse-player player)
+  (if(equal? player -1)
+     1
+     -1
+     )
+  )
+
+;Liefert den Stein der Koordinaten zurück
+(define (get-field-state univ y x)
+  (list-ref (list-ref (current_board univ) y) x)
+  )
+
+;;Überprüfe Freiheiten
+(define (check-freedom univ player proofed proof)
+  (let ((y (car (first proof)))
+    (x (cdr (first proof))))
+  (if (and
+       (or (equal? x 0) (equal? (inverse-player player) (get-field-state univ y (- x 1))) (member (cons y (- x 1)) proofed))
+       (or (equal? x 0) (equal? (inverse-player player) (get-field-state univ y (+ x 1))) (member (cons y (+ x 1)) proofed))
+       (or (equal? x 0) (equal? (inverse-player player) (get-field-state univ (- y 1) x)) (member (cons (- y 1) x) proofed))
+       (or (equal? x 0) (equal? (inverse-player player) (get-field-state univ (+ y 1) x)) (member (cons (+ y 1) x) proofed)))
+      1;;TODO: lösche proofed
+      (check-freedom univ player (cons (first proof) proofed) proof))
+    )
+  )
+
 ;;Erschafft ein Universum
 (universe UNIVERSE0
           (on-new add-world)
