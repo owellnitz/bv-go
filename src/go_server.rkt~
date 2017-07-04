@@ -88,36 +88,34 @@
     ;;Prüfe ob: 1. Nachricht im richtigen Format
     ;;          2. Welt gerade spielen darf
     ;;          3. Feld noch frei ist
-    ;;          4. Ob Zug gültig ist
-    ;;          5. Prüfe Freiheiten
+    ;;TODO      4. Ob Zug gültig ist 
     [(and (list? m) (= (length m) 3) (equal? (first m) 'set)      ;; 1.
           (iworld=? wrld (world1 univ))                           ;; 2.
-          (equal? (get-field-state (current_board univ) (second m) (third m)) 0)  ;;3.
-          (check-turn univ (string->number (iworld-name wrld)) (second m) (third m))) ;;4.
-     (let* ([temp_board (set-stone board (second m) (third m) (string->number (iworld-name wrld)))]
-            [new_board (check-freedom new_board (string->number (iworld-name wrld)) '()
-                                      (find-first-proofs new_board (second m) (third m) (string->number (iworld-name wrld)) route-list '())))])
+          (equal? (get-field-state univ (second m) (third m)) 0)  ;;3.
+          (check-turn univ (string->number (iworld-name wrld)) (second m) (third m))) ;; 4.
+     (let* ([new_board (append (take (current_board univ) (second m))
+                               (list (list-set (list-ref (current_board univ) (second m)) (third m) (string->number (iworld-name wrld))))
+                              (take-right (current_board univ) (- 18 (second m))))])
        ;;Haben beide Spieler gepasst?    
                       
                ;;Falls nein, ist der andere Spieler dran - alles geht einfach weiter
               (make-bundle (list 
                              (reverse (current_worlds univ))
                              'play 
-                             (check-freedom new_board (string->number (iworld-name wrld)) '()
-                             (find-first-proofs new_board (second m) (third m) (string->number (iworld-name wrld)) route-list '())))
+                             new_board)
                             (list (make-mail (world1 univ) (list 'wait new_board))
                                   (make-mail (world2 univ) (list 'play new_board)))
                             '()))]
     ;;Sonstige Anfragen verändern das Universum nicht
     [else (make-bundle univ '() '())]))
-
+             
 ;;Zugprüfung auf Gültigkeit
 (define (check-turn univ player y x)
   [not (and
-        (or (equal? x 0) (equal? (inverse-player player) (get-field-state (current_board univ) y (- x 1))))
-        (or (equal? x 18) (equal? (inverse-player player) (get-field-state (current_board univ) y (+ x 1))))
-        (or (equal? y 0) (equal? (inverse-player player) (get-field-state (current_board univ) (- y 1) x)))
-        (or (equal? y 18) (equal? (inverse-player player) (get-field-state (current_board univ) (+ y 1) x))))]
+        (or (equal? x 0) (equal? (inverse-player player) (get-field-state univ y (- x 1))))
+        (or (equal? x 18) (equal? (inverse-player player) (get-field-state univ y (+ x 1))))
+        (or (equal? y 0) (equal? (inverse-player player) (get-field-state univ (- y 1) x)))
+        (or (equal? y 18) (equal? (inverse-player player) (get-field-state univ (+ y 1) x))))]
   )
 
 ;;Gebe anderen Spieler zurück
@@ -129,86 +127,22 @@
   )
 
 ;Liefert den Stein der Koordinaten zurück
-(define (get-field-state board y x)
-  (list-ref (list-ref board y) x)
+(define (get-field-state univ y x)
+  (list-ref (list-ref (current_board univ) y) x)
   )
-
-(define route-list (list (cons 0 -1)
-                         (cons 0 1)
-                         (cons -1 0)
-                         (cons 1 0)))
 
 ;;Überprüfe Freiheiten
-(define (check-freedom board player proofed proof)
-  (if (empty? proof)
-      (kill-stones board proofed);kill
-  (let* ((y (car (first proof)))
-    (x (cdr (first proof)))
-    (free? (check-coordinate board x y player proof proofed route-list)))
-  (if (equal? free? 'free)
-      board
-      (check-freedom board player (cons (cons y x) proofed) (cdr free?)))
+(define (check-freedom univ player proofed proof)
+  (let ((y (car (first proof)))
+    (x (cdr (first proof))))
+  (if (and
+       (or (equal? x 0) (equal? (inverse-player player) (get-field-state univ y (- x 1))) (member (cons y (- x 1)) proofed))
+       (or (equal? x 0) (equal? (inverse-player player) (get-field-state univ y (+ x 1))) (member (cons y (+ x 1)) proofed))
+       (or (equal? x 0) (equal? (inverse-player player) (get-field-state univ (- y 1) x)) (member (cons (- y 1) x) proofed))
+       (or (equal? x 0) (equal? (inverse-player player) (get-field-state univ (+ y 1) x)) (member (cons (+ y 1) x) proofed)))
+      1;;TODO: lösche proofed
+      (check-freedom univ player (cons (first proof) proofed) proof))
     )
-  ))
-
-;;
-(define (check-coordinate board x-pos y-pos player proof proofed pos-list)
-    (if(or (empty? pos-list) (equal? proof 'free))
-       proof
-       (let ((y (+ y-pos (car (first pos-list))))
-             (x (+ x-pos (cdr (first pos-list)))))
-         (cond
-         ;Eingeschlossen
-         [(or (< x 0) (> x 18) (< y 0) (> y 18) (member? proofed y x) (equal? player (get-field-state board y x)))
-          (check-coordinate board x-pos y-pos player proof proofed (cdr pos-list))]
-         ;Nächsten Stein eigener Farbe gefunden --> proof
-         [(equal? (inverse-player player) (get-field-state board y x))
-          (check-coordinate board x-pos y-pos player (cons (cons y x) proof) proofed (cdr pos-list))]
-         ;Freiheit
-         [(equal? 0 (get-field-state board y x))
-          (check-coordinate board x-pos y-pos player 'free proofed (cdr pos-list))]
-         )
-       )))
-
-
-(define (member? list y x)
-  (if (list? (member (cons y x) list))
-      #t
-      #f
-   )
-  )
-
-;;Finde erste zu prüfende
-(define (find-first-proofs board y-pos x-pos player pos-list proof)
-    (if(empty? pos-list)
-       proof
-         (let ((y (+ y-pos (car (first pos-list))))
-    (x (+ x-pos (cdr (first pos-list)))))
-       (cond
-         ;Eingeschlossen
-         [(or (< x 0) (> x 18) (< y 0) (> y 18) (equal? player (get-field-state board y x)))
-          (find-first-proofs board y-pos x-pos player (cdr pos-list) proof)]
-         ;Nächsten Stein eigener Farbe gefunden --> proof
-         [(equal? (inverse-player player) (get-field-state board y x))
-          (find-first-proofs board y-pos x-pos player (cdr pos-list) (cons (cons y x) proof))]
-         ;Freiheit
-         [(equal? 0 (get-field-state board y x))
-          (find-first-proofs board y-pos x-pos player (cdr pos-list) proof)]
-         )
-       )))
-
-(define (kill-stones board proofed)
-  (if (empty? proofed)
-      board
-      (let* ((y (car (first proofed)))
-             (x (cdr (first proofed))))
-        (kill-stones (set-stone board y x 0) (cdr proofed)))
-  ))
-
-(define (set-stone board y x color)
-(append (take board y)
-        (list (list-set (list-ref board y) x color))
-                              (take-right board (- 18 y)))
   )
 
 ;;Erschafft ein Universum
