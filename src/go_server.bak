@@ -5,10 +5,9 @@
 (define NUM_PLAYERS 2)
 
 ;;Board-Representation
-(define player_color (list (list "player1" -1) (list "player2" 1)))
 (define empty_board  (make-list 19 (make-list 19 0)))
 (define UNIVERSE0 
-  (list '() 'wait empty_board player_color))
+  (list '() 'wait empty_board))
 
 ;;Quick accessors for the universe
 (define (current_worlds univ)
@@ -23,12 +22,6 @@
 
 (define (current_board univ)
   (third univ))
-
-(define (black univ)
-  (car (fourth univ)))
-
-(define (white univ)
-  (cadr (fourth univ)))
 
 ;;Repräsentation eines Universums
 ;; '((iworld_active iworld_inactive) status (make-list 19 (make-list 19 0) )
@@ -62,9 +55,9 @@
          [(= (length (current_worlds univ)) (- NUM_PLAYERS 1))
           (make-bundle (list
                         (append (current_worlds univ) (list wrld))
-                        'started
-                        empty_board player_color)
-                       (list (make-mail (world1 univ) (list 'started empty_board))
+                        'play
+                        empty_board)
+                       (list (make-mail (world1 univ) (list 'play empty_board))
                              (make-mail wrld   (list 'wait empty_board)))
                        '())]
          
@@ -91,20 +84,6 @@
                       (list (make-mail (world1 univ) (list 'wait empty_board))
                             (make-mail (world2 univ) (list 'play empty_board)))
                       '())]
-    ;Das Spiel startet -> Spieler wählen Farbe (und wer anfängt)
-    [(and (equal? (current_state univ) 'started) 
-              (equal? m 'black))
-     (list-set (black univ) 0 (iworld-name (world1 univ)))
-      (list-set (white univ) 0 (iworld-name (world2 univ)))
-         (make-bundle (list
-                       (current_worlds univ)
-                       'play
-                       empty_board)
-                      (list (make-mail (world1 univ) (list 'play empty_board))
-                            (make-mail (world2 univ) (list 'wait empty_board)))
-                      '())]
-    
-    
     ;;Eine Welt möchte ein Feld markieren, dazu schickt sie (set FELD_NR) an das Universum
     ;;Prüfe ob: 1. Nachricht im richtigen Format
     ;;          2. Welt gerade spielen darf
@@ -113,9 +92,9 @@
     [(and (list? m) (= (length m) 3) (equal? (first m) 'set)      ;; 1.
           (iworld=? wrld (world1 univ))                           ;; 2.
           (equal? (get-field-state univ (second m) (third m)) 0)  ;;3.
-          (check-turn univ (get-color univ (iworld-name wrld)) (second m) (third m))) ;; 4.
+          (check-turn univ (string->number (iworld-name wrld)) (second m) (third m))) ;; 4.
      (let* ([new_board (append (take (current_board univ) (second m))
-                               (list (list-set (list-ref (current_board univ) (second m)) (third m) (get-color univ (iworld-name wrld))))
+                               (list (list-set (list-ref (current_board univ) (second m)) (third m) (string->number (iworld-name wrld))))
                               (take-right (current_board univ) (- 18 (second m))))])
        ;;Haben beide Spieler gepasst?    
                       
@@ -129,13 +108,7 @@
                             '()))]
     ;;Sonstige Anfragen verändern das Universum nicht
     [else (make-bundle univ '() '())]))
-
-;;Hilfsfunktion um Farbe des Spielers auszugeben
-(define (get-color player univ)
-  (if (equal? (car (black univ)) player)
-      -1
-      1))
-
+             
 ;;Zugprüfung auf Gültigkeit
 (define (check-turn univ player y x)
   [not (and

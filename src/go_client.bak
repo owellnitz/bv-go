@@ -10,9 +10,7 @@
 ;; 2. w=(play   )      - An der Reihe
 ;; 3. w=(won    )      - Gewonnen
 ;; 4. w=(lost   )      - Verloren
-;; 5. w=(remis  )      - Unentschieden
-;; 6. w=(started)      -Farbwahl und Zugreihenfolge
-
+;; 4. w=(remis  )      - Unentschieden
 
 ;;Startzustand
 (define WORLD0 (list 'wait (make-list 19 (make-list 19 0))))
@@ -53,12 +51,6 @@
               (above 
                (text "Remis" 22 'blue) 
                new_game_text)]
-             ;;Farbwahl und Zugreihenfolge
-             [(equal? (car w) 'started)
-              (above 
-               (text "Farbwahl durch Klick ins Feld" 22 'blue)
-               (draw-board-with-score (second w))
-               )]
              ;;Sonst wird normal gespielt
              [else
                 (above
@@ -74,23 +66,16 @@
   (lambda (w x_pos y_pos mouse_event)
     (if(mouse=? mouse_event "button-up")
        (if (not (equal? (car w) 'wait))
-           (cond
-             ;Restartzeug
-             [(or (equal? (car w) 'won)
+           (if (or (equal? (car w) 'won)
                    (equal? (car w) 'lost)
                    (equal? (car w) 'remis))
-               (make-package w 'restart)]
-               ;Farbwahl
-               [(equal? (car w) 'started)
-                   ;TODO Farbwahl
-                   (make-package w 'black)]
-               ;Stein setzen
-               [(let* ((column (quotient (- x_pos 10)  20))
+               (make-package w 'restart)
+               (let* ((column (quotient (- x_pos 10)  20))
                       (row    (quotient (- y_pos 10) 20))
                       (index (list row column)))
                  (if (and (< -1 column 19) (< -1 row 19))
                      (make-package w (cons 'set index))
-                     w))])
+                     w)))
            w)
        w)))
 
@@ -106,6 +91,6 @@
 
 ;;Macht zwei Welten auf
 (launch-many-worlds 
-  (create-world "Spieler1")
-  (create-world "Spieler2"))
+  (create-world "1")
+  (create-world "-1"))
   ;(create-world "B"))
