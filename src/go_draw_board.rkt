@@ -9,6 +9,10 @@
 
 (provide choose-color-field)
 
+(provide choose-killed-black-stones)
+
+(provide choose-killed-white-stones)
+
 ;;Zeichnen einer Welt
 ;;Hilfsfunktionen
 (define field (rectangle 400 400 "solid" "PeachPuff"))
@@ -93,6 +97,7 @@
                  (overlay/offset text-for-new-game 0 -100 two-areas)))
 
 ;;Neues Spiel mit Auswahl der Farbe
+;;Hilfsfunktionen
 (define text-for-black
   (above(text "Klicke hier um die Farbe" 22 'blue)
         (text " schwarz zu wählen" 22 'blue)))
@@ -104,3 +109,32 @@
 (define choose-color-field
     (overlay/offset text-for-black 0 100
                  (overlay/offset text-for-white 0 -100 two-areas)))
+
+;;Start aus BV-Datei
+;; Hilfsfunktionen
+(define text-for-black-stones
+  (above(text "Gebe die Anzahl der" 22 'blue)
+        (text "geschlagenen schwarzen Steine" 22 'blue)
+        (text "mit den Nummertasten ein." 22 'blue)
+        (text "Bestätige mit der Entertaste" 22 'blue)))
+
+(define text-for-white-stones
+  (above(text "Gebe die Anzahl der" 22 'blue)
+        (text "geschlagenen weißen Steine" 22 'blue)
+        (text "mit den Nummertasten ein." 22 'blue)
+        (text "Bestätige mit der Entertaste" 22 'blue)))
+
+(define (input-for-killed-stones killed-stones)
+  (text (number->string killed-stones) 22 'blue))
+
+;Feld zur Eingabe der geschlagenen Steine
+;;Schwarz
+(define (choose-killed-black-stones killed-stones)
+    (overlay/offset text-for-black-stones 0 100
+                 (overlay/offset (input-for-killed-stones killed-stones) 0 -100 two-areas)))
+
+;;Weiß
+(define (choose-killed-white-stones killed-stones)
+    (overlay/offset text-for-white-stones 0 100
+                 (overlay/offset (input-for-killed-stones killed-stones) 0 -100 two-areas)))
+

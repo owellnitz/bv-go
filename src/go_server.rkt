@@ -119,7 +119,7 @@
          (make-bundle (list
                        (reverse (current_worlds univ))
                        'play
-                       empty_board choosen_color)
+                       empty_board choosen_color) 
                       (list (make-mail (world1 univ) (list 'wait empty_board))
                             (make-mail (world2 univ) (list 'play empty_board)))
                       '()))]
@@ -133,9 +133,9 @@
     [(and (list? m) (= (length m) 3) (equal? (first m) 'set)      ;; 1.
           (iworld=? wrld (world1 univ))                           ;; 2.
           (equal? (get-field-state univ (second m) (third m)) 0)  ;;3.
-          (check-turn univ (get-color univ (iworld-name wrld)) (second m) (third m))) ;; 4.
+          (check-turn univ (get-color univ (iworld-name wrld)) (second m) (third m))) ;; 4. Von Name auf get-color geändert
      (let* ([new_board (append (take (current_board univ) (second m))
-                               (list (list-set (list-ref (current_board univ) (second m)) (third m) (get-color univ (iworld-name wrld))))
+                               (list (list-set (list-ref (current_board univ) (second m)) (third m) (get-color univ (iworld-name wrld)))) ;Von Name auf get-color geändert
                               (take-right (current_board univ) (- 18 (second m))))])
        ;;Haben beide Spieler gepasst?    
                       
@@ -143,7 +143,7 @@
               (make-bundle (list 
                              (reverse (current_worlds univ))
                              'play 
-                             new_board (current_color univ))
+                             new_board (current_color univ)) ;gewählte Farbe im Status hinterlegt.
                             (list (make-mail (world1 univ) (list 'wait new_board))
                                   (make-mail (world2 univ) (list 'play new_board)))
                             '()))]
