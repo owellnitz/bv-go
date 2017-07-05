@@ -94,11 +94,10 @@
           (iworld=? wrld (world1 univ))                           ;; 2.
           (equal? (get-field-state (current_board univ) (second m) (third m)) 0)  ;;3.
           (check-turn univ (string->number (iworld-name wrld)) (second m) (third m))) ;;4.
-     (let* ([temp_board (set-stone (current_board univ) (second m) (third m) (string->number (iworld-name wrld)))]
+     (let* ([temp_board (set-stone (current_board univ) (second m) (third m) (string->number (iworld-name wrld)))];;Neuer Stein
             [new_board (check-freedom temp_board (string->number (iworld-name wrld)) '()
-                                      (find-first-proofs temp_board (second m) (third m) (string->number (iworld-name wrld)) route-list '()))])
-       ;;Haben beide Spieler gepasst?    
-                      
+                                      (find-first-proofs temp_board (second m) (third m) (string->number (iworld-name wrld)) route-list '()))]);;Check auf Freiheiten
+       ;;Haben beide Spieler gepasst?           
                ;;Falls nein, ist der andere Spieler dran - alles geht einfach weiter
               (make-bundle (list 
                              (reverse (current_worlds univ))
@@ -132,12 +131,13 @@
   (list-ref (list-ref board y) x)
   )
 
+;;Koordinaten um eine Steinposition herum
 (define route-list (list (cons 0 -1)
                          (cons 0 1)
                          (cons -1 0)
                          (cons 1 0)))
 
-;;Überprüfe Freiheiten
+;;Überprüfe Freiheiten der gegnerischen Steine, um den gesetzten Stein herum
 (define (check-freedom board player proofed proof)
   (if (empty? proof)
       (kill-stones board proofed);kill
@@ -150,7 +150,7 @@
     )
   ))
 
-;;
+;;Prüfe um eine Koordinate herum, ob sie Eingeschlossen ist, Freiheiten oder befreundete Steine hat
 (define (check-coordinate board x-pos y-pos player proof proofed pos-list)
     (if(or (empty? pos-list) (equal? proof 'free))
        proof
@@ -169,7 +169,7 @@
          )
        )))
 
-
+;;Prüft ob eine Koordinate in der Liste vorhanden ist
 (define (member? list y x)
   (if (list? (member (cons y x) list))
       #t
@@ -177,7 +177,7 @@
    )
   )
 
-;;Finde erste zu prüfende
+;;Finde erste zu prüfende Steine (Steine des Gegners, die geschlagen sein können)
 (define (find-first-proofs board y-pos x-pos player pos-list proof)
     (if(empty? pos-list)
        ;TRUE
