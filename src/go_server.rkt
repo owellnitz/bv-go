@@ -95,8 +95,8 @@
           (equal? (get-field-state (current_board univ) (second m) (third m)) 0)  ;;3.
           (check-turn univ (string->number (iworld-name wrld)) (second m) (third m))) ;;4.
      (let* ([temp_board (set-stone (current_board univ) (second m) (third m) (string->number (iworld-name wrld)))];;Neuer Stein
-            [new_board (check-freedom temp_board (string->number (iworld-name wrld)) '()
-                                      (find-first-proofs temp_board (second m) (third m) (string->number (iworld-name wrld)) route-list '()))]);;Check auf Freiheiten
+            [new_board (cdr (main-freedom-finder temp_board (string->number (iworld-name wrld)) '()
+                                      (find-first-proofs temp_board (second m) (third m) (string->number (iworld-name wrld)) route-list '())))]);;Check auf Freiheiten
        ;;Haben beide Spieler gepasst?           
                ;;Falls nein, ist der andere Spieler dran - alles geht einfach weiter
               (make-bundle (list 
@@ -111,10 +111,17 @@
 
 ;;Zugprüfung auf Gültigkeit
 (define (check-turn univ player y x)
-  (if(equal? (get-field-state (check-freedom (set-stone (current_board univ) y x player) player '() (list (cons y x)))) 0)
-     #f
-     #t
-     )
+  (let ((new_board (set-stone (current_board univ) y x player)))
+    (if(> (car (main-freedom-finder new_board player '()
+                                      (find-first-proofs new_board y x player route-list '()))) 0)
+       #t
+       (if(equal?
+           (get-field-state (cdr (main-freedom-finder new_board (inverse-player player) '() (list (cons y x)))) y x)
+           0)
+          #f
+          #t
+          ))
+    )
   )
 
 ;;Gebe anderen Spieler zurück
@@ -136,15 +143,21 @@
                          (cons -1 0)
                          (cons 1 0)))
 
+(define (main-freedom-finder board player proofed proof)
+  (if(empty? proof)
+  (cons (length proofed) (kill-stones board proofed));kill
+  (main-freedom-finder board player (append proofed (check-freedom board player '() proof)) proof)
+  ))
+
 ;;Überprüfe Freiheiten der gegnerischen Steine, um den gesetzten Stein herum
 (define (check-freedom board player proofed proof)
   (if (empty? proof)
-      (kill-stones board proofed);kill
+      proofed
   (let* ((y (car (first proof)))
     (x (cdr (first proof)))
     (free? (check-coordinate board x y player proof proofed route-list)))
   (if (equal? free? 'free)
-      board
+      '()
       (check-freedom board player (cons (cons y x) proofed) (cdr free?)))
     )
   ))
