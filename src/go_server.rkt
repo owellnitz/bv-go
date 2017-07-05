@@ -94,17 +94,16 @@
           (iworld=? wrld (world1 univ))                           ;; 2.
           (equal? (get-field-state (current_board univ) (second m) (third m)) 0)  ;;3.
           (check-turn univ (string->number (iworld-name wrld)) (second m) (third m))) ;;4.
-     (let* ([temp_board (set-stone board (second m) (third m) (string->number (iworld-name wrld)))]
-            [new_board (check-freedom new_board (string->number (iworld-name wrld)) '()
-                                      (find-first-proofs new_board (second m) (third m) (string->number (iworld-name wrld)) route-list '())))])
+     (let* ([temp_board (set-stone (current_board univ) (second m) (third m) (string->number (iworld-name wrld)))]
+            [new_board (check-freedom temp_board (string->number (iworld-name wrld)) '()
+                                      (find-first-proofs temp_board (second m) (third m) (string->number (iworld-name wrld)) route-list '()))])
        ;;Haben beide Spieler gepasst?    
                       
                ;;Falls nein, ist der andere Spieler dran - alles geht einfach weiter
               (make-bundle (list 
                              (reverse (current_worlds univ))
                              'play 
-                             (check-freedom new_board (string->number (iworld-name wrld)) '()
-                             (find-first-proofs new_board (second m) (third m) (string->number (iworld-name wrld)) route-list '())))
+                             new_board)
                             (list (make-mail (world1 univ) (list 'wait new_board))
                                   (make-mail (world2 univ) (list 'play new_board)))
                             '()))]
@@ -163,7 +162,7 @@
           (check-coordinate board x-pos y-pos player proof proofed (cdr pos-list))]
          ;Nächsten Stein eigener Farbe gefunden --> proof
          [(equal? (inverse-player player) (get-field-state board y x))
-          (check-coordinate board x-pos y-pos player (cons (cons y x) proof) proofed (cdr pos-list))]
+          (check-coordinate board x-pos y-pos player (append proof (list (cons y x))) proofed (cdr pos-list))]
          ;Freiheit
          [(equal? 0 (get-field-state board y x))
           (check-coordinate board x-pos y-pos player 'free proofed (cdr pos-list))]
@@ -181,21 +180,25 @@
 ;;Finde erste zu prüfende
 (define (find-first-proofs board y-pos x-pos player pos-list proof)
     (if(empty? pos-list)
+       ;TRUE
        proof
-         (let ((y (+ y-pos (car (first pos-list))))
-    (x (+ x-pos (cdr (first pos-list)))))
-       (cond
-         ;Eingeschlossen
-         [(or (< x 0) (> x 18) (< y 0) (> y 18) (equal? player (get-field-state board y x)))
-          (find-first-proofs board y-pos x-pos player (cdr pos-list) proof)]
-         ;Nächsten Stein eigener Farbe gefunden --> proof
-         [(equal? (inverse-player player) (get-field-state board y x))
-          (find-first-proofs board y-pos x-pos player (cdr pos-list) (cons (cons y x) proof))]
-         ;Freiheit
-         [(equal? 0 (get-field-state board y x))
-          (find-first-proofs board y-pos x-pos player (cdr pos-list) proof)]
+       ;FALSE
+       (let ((y (+ y-pos (car (first pos-list))))
+             (x (+ x-pos (cdr (first pos-list)))))
+         (cond
+           ;Eingeschlossen
+           [(or (< x 0) (> x 18) (< y 0) (> y 18) (equal? player (get-field-state board y x)))
+            (find-first-proofs board y-pos x-pos player (cdr pos-list) proof)]
+           ;Stein von Gegner gefunden --> proof
+           [(equal? (inverse-player player) (get-field-state board y x))
+            (find-first-proofs board y-pos x-pos player (cdr pos-list) (cons (cons y x) proof))]
+           ;Freiheit
+           [(equal? 0 (get-field-state board y x))
+            (find-first-proofs board y-pos x-pos player (cdr pos-list) proof)]
+           )
          )
-       )))
+       )
+  )
 
 (define (kill-stones board proofed)
   (if (empty? proofed)
