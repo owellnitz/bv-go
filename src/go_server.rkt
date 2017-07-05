@@ -111,11 +111,10 @@
 
 ;;Zugprüfung auf Gültigkeit
 (define (check-turn univ player y x)
-  [not (and
-        (or (equal? x 0) (equal? (inverse-player player) (get-field-state (current_board univ) y (- x 1))))
-        (or (equal? x 18) (equal? (inverse-player player) (get-field-state (current_board univ) y (+ x 1))))
-        (or (equal? y 0) (equal? (inverse-player player) (get-field-state (current_board univ) (- y 1) x)))
-        (or (equal? y 18) (equal? (inverse-player player) (get-field-state (current_board univ) (+ y 1) x))))]
+  (if(equal? (get-field-state (check-freedom (set-stone (current_board univ) y x player) player '() (list (cons y x)))) 0)
+     #f
+     #t
+     )
   )
 
 ;;Gebe anderen Spieler zurück
