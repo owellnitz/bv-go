@@ -88,10 +88,20 @@
                       (list (make-mail (world1 univ) (list 'wait empty_board))
                             (make-mail (world2 univ) (list 'play empty_board)))
                       '())]
-    ;;Das Spiel startet -> Spieler wählen Farbe (und wer anfängt)
-    ;;Bisher implementiert: erster angemeldeter Spieler fängt an und wählt schwarz
-    ;;Universum merkt sich '(Spieler1 -1 Spieler2 1)
-    [(and (equal? (current_state univ) 'started) 
+    ;;Das Spiel startet -> Spieler wählt Spielstart aus BV oder neues Spiel
+[(and (equal? (current_state univ) 'started) 
+              (equal? m 'newgame))
+         (make-bundle (list
+                       (current_worlds univ)
+                       'newgame
+                       empty_board player_color)
+                      (list (make-mail (world1 univ) (list 'newgame empty_board))
+                            (make-mail (world2 univ) (list 'wait empty_board)))
+                      '())]
+    
+    ;Farbwahl bei Neustart
+    ;;Der Spieler wählt schwarz
+    [(and (equal? (current_state univ) 'newgame) 
               (equal? m 'black))
      (let* ([choosen_color (list (iworld-name (world1 univ)) -1 (iworld-name (world2 univ)) 1)])
          (make-bundle (list
@@ -100,6 +110,18 @@
                        empty_board choosen_color)
                       (list (make-mail (world1 univ) (list 'play empty_board))
                             (make-mail (world2 univ) (list 'wait empty_board)))
+                      '()))]
+
+      ;;Der Spieler wählt weiß
+    [(and (equal? (current_state univ) 'newgame) 
+              (equal? m 'white))
+     (let* ([choosen_color (list (iworld-name (world2 univ)) -1 (iworld-name (world1 univ)) 1)])
+         (make-bundle (list
+                       (reverse (current_worlds univ))
+                       'play
+                       empty_board choosen_color)
+                      (list (make-mail (world1 univ) (list 'wait empty_board))
+                            (make-mail (world2 univ) (list 'play empty_board)))
                       '()))]
     
     

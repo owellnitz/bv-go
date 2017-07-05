@@ -53,12 +53,12 @@
               (above 
                (text "Remis" 22 'blue) 
                new_game_text)]
-             ;;Farbwahl und Zugreihenfolge
+             ;;Wahl des Spielstarts
              [(equal? (car w) 'started)
-              (above 
-               (text "Farbwahl durch Klick ins Feld" 22 'blue)
-               (draw-board-with-score (second w))
-               )]
+              start-field]
+             ;;Wahl der Farbe
+             [(equal? (car w) 'newgame)
+              choose-color-field]
              ;;Sonst wird normal gespielt
              [else
                 (above
@@ -80,10 +80,20 @@
                    (equal? (car w) 'lost)
                    (equal? (car w) 'remis))
                (make-package w 'restart)]
-               ;Farbwahl
+               ;Start aus BV oder neues Spiel
                [(equal? (car w) 'started)
-                   ;TODO Farbwahl
-                   (make-package w 'black)]
+                   (if (< y_pos 200)
+                       ;TODO Start aus BV
+                       w
+                       ;Start eines neuen Spiels
+                   (make-package w 'newgame))]
+               ;Farbwahl
+               [(equal? (car w) 'newgame)
+                   (if (< y_pos 200)
+                       ;Wahl von Schwarz
+                       (make-package w 'black)
+                       ;Wahl von Weiß
+                       (make-package w 'white))]
                ;Stein setzen
                [(let* ((column (quotient (- x_pos 10)  20))
                       (row    (quotient (- y_pos 10) 20))

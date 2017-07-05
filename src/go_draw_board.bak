@@ -5,10 +5,6 @@
 
 (provide draw-board-with-score)
 
-(provide start-field)
-
-(provide choose-color-field)
-
 ;;Zeichnen einer Welt
 ;;Hilfsfunktionen
 (define field (rectangle 400 400 "solid" "PeachPuff"))
@@ -87,20 +83,6 @@
 (define text-for-new-game
   (text "Klicke hier um ein neues Spiel zu starten" 22 'blue))
 
-;;Startfeld
+
 (define start-field
-  (overlay/offset text-for-image 0 100
-                 (overlay/offset text-for-new-game 0 -100 two-areas)))
-
-;;Neues Spiel mit Auswahl der Farbe
-(define text-for-black
-  (above(text "Klicke hier um die Farbe" 22 'blue)
-        (text " schwarz zu wählen" 22 'blue)))
-
-(define text-for-white
-  (above(text "Klicke hier um die Farbe" 22 'blue)
-        (text " weiß zu wählen" 22 'blue)))
-;;Farbwahlfeld
-(define choose-color-field
-    (overlay/offset text-for-black 0 100
-                 (overlay/offset text-for-white 0 -100 two-areas)))
+  (overlay/align "middle" "top" text-for-image two-areas))
