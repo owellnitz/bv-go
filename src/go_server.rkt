@@ -143,10 +143,11 @@
                          (cons -1 0)
                          (cons 1 0)))
 
+;;
 (define (main-freedom-finder board player proofed proof)
   (if(empty? proof)
   (cons (length proofed) (kill-stones board proofed));kill
-  (main-freedom-finder board player (append proofed (check-freedom board player '() proof)) proof)
+  (main-freedom-finder board player (append proofed (check-freedom board player '() (list (car proof)))) (cdr proof))
   ))
 
 ;;Überprüfe Freiheiten der gegnerischen Steine, um den gesetzten Stein herum
