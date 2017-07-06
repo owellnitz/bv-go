@@ -94,29 +94,42 @@
           (iworld=? wrld (world1 univ))                           ;; 2.
           (equal? (get-field-state (current_board univ) (second m) (third m)) 0)  ;;3.
           (check-turn univ (string->number (iworld-name wrld)) (second m) (third m))) ;;4.
-     (let* ([temp_board (set-stone (current_board univ) (second m) (third m) (string->number (iworld-name wrld)))];;Neuer Stein
-            [new_board (cdr (main-freedom-finder temp_board (string->number (iworld-name wrld)) '()
-                                      (find-first-proofs temp_board (second m) (third m) (string->number (iworld-name wrld)) route-list '())))]);;Check auf Freiheiten
-       ;;Haben beide Spieler gepasst?           
-               ;;Falls nein, ist der andere Spieler dran - alles geht einfach weiter
-              (make-bundle (list 
-                             (reverse (current_worlds univ))
-                             'play 
-                             new_board)
-                            (list (make-mail (world1 univ) (list 'wait new_board))
-                                  (make-mail (world2 univ) (list 'play new_board)))
-                            '()))]
+     (let* ([temp_board (set-stone (current_board univ) (second m) (third m) (string->number (iworld-name wrld)))];;Setze neuen Stein
+            [new_board_state (find-freedoms temp_board (string->number (iworld-name wrld)) '()
+                                            (find-opposing-stones
+                                             temp_board (second m) (third m)
+                                             (string->number (iworld-name wrld))
+                                             route-list '()))];;Spielbrett und Anzahl geschlagenen Steinen
+            [new_board (cdr new_board_state)];;Spielbrett nach entfernen der geschlagenen Steine
+            [killed_stones (car new_board_state)]);;Geschlagene Steine im Spielzug
+       ;;Haben beide Spieler gepasst?
+       ;;Falls nein, ist der andere Spieler dran - alles geht einfach weiter
+       (make-bundle (list
+                     (reverse (current_worlds univ))
+                     'play
+                     new_board)
+                    (list (make-mail (world1 univ) (list 'wait new_board))
+                          (make-mail (world2 univ) (list 'play new_board)))
+                    '()))]
     ;;Sonstige Anfragen verändern das Universum nicht
     [else (make-bundle univ '() '())]))
 
-;;Zugprüfung auf Gültigkeit
+;;Zugprüfung auf Gültigkeit.
+;;Verhindert den Selbstmord eines Spielers, außer der Selbstmord schlägt Steine des Gegners.
+;;
+;;Parameter
+;;univ: Das Universum des Spieles.
+;;player: Der Spieler, der am Zug ist.
+;;y/x:Die y- und x-Koordinaten des neuen Steines.
+;;
+;;return: Die Zulässigkeit des Zuges.
 (define (check-turn univ player y x)
   (let ((new_board (set-stone (current_board univ) y x player)))
-    (if(> (car (main-freedom-finder new_board player '()
-                                      (find-first-proofs new_board y x player route-list '()))) 0)
+    (if(> (car (find-freedoms new_board player '()
+                                      (find-opposing-stones new_board y x player route-list '()))) 0)
        #t
        (if(equal?
-           (get-field-state (cdr (main-freedom-finder new_board (inverse-player player) '() (list (cons y x)))) y x)
+           (get-field-state (cdr (find-freedoms new_board (inverse-player player) '() (list (cons y x)))) y x)
            0)
           #f
           #t
@@ -124,7 +137,12 @@
     )
   )
 
-;;Gebe anderen Spieler zurück
+;;Gibt den gegnerischen Spieler zurück.
+;;
+;;Parameter
+;;player: Der aktuelle Spieler.
+;;
+;;return: Der gegnerische Spieler.
 (define (inverse-player player)
   (if(equal? player -1)
      1
@@ -132,26 +150,52 @@
      )
   )
 
-;Liefert den Stein der Koordinaten zurück
+;Liefert den Zustand des Feldes Zurück
+;
+;Paramter
+;board: Das Spielbrett mit Belegung.
+;y: y-Koordinate des gesuchten Feldes.
+;x: x-Koordinate des gesuchten Feldes.
+;
+;Return: Zustand (Schwarz, weiß, leer) des gesuchten Feldes.
 (define (get-field-state board y x)
   (list-ref (list-ref board y) x)
   )
 
-;;Koordinaten um eine Steinposition herum
-(define route-list (list (cons 0 -1)
-                         (cons 0 1)
-                         (cons -1 0)
-                         (cons 1 0)))
+;;Dient zur Berechnung der umliegenden Koordinaten eines Feldes.
+;;        3
+;;      1 o 2
+;;        4
+(define route-list (list (cons 0 -1)  ;1
+                         (cons 0 1)   ;2
+                         (cons -1 0)  ;3
+                         (cons 1 0))) ;4
 
+;;Prüft jeden gegnerischen Stein (= Start des möglichen Pfades) um den gesetzten Stein herum.
 ;;
-(define (main-freedom-finder board player proofed proof)
-  (if(empty? proof)
-  (cons (length proofed) (kill-stones board proofed));kill
-  (main-freedom-finder board player (append proofed (check-freedom board player '() (list (car proof)))) (cdr proof))
+;;Parameter
+;;board: Das Spielbrett mit Belegung.
+;;player: Der Spieler, der am Zug ist.
+;;beaten_stones: Die bereits geschlagenen Steine
+;;start_stones: Die umliegenden Steine um den neu gesetzten Stein, die geprüft werden müssen.
+;;
+;;return: Die Anzahl der geschlagene Steine und die neue Belegung des Spielfeldes
+(define (find-freedoms board player beaten_stones start_stones)
+  (if(empty? start_stones)
+  (cons (length beaten_stones) (kill-stones board beaten_stones));kill
+  (find-freedoms board player (append beaten_stones (check-freedom-path board player '() (list (car start_stones)))) (cdr start_stones))
   ))
 
-;;Überprüfe Freiheiten der gegnerischen Steine, um den gesetzten Stein herum
-(define (check-freedom board player proofed proof)
+;;Sucht ab des Startsteines eine Freiheit
+;;
+;;Parameter
+;;board: Das Spielbrett mit Belegung.
+;;player: Der Spieler, der am Zug ist.
+;;proofed: Die bereits geprüften Steine.
+;;proof: Die noch zu prüfende Steine.
+;;
+;;return: Wenn keine Freiheit gefunden wurde, die Liste mit den geschlagenen Steinen. Sonst die leere Liste.
+(define (check-freedom-path board player proofed proof)
   (if (empty? proof)
       proofed
   (let* ((y (car (first proof)))
@@ -159,11 +203,22 @@
     (free? (check-coordinate board x y player proof proofed route-list)))
   (if (equal? free? 'free)
       '()
-      (check-freedom board player (cons (cons y x) proofed) (cdr free?)))
+      (check-freedom-path board player (cons (cons y x) proofed) (cdr free?)))
     )
   ))
 
-;;Prüfe um eine Koordinate herum, ob sie Eingeschlossen ist, Freiheiten oder befreundete Steine hat
+;;Prüfe um eine Koordinate herum, ob sie Eingeschlossen ist, Freiheiten oder befreundete Steine hat.
+;;board: Das Spielbrett mit Belegung.
+;;x-pos: Die x-Koordinate des zu prüfenden Feldes.
+;;y-pos: Die y-Koordinate des zu prüfenden Feldes.
+;;proofed: Die bereits geprüften Steine.
+;;proof: Die noch zu prüfende Steine.
+;;player: Der Spieler, der am Zug ist.
+;;pos-list: Hilfsliste für das Finden der umliegenden Koordinaten.
+;;
+;;return: Die Liste mit den neu zu prüfenden Steinen.
+;;        Es können Steine enthalten sein, die Information, dass eine Freiheit gefunden wurde oder die Liste ist leer,
+;;        weil der Stein eingeschlossen ist.
 (define (check-coordinate board x-pos y-pos player proof proofed pos-list)
     (if(or (empty? pos-list) (equal? proof 'free))
        proof
@@ -183,6 +238,12 @@
        )))
 
 ;;Prüft ob eine Koordinate in der Liste vorhanden ist
+;;
+;;Parameter
+;;list: Die Liste, die durchsucht werden soll.
+;;y/x: Die Koordinaten, die in der Liste gesucht werden.
+;;
+;;return: Koordinate in der Liste?
 (define (member? list y x)
   (if (list? (member (cons y x) list))
       #t
@@ -190,8 +251,19 @@
    )
   )
 
-;;Finde erste zu prüfende Steine (Steine des Gegners, die geschlagen sein können)
-(define (find-first-proofs board y-pos x-pos player pos-list proof)
+;;Sucht gegnerische Steine, um den neu gesetzten Stein.
+;;
+;;Parameter
+;;board: Das Spielbrett mit Belegung.
+;;player: Der Spieler, der den Stein gesetzt hat.
+;;x-pos: Die x-Koordinate des zu prüfenden Feldes.
+;;y-pos: Die y-Koordinate des zu prüfenden Feldes.
+;;pos-list: Hilfsliste für das Finden der umliegenden Koordinaten.
+;;proof: Die gegnerischen Steinen, um den neuen Stein herum.
+;;
+;;return: Die Liste mit den gegnerischen Steinen, um den neuen Stein herum.
+;;        Ab diesen Steine muss überprüft werden, ob Steine geschalgen wurden. 
+(define (find-opposing-stones board y-pos x-pos player pos-list proof)
     (if(empty? pos-list)
        ;TRUE
        proof
@@ -201,26 +273,41 @@
          (cond
            ;Eingeschlossen
            [(or (< x 0) (> x 18) (< y 0) (> y 18) (equal? player (get-field-state board y x)))
-            (find-first-proofs board y-pos x-pos player (cdr pos-list) proof)]
+            (find-opposing-stones board y-pos x-pos player (cdr pos-list) proof)]
            ;Stein von Gegner gefunden --> proof
            [(equal? (inverse-player player) (get-field-state board y x))
-            (find-first-proofs board y-pos x-pos player (cdr pos-list) (cons (cons y x) proof))]
+            (find-opposing-stones board y-pos x-pos player (cdr pos-list) (cons (cons y x) proof))]
            ;Freiheit
            [(equal? 0 (get-field-state board y x))
-            (find-first-proofs board y-pos x-pos player (cdr pos-list) proof)]
+            (find-opposing-stones board y-pos x-pos player (cdr pos-list) proof)]
            )
          )
        )
   )
 
-(define (kill-stones board proofed)
-  (if (empty? proofed)
+;;Entfernt die geschlagenen Steine von dem Spielfeld.
+;;
+;;Parameter
+;;board: Das Spielbrett mit Belegung.
+;;beaten_stones: Die geschlagenen Steine.
+;;
+;;return: Die Spielfeldbelegung ohne die geschlagenen Steine
+(define (kill-stones board beaten_stones)
+  (if (empty? beaten_stones)
       board
-      (let* ((y (car (first proofed)))
-             (x (cdr (first proofed))))
-        (kill-stones (set-stone board y x 0) (cdr proofed)))
+      (let* ((y (car (first beaten_stones)))
+             (x (cdr (first beaten_stones))))
+        (kill-stones (set-stone board y x 0) (cdr beaten_stones)))
   ))
 
+;;Setzt einen Stein auf dem Spielfeld.
+;;
+;;Parameter
+;;board: Das Spielbrett mit Belegung.
+;;y/x: Die x- und y-Koordinaten des neu zu setzenden Steines.
+;;color: Die Farbe des zu setzenden Steines.
+;;
+;;return: Die Belegung Spielfeldes mit dem neuen Stein.
 (define (set-stone board y x color)
 (append (take board y)
         (list (list-set (list-ref board y) x color))
