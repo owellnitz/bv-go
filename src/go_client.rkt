@@ -57,7 +57,7 @@
              [(equal? (car w) 'started)
               start-field]
              ;;Wahl der Farbe
-             [(equal? (car w) 'newgame)
+             [(equal? (car w) 'choosecolor)
               choose-color-field]
              ;;Sonst wird normal gespielt
              [else
@@ -84,11 +84,11 @@
                [(equal? (car w) 'started)
                    (if (< y_pos 200)
                        ;TODO Start aus BV
-                       w
+                   (make-package w 'newbvgame)
                        ;Start eines neuen Spiels
                    (make-package w 'newgame))]
                ;Farbwahl
-               [(equal? (car w) 'newgame)
+               [(equal? (car w) 'choosecolor)
                    (if (< y_pos 200)
                        ;Wahl von Schwarz
                        (make-package w 'black)
@@ -103,6 +103,10 @@
                      w))])
            w)
        w)))
+
+;;Tastatureingabe zur Eingabe der geschlagenen Steine
+
+;;ToDo
 
 ;;Erstelle eine Welt und verbinde sie mit dem LOCALHOST Server
 (define (create-world n)

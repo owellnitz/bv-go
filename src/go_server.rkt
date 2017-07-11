@@ -1,5 +1,7 @@
 #lang racket
 (require 2htdp/universe)
+(require "go_bv.rkt")
+
 
 ;;Maximale Anzahl an Spieler
 (define NUM_PLAYERS 2)
@@ -95,9 +97,21 @@
                        (current_worlds univ)
                        'newgame
                        empty_board player_color)
-                      (list (make-mail (world1 univ) (list 'newgame empty_board))
+                      (list (make-mail (world1 univ) (list 'choosecolor empty_board))
                             (make-mail (world2 univ) (list 'wait empty_board)))
                       '())]
+
+    ;Start aus BV
+[(and (equal? (current_state univ) 'started)
+      (equal? m 'newbvgame))
+ (let* ([new_board bord-state])
+ (make-bundle (list
+               (current_worlds univ)
+               'newgame
+               new_board player_color)
+              (list (make-mail (world1 univ) (list 'choosecolor new_board))
+                            (make-mail (world2 univ) (list 'wait new_board)))
+                      '()))]
     
     ;Farbwahl bei Neustart
     ;;Der Spieler wählt schwarz
@@ -107,9 +121,9 @@
          (make-bundle (list
                        (current_worlds univ)
                        'play
-                       empty_board choosen_color)
-                      (list (make-mail (world1 univ) (list 'play empty_board))
-                            (make-mail (world2 univ) (list 'wait empty_board)))
+                       (current_board univ) choosen_color)
+                      (list (make-mail (world1 univ) (list 'play (current_board univ)))
+                            (make-mail (world2 univ) (list 'wait (current_board univ))))
                       '()))]
 
       ;;Der Spieler wählt weiß
@@ -119,9 +133,9 @@
          (make-bundle (list
                        (reverse (current_worlds univ))
                        'play
-                       empty_board choosen_color) 
-                      (list (make-mail (world1 univ) (list 'wait empty_board))
-                            (make-mail (world2 univ) (list 'play empty_board)))
+                       (current_board univ) choosen_color) 
+                      (list (make-mail (world1 univ) (list 'wait (current_board univ)))
+                            (make-mail (world2 univ) (list 'play (current_board univ))))
                       '()))]
     
     
