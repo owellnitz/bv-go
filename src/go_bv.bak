@@ -47,9 +47,9 @@
 
 ;Zeige
 (define img_gray (list (car img)))
-;(present-image img_gray "image_gray.png")
+(present-image img_gray "image_gray.png")
 
-;(present-image (cannyedgeimage img_gray 1.0 6.0 255.0) "go-canny.png")
+(present-image (cannyedgeimage img_gray 1.0 6.0 255.0) "go-canny.png")
 
 (define canny_img (cannyedgeimage img 1.0 6.0 255.0))
 
@@ -82,13 +82,13 @@
 (void (image-for-each-pixel (curryr findBBox canny_bbox)  canny_img))
 
 ;Zeigen des Bildes mit Canny-Box
-;(present-image (plt-image->image (overlay-bboxes img (list canny_bbox) '(green))) "go-canny-bbox.png")
+(present-image (plt-image->image (overlay-bboxes img (list canny_bbox) '(green))) "go-canny-bbox.png")
 
 ;Ausschneiden des Spielfeldes
 (define canny_crop (subimage img  (vector-ref canny_bbox 0) (vector-ref canny_bbox 1) (vector-ref canny_bbox 2) (vector-ref canny_bbox 3)))
 
 ;Zeigen des ausgeschnittenen Spielfeldes
-;(present-image canny_crop  "go-canny-crop.png")
+(present-image canny_crop  "go-canny-crop.png")
 
 
 ;Spielstand auslesen
@@ -100,7 +100,7 @@
 (define smoothedImage (image->blue (gsmooth canny_crop smoothFactor)))
 
 ;Zeige verwaschenes Bild
-;(present-image smoothedImage "go-smoothed.png")
+(present-image smoothedImage "go-smoothed.png")
 
 ;Größe eines x-Schrittes
 (define (stepsizeX pic)

@@ -1,13 +1,16 @@
 #lang racket
 (require 2htdp/universe)
+(require "go_bv.rkt")
+
 
 ;;Maximale Anzahl an Spieler
 (define NUM_PLAYERS 2)
 
 ;;Board-Representation
+(define player_color (list "playername" -1 "playername" 1))
 (define empty_board  (make-list 19 (make-list 19 0)))
 (define UNIVERSE0 
-  (list '() 'wait empty_board))
+  (list '() 'wait empty_board player_color))
 
 ;;Quick accessors for the universe
 (define (current_worlds univ)
@@ -22,6 +25,9 @@
 
 (define (current_board univ)
   (third univ))
+
+(define (current_color univ)
+  (fourth univ))
 
 ;;Repräsentation eines Universums
 ;; '((iworld_active iworld_inactive) status (make-list 19 (make-list 19 0) )
@@ -55,9 +61,9 @@
          [(= (length (current_worlds univ)) (- NUM_PLAYERS 1))
           (make-bundle (list
                         (append (current_worlds univ) (list wrld))
-                        'play
-                        empty_board)
-                       (list (make-mail (world1 univ) (list 'play empty_board))
+                        'started
+                        empty_board player_color)
+                       (list (make-mail (world1 univ) (list 'started empty_board))
                              (make-mail wrld   (list 'wait empty_board)))
                        '())]
          
@@ -67,7 +73,7 @@
           (make-bundle (list 
                         (append (current_worlds univ) (list wrld))
                         'wait 
-                        empty_board)
+                        empty_board player_color)
                        (list (make-mail wrld (list 'wait empty_board)))
                        '())]))
  
@@ -80,10 +86,59 @@
          (make-bundle (list
                        (reverse (current_worlds univ))
                        'play
-                       empty_board)
+                       empty_board player_color)
                       (list (make-mail (world1 univ) (list 'wait empty_board))
                             (make-mail (world2 univ) (list 'play empty_board)))
                       '())]
+    ;;Das Spiel startet -> Spieler wählt Spielstart aus BV oder neues Spiel
+[(and (equal? (current_state univ) 'started) 
+              (equal? m 'newgame))
+         (make-bundle (list
+                       (current_worlds univ)
+                       'newgame
+                       empty_board player_color)
+                      (list (make-mail (world1 univ) (list 'choosecolor empty_board))
+                            (make-mail (world2 univ) (list 'wait empty_board)))
+                      '())]
+
+    ;Start aus BV
+[(and (equal? (current_state univ) 'started)
+      (equal? m 'newbvgame))
+ (let* ([new_board bord-state])
+ (make-bundle (list
+               (current_worlds univ)
+               'newgame
+               new_board player_color)
+              (list (make-mail (world1 univ) (list 'choosecolor new_board))
+                            (make-mail (world2 univ) (list 'wait new_board)))
+                      '()))]
+    
+    ;Farbwahl bei Neustart
+    ;;Der Spieler wählt schwarz
+    [(and (equal? (current_state univ) 'newgame) 
+              (equal? m 'black))
+     (let* ([choosen_color (list (iworld-name (world1 univ)) -1 (iworld-name (world2 univ)) 1)])
+         (make-bundle (list
+                       (current_worlds univ)
+                       'play
+                       (current_board univ) choosen_color)
+                      (list (make-mail (world1 univ) (list 'play (current_board univ)))
+                            (make-mail (world2 univ) (list 'wait (current_board univ))))
+                      '()))]
+
+      ;;Der Spieler wählt weiß
+    [(and (equal? (current_state univ) 'newgame) 
+              (equal? m 'white))
+     (let* ([choosen_color (list (iworld-name (world2 univ)) -1 (iworld-name (world1 univ)) 1)])
+         (make-bundle (list
+                       (reverse (current_worlds univ))
+                       'play
+                       (current_board univ) choosen_color) 
+                      (list (make-mail (world1 univ) (list 'wait (current_board univ)))
+                            (make-mail (world2 univ) (list 'play (current_board univ))))
+                      '()))]
+    
+    
     ;;Eine Welt möchte ein Feld markieren, dazu schickt sie (set FELD_NR) an das Universum
     ;;Prüfe ob: 1. Nachricht im richtigen Format
     ;;          2. Welt gerade spielen darf
@@ -92,6 +147,7 @@
     ;;          5. Prüfe Freiheiten
     [(and (list? m) (= (length m) 3) (equal? (first m) 'set)      ;; 1.
           (iworld=? wrld (world1 univ))                           ;; 2.
+     (let* ([temp_board (set-stone (current_board univ) (second m) (third m) (get-color univ (iworld-name wrld)))];;Setze neuen Stein
           (equal? (get-field-state (current_board univ) (second m) (third m)) 0)  ;;3.
           (check-turn univ (string->number (iworld-name wrld)) (second m) (third m))) ;;4.
      (let* ([temp_board (set-stone (current_board univ) (second m) (third m) (string->number (iworld-name wrld)))];;Setze neuen Stein
@@ -113,6 +169,11 @@
                     '()))]
     ;;Sonstige Anfragen verändern das Universum nicht
     [else (make-bundle univ '() '())]))
+
+;;Hilfsfunktion um Farbe des Spielers auszugeben
+(define (get-color univ player)
+  (second (member player (current_color univ))))
+
 
 ;;Zugprüfung auf Gültigkeit.
 ;;Verhindert den Selbstmord eines Spielers, außer der Selbstmord schlägt Steine des Gegners.
@@ -317,5 +378,6 @@
 ;;Erschafft ein Universum
 (universe UNIVERSE0
           (on-new add-world)
-          (on-msg handle-messages))
+          (on-msg handle-messages)
+          (state #t))
  
