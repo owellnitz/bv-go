@@ -110,9 +110,22 @@
   (lambda (w key_event)
      (if (not (equal? (car w) 'wait))
 [(let*((key_list '())
-         (key_press (append key_list key_event)))
-         (make-package w 'bla))]         
-     w)))
+       (key_press (append key_list key_event)))
+   (cond
+     [(member? '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0") key_event)
+        key_press]
+     [(key=? key_event "\r")
+        (make-package w 'killed key_list)]         
+     [else w]))]
+w)))
+
+;;Hilfsfunktion ob ein Key in der Liste ist
+(define (member? list key)
+  (if (list? (member key list))
+      #t
+      #f
+   )
+  )
 
 ;;Erstelle eine Welt und verbinde sie mit dem LOCALHOST Server
 (define (create-world n)
