@@ -106,7 +106,13 @@
 
 ;;Tastatureingabe zur Eingabe der geschlagenen Steine
 
-;;ToDo
+(define (handle-key name)
+  (lambda (w key_event)
+     (if (not (equal? (car w) 'wait))
+[(let*((key_list '())
+         (key_press (append key_list key_event)))
+         (make-package w 'bla))]         
+     w)))
 
 ;;Erstelle eine Welt und verbinde sie mit dem LOCALHOST Server
 (define (create-world n)
@@ -114,6 +120,7 @@
              (on-receive receive)
              (to-draw (draw n))
              (on-mouse (handle-mouse n))
+             (on-release (handle-key n))
              (name n)
              (state #f)
              (register LOCALHOST)))
