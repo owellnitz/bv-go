@@ -147,14 +147,13 @@
     ;;          5. Prüfe Freiheiten
     [(and (list? m) (= (length m) 3) (equal? (first m) 'set)      ;; 1.
           (iworld=? wrld (world1 univ))                           ;; 2.
-     (let* ([temp_board (set-stone (current_board univ) (second m) (third m) (get-color univ (iworld-name wrld)))];;Setze neuen Stein
           (equal? (get-field-state (current_board univ) (second m) (third m)) 0)  ;;3.
-          (check-turn univ (string->number (iworld-name wrld)) (second m) (third m))) ;;4.
-     (let* ([temp_board (set-stone (current_board univ) (second m) (third m) (string->number (iworld-name wrld)))];;Setze neuen Stein
-            [new_board_state (find-freedoms temp_board (string->number (iworld-name wrld)) '()
+          (check-turn univ (get-color univ (iworld-name wrld)) (second m) (third m))) ;;4.
+     (let* ([temp_board (set-stone (current_board univ) (second m) (third m) (get-color univ (iworld-name wrld)))];;Setze neuen Stein
+            [new_board_state (find-freedoms temp_board (get-color univ (iworld-name wrld)) '()
                                             (find-opposing-stones
                                              temp_board (second m) (third m)
-                                             (string->number (iworld-name wrld))
+                                             (get-color univ (iworld-name wrld))
                                              route-list '()))];;Spielbrett und Anzahl geschlagenen Steinen
             [new_board (cdr new_board_state)];;Spielbrett nach entfernen der geschlagenen Steine
             [killed_stones (car new_board_state)]);;Geschlagene Steine im Spielzug
@@ -163,7 +162,7 @@
        (make-bundle (list
                      (reverse (current_worlds univ))
                      'play
-                     new_board)
+                     new_board (current_color univ))
                     (list (make-mail (world1 univ) (list 'wait new_board))
                           (make-mail (world2 univ) (list 'play new_board)))
                     '()))]
