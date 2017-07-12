@@ -15,13 +15,13 @@
 
 
 ;;Startzustand
-(define WORLD0 (list 'wait (make-list 19 (make-list 19 0))))
+(define WORLD0 (list 'wait (make-list 19 (make-list 19 0)) (list 0 0)))
 
 ;;Falls ein korrekter Weltzustand empfangen wird
 ;;   --> setze die Welt auf die empfangene Nachricht
 ;;sonst: verharre im alten Weltzustand
 (define (receive w m)
-  (if (and (list? m) (= (length m) 2)
+  (if (and (list? m) (= (length m) 3)
            (symbol? (first m)) 
            (list? (second m)) (= (length (second m)) 19))
       m
@@ -56,13 +56,20 @@
              ;;Wahl des Spielstarts
              [(equal? (car w) 'started)
               start-field]
+             ;;Eingabe der geschlagenen Steine
+             ;;Zuerst schwarz
+             [(equal? (car w) 'setkilledblack)
+              (choose-killed-black-stones (car (third w))) ]
+             ;;dann weiß
+             [(equal? (car w) 'setkilledwhite)
+              (choose-killed-white-stones (cadr (third w))) ]
              ;;Wahl der Farbe
              [(equal? (car w) 'choosecolor)
               choose-color-field]
              ;;Sonst wird normal gespielt
              [else
                 (above
-                 (draw-board-with-score (second w))
+                 (draw-board-with-score (second w) (third w))
                  (if (equal? (car w) 'wait)
                      (text "warte auf Gegner..." 16 'red)
                      (text "bitte Zelle markieren!" 16 'darkgreen)))
@@ -106,7 +113,28 @@
 
 ;;Tastatureingabe zur Eingabe der geschlagenen Steine
 
-;;ToDo
+(define (handle-key name)
+  (lambda (w key_event)
+     (if (or (equal? (car w) 'setkilledblack)
+             (equal? (car w) 'setkilledwhite))
+(cond
+     [(member? '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0") key_event)
+        (make-package w (list 'set key_event))]
+     [(key=? key_event "\r")
+        (make-package w 'confirm)]
+     [(key=? key_event "\b")
+        (make-package w 'delete)]
+     
+     [else w])
+w)))
+
+;;Hilfsfunktion ob ein Key in der Liste ist
+(define (member? list key)
+  (if (list? (member key list))
+      #t
+      #f
+   )
+  )
 
 ;;Erstelle eine Welt und verbinde sie mit dem LOCALHOST Server
 (define (create-world n)
@@ -114,6 +142,7 @@
              (on-receive receive)
              (to-draw (draw n))
              (on-mouse (handle-mouse n))
+             (on-release (handle-key n))
              (name n)
              (state #f)
              (register LOCALHOST)))
