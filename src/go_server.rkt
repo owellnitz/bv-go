@@ -112,7 +112,7 @@
      (let* ([new_board bord-state])
        (make-bundle (list
                (current_worlds univ)
-               'newbvgame
+               'setkilledblack
                new_board player_color killed_empty)
               (list (make-mail (world1 univ) (list 'setkilledblack new_board (current_killed univ)))
                             (make-mail (world2 univ) (list 'wait new_board (current_killed univ))))
@@ -120,39 +120,75 @@
 
     ;Eingabe der geschlagenen Steine
     ;Zuerst schwarze Steine eingeben
-    [(and (equal? (current_state univ) 'newbvgame)
+    [(and (equal? (current_state univ) 'setkilledblack)
           (pair? m)
           (equal? (car m) 'set))
      (let* ([killed_stones (list (+ (* 10 (car (current_killed univ))) (string->number(cadr m))) (cadr(current_killed univ)))])
      (make-bundle (list
                (current_worlds univ)
-               'newbvgame
+               'setkilledblack
                (current_board univ) player_color killed_stones)
               (list (make-mail (world1 univ) (list 'setkilledblack (current_board univ) killed_stones))
                             (make-mail (world2 univ) (list 'wait (current_board univ) killed_stones)))
                       '()))]
     ;Löschen der Eingabe
-        [(and (equal? (current_state univ) 'newbvgame)
+        [(and (equal? (current_state univ) 'setkilledblack)
           (equal? m 'delete))
-     (let* ([killed_stones (list (/ 10 (- (car (current_killed univ)) (remainder (car (current_killed univ)) 10))) (current_killed univ))])
+     (let* ([killed_stones (list (/ 10 (- (car (current_killed univ)) (remainder (car (current_killed univ)) 10))) (cadr (current_killed univ)))])
      (make-bundle (list
                (current_worlds univ)
-               'newbvgame
+               'setkilledblack
                (current_board univ) player_color killed_stones)
               (list (make-mail (world1 univ) (list 'setkilledblack (current_board univ) killed_stones))
                             (make-mail (world2 univ) (list 'wait (current_board univ) killed_stones)))
               '()))]
     
     ;Bestätigen der geschlagenen Schwarzen Steine
-        [(and (equal? (current_state univ) 'newbvgame)
+        [(and (equal? (current_state univ) 'setkilledblack)
           (equal? m 'confirm))
      (make-bundle (list
                (current_worlds univ)
-               'newbvgame
+               'setkilledwhite
                (current_board univ) player_color (current_killed univ))
               (list (make-mail (world1 univ) (list 'setkilledwhite (current_board univ) (current_killed univ)))
                             (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ))))
                       '())]
+        
+    ;Dann weiße Steine eingeben
+    [(and (equal? (current_state univ) 'setkilledwhite)
+          (pair? m)
+          (equal? (car m) 'set))
+     (let* ([killed_stones (list (car(current_killed univ)) (+ (* 10 (cadr (current_killed univ))) (string->number(cadr m))))])
+     (make-bundle (list
+               (current_worlds univ)
+               'setkilledwhite
+               (current_board univ) player_color killed_stones)
+              (list (make-mail (world1 univ) (list 'setkilledwhite (current_board univ) killed_stones))
+                            (make-mail (world2 univ) (list 'wait (current_board univ) killed_stones)))
+                      '()))]
+    ;Löschen der Eingabe
+        [(and (equal? (current_state univ) 'setkilledwhite)
+          (equal? m 'delete))
+     (let* ([killed_stones (list (cadr (current_killed univ)) (/ 10 (- (car (current_killed univ)) (remainder (car (current_killed univ)) 10))))])
+     (make-bundle (list
+               (current_worlds univ)
+               'setkilledwhite
+               (current_board univ) player_color killed_stones)
+              (list (make-mail (world1 univ) (list 'setkilledwhite (current_board univ) killed_stones))
+                            (make-mail (world2 univ) (list 'wait (current_board univ) killed_stones)))
+              '()))]
+    
+    ;Bestätigen der geschlagenen weißen Steine
+        [(and (equal? (current_state univ) 'setkilledwhite)
+          (equal? m 'confirm))
+     (make-bundle (list
+               (current_worlds univ)
+               'newgame
+               (current_board univ) player_color (current_killed univ))
+              (list (make-mail (world1 univ) (list 'choosecolor (current_board univ) (current_killed univ)))
+                            (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ))))
+                      '())]
+        
       
     ;Farbwahl bei Spielstart
     ;;Der Spieler wählt schwarz

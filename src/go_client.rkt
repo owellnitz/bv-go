@@ -60,6 +60,9 @@
              ;;Zuerst schwarz
              [(equal? (car w) 'setkilledblack)
               (choose-killed-black-stones (car (third w))) ]
+             ;;dann weiß
+             [(equal? (car w) 'setkilledwhite)
+              (choose-killed-white-stones (cadr (third w))) ]
              ;;Wahl der Farbe
              [(equal? (car w) 'choosecolor)
               choose-color-field]
