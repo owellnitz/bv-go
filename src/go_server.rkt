@@ -233,15 +233,22 @@
                                              (get-color univ (iworld-name wrld))
                                              route-list '()))];;Spielbrett und Anzahl geschlagenen Steinen
             [new_board (cdr new_board_state)];;Spielbrett nach entfernen der geschlagenen Steine
-            [killed_stones (car new_board_state)]);;Geschlagene Steine im Spielzug
+            [killed_stones (cond
+                               [(= 0 (car new_board_state))
+                               (current_killed univ)]
+                               [(equal? 1 (get-color univ (iworld-name wrld)));;Geschlagene Steine im Spielzug
+                               (list (+ (car new_board_state) (car (current_killed univ))) (cadr (current_killed univ)))]
+                               [(equal? -1 (get-color univ (iworld-name wrld)))
+                               (list (car (current_killed univ))(+ (car new_board_state) (cadr (current_killed univ))))]
+                               )])
        ;;Haben beide Spieler gepasst?
        ;;Falls nein, ist der andere Spieler dran - alles geht einfach weiter
        (make-bundle (list
                      (reverse (current_worlds univ))
                      'play
-                     new_board (current_color univ))
-                    (list (make-mail (world1 univ) (list 'wait new_board))
-                          (make-mail (world2 univ) (list 'play new_board)))
+                     new_board (current_color univ) killed_stones)
+                    (list (make-mail (world1 univ) (list 'wait new_board killed_stones))
+                          (make-mail (world2 univ) (list 'play new_board killed_stones)))
                     '()))]
     ;;Sonstige Anfragen verändern das Universum nicht
     [else (make-bundle univ '() '())]))

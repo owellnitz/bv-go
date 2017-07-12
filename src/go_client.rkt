@@ -15,7 +15,7 @@
 
 
 ;;Startzustand
-(define WORLD0 (list 'wait (make-list 19 (make-list 19 0))))
+(define WORLD0 (list 'wait (make-list 19 (make-list 19 0)) (list 0 0)))
 
 ;;Falls ein korrekter Weltzustand empfangen wird
 ;;   --> setze die Welt auf die empfangene Nachricht
@@ -69,7 +69,7 @@
              ;;Sonst wird normal gespielt
              [else
                 (above
-                 (draw-board-with-score (second w))
+                 (draw-board-with-score (second w) (third w))
                  (if (equal? (car w) 'wait)
                      (text "warte auf Gegner..." 16 'red)
                      (text "bitte Zelle markieren!" 16 'darkgreen)))
