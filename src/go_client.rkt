@@ -21,7 +21,7 @@
 ;;   --> setze die Welt auf die empfangene Nachricht
 ;;sonst: verharre im alten Weltzustand
 (define (receive w m)
-  (if (and (list? m) (= (length m) 2)
+  (if (and (list? m) (= (length m) 3)
            (symbol? (first m)) 
            (list? (second m)) (= (length (second m)) 19))
       m
@@ -56,6 +56,10 @@
              ;;Wahl des Spielstarts
              [(equal? (car w) 'started)
               start-field]
+             ;;Eingabe der geschlagenen Steine
+             ;;Zuerst schwarz
+             [(equal? (car w) 'setkilledblack)
+              (choose-killed-black-stones (car (third w))) ]
              ;;Wahl der Farbe
              [(equal? (car w) 'choosecolor)
               choose-color-field]
@@ -108,15 +112,14 @@
 
 (define (handle-key name)
   (lambda (w key_event)
-     (if (not (equal? (car w) 'wait))
-[(let*((key_list '())
-       (key_press (append key_list key_event)))
-   (cond
+     (if (or (equal? (car w) 'setkilledblack)
+             (equal? (car w) 'setkilledwhite))
+(cond
      [(member? '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0") key_event)
-        key_press]
+        (make-package w (list 'set key_event))]
      [(key=? key_event "\r")
-        (make-package w 'killed key_list)]         
-     [else w]))]
+        (make-package w 'confirm)]         
+     [else w])
 w)))
 
 ;;Hilfsfunktion ob ein Key in der Liste ist

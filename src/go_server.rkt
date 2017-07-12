@@ -8,9 +8,11 @@
 
 ;;Board-Representation
 (define player_color (list "playername" -1 "playername" 1))
+;Geschlagene Steine (schwarz weiß)
+(define killed_empty (list 0 0))
 (define empty_board  (make-list 19 (make-list 19 0)))
 (define UNIVERSE0 
-  (list '() 'wait empty_board player_color))
+  (list '() 'wait empty_board player_color killed_empty))
 
 ;;Quick accessors for the universe
 (define (current_worlds univ)
@@ -29,6 +31,9 @@
 (define (current_color univ)
   (fourth univ))
 
+  (define (current_killed univ)
+  (fifth univ))
+  
 ;;Repräsentation eines Universums
 ;; '((iworld_active iworld_inactive) status (make-list 19 (make-list 19 0) )
 ;; 
@@ -62,9 +67,9 @@
           (make-bundle (list
                         (append (current_worlds univ) (list wrld))
                         'started
-                        empty_board player_color)
-                       (list (make-mail (world1 univ) (list 'started empty_board))
-                             (make-mail wrld   (list 'wait empty_board)))
+                        empty_board player_color killed_empty)
+                       (list (make-mail (world1 univ) (list 'started empty_board (current_killed univ)))
+                             (make-mail wrld   (list 'wait empty_board (current_killed univ))))
                        '())]
          
          ;;Maximale Anzahl an Spielern noch nicht erreicht
@@ -73,8 +78,8 @@
           (make-bundle (list 
                         (append (current_worlds univ) (list wrld))
                         'wait 
-                        empty_board player_color)
-                       (list (make-mail wrld (list 'wait empty_board)))
+                        empty_board player_color killed_empty)
+                       (list (make-mail wrld (list 'wait empty_board (current_killed univ))))
                        '())]))
  
 ;;Nachrichtenaustausch zwischen den Welten 
@@ -86,34 +91,60 @@
          (make-bundle (list
                        (reverse (current_worlds univ))
                        'play
-                       empty_board player_color)
-                      (list (make-mail (world1 univ) (list 'wait empty_board))
-                            (make-mail (world2 univ) (list 'play empty_board)))
+                       empty_board player_color killed_empty)
+                      (list (make-mail (world1 univ) (list 'wait empty_board (current_killed univ)))
+                            (make-mail (world2 univ) (list 'play empty_board (current_killed univ))))
                       '())]
     ;;Das Spiel startet -> Spieler wählt Spielstart aus BV oder neues Spiel
-[(and (equal? (current_state univ) 'started) 
+    [(and (equal? (current_state univ) 'started) 
               (equal? m 'newgame))
          (make-bundle (list
                        (current_worlds univ)
                        'newgame
-                       empty_board player_color)
-                      (list (make-mail (world1 univ) (list 'choosecolor empty_board))
-                            (make-mail (world2 univ) (list 'wait empty_board)))
+                       empty_board player_color killed_empty)
+                      (list (make-mail (world1 univ) (list 'choosecolor empty_board (current_killed univ)))
+                            (make-mail (world2 univ) (list 'wait empty_board (current_killed univ))))
                       '())]
 
     ;Start aus BV
-[(and (equal? (current_state univ) 'started)
+    [(and (equal? (current_state univ) 'started)
       (equal? m 'newbvgame))
- (let* ([new_board bord-state])
- (make-bundle (list
+     (let* ([new_board bord-state])
+       (make-bundle (list
                (current_worlds univ)
-               'newgame
-               new_board player_color)
-              (list (make-mail (world1 univ) (list 'choosecolor new_board))
-                            (make-mail (world2 univ) (list 'wait new_board)))
+               'newbvgame
+               new_board player_color killed_empty)
+              (list (make-mail (world1 univ) (list 'setkilledblack new_board (current_killed univ)))
+                            (make-mail (world2 univ) (list 'wait new_board (current_killed univ))))
                       '()))]
+
+    ;Eingabe der geschlagenen Steine
+    ;Zuerst schwarze Steine eingeben
+    [(and (equal? (current_state univ) 'newbvgame)
+          (pair? m)
+          (equal? (car m) 'set))
+     (let* ([killed_stones (list (+ (* 10 (car (current_killed univ))) (string->number(cadr m))) (cadr(current_killed univ)))])
+     (make-bundle (list
+               (current_worlds univ)
+               'newbvgame
+               (current_board univ) player_color killed_stones)
+              (list (make-mail (world1 univ) (list 'setkilledblack (current_board univ) killed_stones))
+                            (make-mail (world2 univ) (list 'wait (current_board univ) killed_stones)))
+                      '()))]
+    ;Bestätigen der geschlagenen Schwarzen Steine
+        [(and (equal? (current_state univ) 'newbvgame)
+          (equal? m 'confirm))
+     (make-bundle (list
+               (current_worlds univ)
+               'newbvgame
+               (current_board univ) player_color (current_killed univ))
+              (list (make-mail (world1 univ) (list 'setkilledwhite (current_board univ) (current_killed univ)))
+                            (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ))))
+                      '())]
+
     
-    ;Farbwahl bei Neustart
+
+    ;Farbwahl bei Spielstart
     ;;Der Spieler wählt schwarz
     [(and (equal? (current_state univ) 'newgame) 
               (equal? m 'black))
@@ -121,9 +152,9 @@
          (make-bundle (list
                        (current_worlds univ)
                        'play
-                       (current_board univ) choosen_color)
-                      (list (make-mail (world1 univ) (list 'play (current_board univ)))
-                            (make-mail (world2 univ) (list 'wait (current_board univ))))
+                       (current_board univ) choosen_color (current_killed univ))
+                      (list (make-mail (world1 univ) (list 'play (current_board univ) (current_killed univ)))
+                            (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ))))
                       '()))]
 
       ;;Der Spieler wählt weiß
@@ -133,9 +164,9 @@
          (make-bundle (list
                        (reverse (current_worlds univ))
                        'play
-                       (current_board univ) choosen_color) 
-                      (list (make-mail (world1 univ) (list 'wait (current_board univ)))
-                            (make-mail (world2 univ) (list 'play (current_board univ))))
+                       (current_board univ) choosen_color (current_killed univ)) 
+                      (list (make-mail (world1 univ) (list 'wait (current_board univ) (current_killed univ)))
+                            (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ))))
                       '()))]
     
     
@@ -378,5 +409,5 @@
 (universe UNIVERSE0
           (on-new add-world)
           (on-msg handle-messages)
-          (state #t))
+          (state #f))
  
