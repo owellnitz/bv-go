@@ -131,6 +131,18 @@
               (list (make-mail (world1 univ) (list 'setkilledblack (current_board univ) killed_stones))
                             (make-mail (world2 univ) (list 'wait (current_board univ) killed_stones)))
                       '()))]
+    ;Löschen der Eingabe
+        [(and (equal? (current_state univ) 'newbvgame)
+          (equal? m 'delete))
+     (let* ([killed_stones (list (/ 10 (- (car (current_killed univ)) (remainder (car (current_killed univ)) 10))) (current_killed univ))])
+     (make-bundle (list
+               (current_worlds univ)
+               'newbvgame
+               (current_board univ) player_color killed_stones)
+              (list (make-mail (world1 univ) (list 'setkilledblack (current_board univ) killed_stones))
+                            (make-mail (world2 univ) (list 'wait (current_board univ) killed_stones)))
+              '()))]
+    
     ;Bestätigen der geschlagenen Schwarzen Steine
         [(and (equal? (current_state univ) 'newbvgame)
           (equal? m 'confirm))
@@ -141,9 +153,7 @@
               (list (make-mail (world1 univ) (list 'setkilledwhite (current_board univ) (current_killed univ)))
                             (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ))))
                       '())]
-
-    
-
+      
     ;Farbwahl bei Spielstart
     ;;Der Spieler wählt schwarz
     [(and (equal? (current_state univ) 'newgame) 

@@ -118,7 +118,10 @@
      [(member? '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0") key_event)
         (make-package w (list 'set key_event))]
      [(key=? key_event "\r")
-        (make-package w 'confirm)]         
+        (make-package w 'confirm)]
+     [(key=? key_event "\b")
+        (make-package w 'delete)]
+     
      [else w])
 w)))
 
