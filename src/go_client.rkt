@@ -102,12 +102,14 @@
                        ;Wahl von Weiß
                        (make-package w 'white))]
                ;Stein setzen
-               [(let* ((column (quotient (- x_pos 10)  20))
+               [(equal? (car w) 'play)
+                (let* ((column (quotient (- x_pos 10)  20))
                       (row    (quotient (- y_pos 10) 20))
                       (index (list row column)))
                  (if (and (< -1 column 19) (< -1 row 19))
                      (make-package w (cons 'set index))
-                     w))])
+                     w))]
+              [else w])
            w)
        w)))
 
@@ -119,7 +121,7 @@
              (equal? (car w) 'setkilledwhite))
 (cond
      [(member? '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0") key_event)
-        (make-package w (list 'set key_event))]
+        (make-package w (list 'setkilled key_event))]
      [(key=? key_event "\r")
         (make-package w 'confirm)]
      [(key=? key_event "\b")

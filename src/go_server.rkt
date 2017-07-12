@@ -122,7 +122,7 @@
     ;Zuerst schwarze Steine eingeben
     [(and (equal? (current_state univ) 'setkilledblack)
           (pair? m)
-          (equal? (car m) 'set))
+          (equal? (car m) 'setkilled))
      (let* ([killed_stones (list (+ (* 10 (car (current_killed univ))) (string->number(cadr m))) (cadr(current_killed univ)))])
      (make-bundle (list
                (current_worlds univ)
@@ -157,7 +157,7 @@
     ;Dann weiße Steine eingeben
     [(and (equal? (current_state univ) 'setkilledwhite)
           (pair? m)
-          (equal? (car m) 'set))
+          (equal? (car m) 'setkilled))
      (let* ([killed_stones (list (car(current_killed univ)) (+ (* 10 (cadr (current_killed univ))) (string->number(cadr m))))])
      (make-bundle (list
                (current_worlds univ)
