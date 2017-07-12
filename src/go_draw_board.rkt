@@ -81,7 +81,8 @@
 ;;Spielfeld mit gesetzen Steinen + geschlagenen Steine
 ;;Hilfsfunktionen
 (define (text-for-killed-stones killed_stones)
-  (above (text-for-black-killed (car killed_stones))
+  (overlay/offset (text-for-black-killed (car killed_stones))
+                  0 200
          (text-for-white-killed (cadr killed_stones))))
 
 (define (text-for-black-killed black_killed)
