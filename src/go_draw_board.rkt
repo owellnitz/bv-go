@@ -80,6 +80,8 @@
 
 ;;Spielfeld mit gesetzen Steinen + geschlagenen Steine
 ;;Hilfsfunktionen
+
+  ;;Anzeige der geschlagenen Steine mit Schwarz über Weiß
 (define (text-for-killed-stones killed_stones)
   (overlay/offset (text-for-black-killed (car killed_stones))
                   0 200
@@ -94,15 +96,19 @@
          (text (number->string white_killed) 14 'blue)))
 
 
-
+  ;;Anzeige des Spielfelds mit den geschlagenen Steinen am rechten Rand
 (define (draw-board-with-score game_score killed_stones)
  (beside (board-state->board 0 game-board game_score)
          (text-for-killed-stones killed_stones)))
 
-;;Startfeld zur Auswahl vom Spielstart aus Bilddatei oder als neues Spiel
-;;Hilfsfunktionen
+
+;;Hilfsfunktion für alle Auswahlfelder
+
+  ;;Teilung des Feldes in zwei horizontale Bereiche
 (define two-areas (add-line field 0 200 400 200  "black"))
 
+;;Startfeld zur Auswahl vom Spielstart aus Bilddatei oder als neues Spiel
+;;Hilfsfunktionen  
 (define text-for-image
   (above (text "Klicke hier um ein Spiel" 22 'blue)
          (text "aus einer Bilddatei zu laden" 22 'blue)))

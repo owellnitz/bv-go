@@ -77,8 +77,27 @@
     [(= num 0) ""]
   ))
 
-(define (draw-board-with-score game_score)
- (board-state->board 0 game-board game_score))
+
+;;Spielfeld mit gesetzen Steinen + geschlagenen Steine
+;;Hilfsfunktionen
+(define (text-for-killed-stones killed_stones)
+  (overlay/offset (text-for-black-killed (car killed_stones))
+                  0 200
+         (text-for-white-killed (cadr killed_stones))))
+
+(define (text-for-black-killed black_killed)
+  (above (text "Geschlagene schwarze Steine" 14 'blue)
+         (text (number->string black_killed) 14 'blue)))
+
+(define (text-for-white-killed white_killed)
+  (above (text "Geschlagene weiße Steine" 14 'blue)
+         (text (number->string white_killed) 14 'blue)))
+
+
+
+(define (draw-board-with-score game_score killed_stones)
+ (beside (board-state->board 0 game-board game_score)
+         (text-for-killed-stones killed_stones)))
 
 ;;Startfeld zur Auswahl vom Spielstart aus Bilddatei oder als neues Spiel
 ;;Hilfsfunktionen
