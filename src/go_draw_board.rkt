@@ -13,6 +13,8 @@
 
 (provide choose-killed-white-stones)
 
+(provide result-field)
+
 ;;Zeichnen einer Welt
 ;;Hilfsfunktionen
 (define field (rectangle 400 400 "solid" "PeachPuff"))
@@ -75,17 +77,17 @@
     [(= num 1) "white"]
     [(= num -1) "black"]
     [(= num 0) ""]
-  ))
+    ))
 
 
 ;;Spielfeld mit gesetzen Steinen + geschlagenen Steine
 ;;Hilfsfunktionen
 
-  ;;Anzeige der geschlagenen Steine mit Schwarz über Weiß
+;;Anzeige der geschlagenen Steine mit Schwarz über Weiß
 (define (text-for-killed-stones killed_stones)
   (overlay/offset (text-for-black-killed (car killed_stones))
                   0 200
-         (text-for-white-killed (cadr killed_stones))))
+                  (text-for-white-killed (cadr killed_stones))))
 
 (define (text-for-black-killed black_killed)
   (above (text "Geschlagene schwarze Steine" 14 'blue)
@@ -96,15 +98,27 @@
          (text (number->string white_killed) 14 'blue)))
 
 
-  ;;Anzeige des Spielfelds mit den geschlagenen Steinen am rechten Rand
-(define (draw-board-with-score game_score killed_stones)
- (beside (board-state->board 0 game-board game_score)
-         (text-for-killed-stones killed_stones)))
+;;Anzeige des Spielfelds mit den geschlagenen Steinen und Pass-Status am rechten Rand.
+(define (draw-board-with-score world)
+  (overlay/offset (beside (above (board-state->board 0 game-board (second world))
+                                 (if (equal? (first world) 'wait)
+                                     (if (equal? (fourth world) 'passed)
+                                         (above (text "warte auf Gegner..." 16 'darkgreen)
+                                                (text "Du hast gepasst!" 16 'red))
+                                         (text "warte auf Gegner..." 16 'red))
+                                     (if (equal? (fourth world) 'passed)
+                                         (above (text "bitte Zelle markieren!" 16 'darkgreen)
+                                                (text "Gegner hat gepasst!" 16 'red))
+                                         (text "bitte Zelle markieren!" 16 'darkgreen))))
+                          (text-for-killed-stones (third world)))
+                  155 215
+                  (overlay (text "Passen" 16 'black)
+                           (rectangle 100 50 "solid" "gray"))))
 
 
 ;;Hilfsfunktion für alle Auswahlfelder
 
-  ;;Teilung des Feldes in zwei horizontale Bereiche
+;;Teilung des Feldes in zwei horizontale Bereiche
 (define two-areas (add-line field 0 200 400 200  "black"))
 
 ;;Startfeld zur Auswahl vom Spielstart aus Bilddatei oder als neues Spiel
@@ -119,7 +133,7 @@
 ;;Startfeld
 (define start-field
   (overlay/offset text-for-image 0 100
-                 (overlay/offset text-for-new-game 0 -100 two-areas)))
+                  (overlay/offset text-for-new-game 0 -100 two-areas)))
 
 ;;Neues Spiel mit Auswahl der Farbe
 ;;Hilfsfunktionen
@@ -132,8 +146,8 @@
         (text " weiß zu wählen" 22 'blue)))
 ;;Farbwahlfeld
 (define choose-color-field
-    (overlay/offset text-for-black 0 100
-                 (overlay/offset text-for-white 0 -100 two-areas)))
+  (overlay/offset text-for-black 0 100
+                  (overlay/offset text-for-white 0 -100 two-areas)))
 
 ;;Start aus BV-Datei
 ;; Hilfsfunktionen
@@ -155,11 +169,16 @@
 ;Feld zur Eingabe der geschlagenen Steine
 ;;Schwarz
 (define (choose-killed-black-stones killed-stones)
-    (overlay/offset text-for-black-stones 0 100
-                 (overlay/offset (input-for-killed-stones killed-stones) 0 -100 two-areas)))
+  (overlay/offset text-for-black-stones 0 100
+                  (overlay/offset (input-for-killed-stones killed-stones) 0 -100 two-areas)))
 
 ;;Weiß
 (define (choose-killed-white-stones killed-stones)
-    (overlay/offset text-for-white-stones 0 100
-                 (overlay/offset (input-for-killed-stones killed-stones) 0 -100 two-areas)))
+  (overlay/offset text-for-white-stones 0 100
+                  (overlay/offset (input-for-killed-stones killed-stones) 0 -100 two-areas)))
+
+;;Auswertung Placeholder
+(define result-field
+  (overlay/offset (text "Auswertung" 22 'blue) 0 100
+                  field))
 

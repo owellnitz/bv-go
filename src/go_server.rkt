@@ -74,8 +74,8 @@
                         (append (current_worlds univ) (list wrld))
                         'started
                         empty_board player_color killed_empty)
-                       (list (make-mail (world1 univ) (list 'started empty_board (current_killed univ)))
-                             (make-mail wrld   (list 'wait empty_board (current_killed univ))))
+                       (list (make-mail (world1 univ) (list 'started empty_board (current_killed univ) 'passsatus))
+                             (make-mail wrld   (list 'wait empty_board (current_killed univ) 'passsatus)))
                        '())]
          
          ;;Maximale Anzahl an Spielern noch nicht erreicht
@@ -85,7 +85,7 @@
                         (append (current_worlds univ) (list wrld))
                         'wait 
                         empty_board player_color killed_empty)
-                       (list (make-mail wrld (list 'wait empty_board (current_killed univ))))
+                       (list (make-mail wrld (list 'wait empty_board (current_killed univ) 'passsatus)))
                        '())]))
  
 ;;Nachrichtenaustausch zwischen den Welten 
@@ -98,8 +98,8 @@
                        (reverse (current_worlds univ))
                        'play
                        empty_board player_color killed_empty)
-                      (list (make-mail (world1 univ) (list 'wait empty_board (current_killed univ)))
-                            (make-mail (world2 univ) (list 'play empty_board (current_killed univ))))
+                      (list (make-mail (world1 univ) (list 'wait empty_board (current_killed univ) 'passsatus))
+                            (make-mail (world2 univ) (list 'play empty_board (current_killed univ) 'passsatus)))
                       '())]
     ;;Das Spiel startet -> Spieler wählt Spielstart aus BV oder neues Spiel
     [(and (equal? (current_state univ) 'started) 
@@ -108,8 +108,8 @@
                        (current_worlds univ)
                        'newgame
                        empty_board player_color killed_empty)
-                      (list (make-mail (world1 univ) (list 'choosecolor empty_board (current_killed univ)))
-                            (make-mail (world2 univ) (list 'wait empty_board (current_killed univ))))
+                      (list (make-mail (world1 univ) (list 'choosecolor empty_board (current_killed univ) 'passsatus))
+                            (make-mail (world2 univ) (list 'wait empty_board (current_killed univ) 'passsatus)))
                       '())]
 
     ;Start aus BV
@@ -139,8 +139,8 @@
                (current_worlds univ)
                'setkilledblack
                new_board player_color killed_empty)
-              (list (make-mail (world1 univ) (list 'setkilledblack new_board (current_killed univ)))
-                            (make-mail (world2 univ) (list 'wait new_board (current_killed univ))))
+              (list (make-mail (world1 univ) (list 'setkilledblack new_board (current_killed univ) 'passsatus))
+                            (make-mail (world2 univ) (list 'wait new_board (current_killed univ) 'passsatus)))
                       '()))]
 
     ;Eingabe der geschlagenen Steine
@@ -153,8 +153,8 @@
                (current_worlds univ)
                'setkilledblack
                (current_board univ) player_color killed_stones)
-              (list (make-mail (world1 univ) (list 'setkilledblack (current_board univ) killed_stones))
-                            (make-mail (world2 univ) (list 'wait (current_board univ) killed_stones)))
+              (list (make-mail (world1 univ) (list 'setkilledblack (current_board univ) killed_stones 'passsatus))
+                            (make-mail (world2 univ) (list 'wait (current_board univ) killed_stones 'passsatus)))
                       '()))]
     ;Löschen der Eingabe
         [(and (equal? (current_state univ) 'setkilledblack)
@@ -164,8 +164,8 @@
                (current_worlds univ)
                'setkilledblack
                (current_board univ) player_color killed_stones)
-              (list (make-mail (world1 univ) (list 'setkilledblack (current_board univ) killed_stones))
-                            (make-mail (world2 univ) (list 'wait (current_board univ) killed_stones)))
+              (list (make-mail (world1 univ) (list 'setkilledblack (current_board univ) killed_stones 'passsatus))
+                            (make-mail (world2 univ) (list 'wait (current_board univ) killed_stones 'passsatus)))
               '()))]
     
     ;Bestätigen der geschlagenen Schwarzen Steine
@@ -175,8 +175,8 @@
                (current_worlds univ)
                'setkilledwhite
                (current_board univ) player_color (current_killed univ))
-              (list (make-mail (world1 univ) (list 'setkilledwhite (current_board univ) (current_killed univ)))
-                            (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ))))
+              (list (make-mail (world1 univ) (list 'setkilledwhite (current_board univ) (current_killed univ) 'passsatus))
+                            (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) 'passsatus)))
                       '())]
         
     ;Dann weiße Steine eingeben
@@ -188,8 +188,8 @@
                (current_worlds univ)
                'setkilledwhite
                (current_board univ) player_color killed_stones)
-              (list (make-mail (world1 univ) (list 'setkilledwhite (current_board univ) killed_stones))
-                            (make-mail (world2 univ) (list 'wait (current_board univ) killed_stones)))
+              (list (make-mail (world1 univ) (list 'setkilledwhite (current_board univ) killed_stones 'passsatus))
+                            (make-mail (world2 univ) (list 'wait (current_board univ) killed_stones 'passsatus)))
                       '()))]
     ;Löschen der Eingabe
         [(and (equal? (current_state univ) 'setkilledwhite)
@@ -199,8 +199,8 @@
                (current_worlds univ)
                'setkilledwhite
                (current_board univ) player_color killed_stones)
-              (list (make-mail (world1 univ) (list 'setkilledwhite (current_board univ) killed_stones))
-                            (make-mail (world2 univ) (list 'wait (current_board univ) killed_stones)))
+              (list (make-mail (world1 univ) (list 'setkilledwhite (current_board univ) killed_stones 'passsatus))
+                            (make-mail (world2 univ) (list 'wait (current_board univ) killed_stones 'passsatus)))
               '()))]
     
     ;Bestätigen der geschlagenen weißen Steine
@@ -210,8 +210,8 @@
                (current_worlds univ)
                'newgame
                (current_board univ) player_color (current_killed univ))
-              (list (make-mail (world1 univ) (list 'choosecolor (current_board univ) (current_killed univ)))
-                            (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ))))
+              (list (make-mail (world1 univ) (list 'choosecolor (current_board univ) (current_killed univ) 'passsatus))
+                            (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) 'passsatus)))
                       '())]
         
       
@@ -224,8 +224,8 @@
                        (current_worlds univ)
                        'play
                        (current_board univ) choosen_color (current_killed univ))
-                      (list (make-mail (world1 univ) (list 'play (current_board univ) (current_killed univ)))
-                            (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ))))
+                      (list (make-mail (world1 univ) (list 'play (current_board univ) (current_killed univ) 'passsatus))
+                            (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) 'passsatus)))
                       '()))]
 
       ;;Der Spieler wählt weiß
@@ -236,8 +236,8 @@
                        (reverse (current_worlds univ))
                        'play
                        (current_board univ) choosen_color (current_killed univ)) 
-                      (list (make-mail (world1 univ) (list 'wait (current_board univ) (current_killed univ)))
-                            (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ))))
+                      (list (make-mail (world1 univ) (list 'wait (current_board univ) (current_killed univ) 'passsatus))
+                            (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ) 'passsatus)))
                       '()))]
     
     
@@ -256,7 +256,31 @@
     [(and (list? m) (= (length m) 3) (equal? (first m) 'set)      ;; 1.
           (iworld=? wrld (world1 univ)))                           ;; 2.
      (do_set univ wrld m)]
-          
+
+    ;;Ein Spieler passt. Der Client schickt 'passed
+    ;;Prüfen ob es das erste Passen ist oder der andere Spieler im Zug davor schon gepasst hat.
+    ;;
+    ;;Ansonsten ist der andere Spieler am Zug
+    [(and (equal? (current_state univ) 'play) 
+              (equal? m 'passed))
+            (make-bundle (list
+                     (reverse (current_worlds univ))
+                     'passed
+                     (current_board univ) (current_color univ) (current_killed univ))
+                    (list (make-mail (world1 univ) (list 'wait (current_board univ) (current_killed univ)  'passed))
+                          (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ)  'passed)))
+                    '())]
+    ;;Haben beide Spieler hintereinander gepasst -> Auswertung
+    [(and (equal? (current_state univ) 'passed) 
+              (equal? m 'passed))
+     ;;ToDO Auswertung
+     (make-bundle (list
+                     (current_worlds univ)
+                     'result
+                     (current_board univ) (current_color univ) (current_killed univ))
+                    (list (make-mail (world1 univ) (list 'result (current_board univ) (current_killed univ)  'passed))
+                          (make-mail (world2 univ) (list 'result (current_board univ) (current_killed univ)  'passed)))
+                    '())]
     ;;Sonstige Anfragen verändern das Universum nicht
     [else (make-bundle univ '() '())]))
 

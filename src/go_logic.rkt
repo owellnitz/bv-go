@@ -43,14 +43,13 @@
                                [(equal? -1 (get-color univ (iworld-name wrld)))
                                (list (car (current_killed univ))(+ (car new_board_state) (cadr (current_killed univ))))]
                                )])
-       ;;Haben beide Spieler gepasst?
-       ;;Falls nein, ist der andere Spieler dran - alles geht einfach weiter
+       ;;Senden des geänderten Spielbretts
        (make-bundle (list
                      (reverse (current_worlds univ))
                      'play
                      new_board (current_color univ) killed_stones)
-                    (list (make-mail (world1 univ) (list 'wait new_board killed_stones))
-                          (make-mail (world2 univ) (list 'play new_board killed_stones)))
+                    (list (make-mail (world1 univ) (list 'wait new_board killed_stones  'passsatus))
+                          (make-mail (world2 univ) (list 'play new_board killed_stones  'passsatus)))
                     '()))
     ;;Sonstige Anfragen verändern das Universum nicht
     [make-bundle univ '() '()]])

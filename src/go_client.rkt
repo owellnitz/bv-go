@@ -5,7 +5,7 @@
 (require "go_draw_board.rkt")
 
 ;;Der go_client hat in jeder Instanz eine eigene Welt, welche ihm vom Server mitgeteilt wird.
-;;Eine Welt setzt sich zusammen aus: (Zustand Spielfeldbelegung Geschlagene_Steine)
+;;Eine Welt setzt sich zusammen aus: (Zustand Spielfeldbelegung Geschlagene_Steine Passstatus)
 ;;Mögliche Zustände:
 ;; 1. w=(wait          ) - Abwarten
 ;; 2. w=(play          ) - An der Reihe
@@ -16,15 +16,16 @@
 ;; 7. w=(setkilledblack) - Eingabe der geschlagenen schwarzen Steine bei Spielstart
 ;; 8. w=(setkilledwhite) - Eingabe der geschlagenen weißen Steine bei Spielstart
 ;; 9. w=(choosecolor   ) - Farbwahl
+ 
 
 ;;Startzustand als wartender Zustand mit leerem Spielfeld und keinen geschlagenen Steinen
-(define WORLD0 (list 'wait (make-list 19 (make-list 19 0)) (list 0 0)))
+(define WORLD0 (list 'wait (make-list 19 (make-list 19 0)) (list 0 0) 'passstatus))
 
 ;;Falls ein korrekter Weltzustand empfangen wird
 ;;   --> setze die Welt auf die empfangene Nachricht
 ;;sonst: verharre im alten Weltzustand
 (define (receive w m)
-  (if (and (list? m) (= (length m) 3)
+  (if (and (list? m) (= (length m) 4)
            (symbol? (first m)) 
            (list? (second m)) (= (length (second m)) 19))
       m
@@ -70,14 +71,12 @@
              ;;Wahl der Farbe
              [(equal? (car w) 'choosecolor)
               choose-color-field]
+             ;;Auswertung
+             [(equal? (car w) 'result)
+              result-field]
              ;;Sonst wird normal gespielt
              [else
-                (above
-                 (draw-board-with-score (second w) (third w))
-                 (if (equal? (car w) 'wait)
-                     (text "warte auf Gegner..." 16 'red)
-                     (text "bitte Zelle markieren!" 16 'darkgreen)))
-                 ])))
+                 (draw-board-with-score w)])))
 
 
 ;;Maus-Interaktionen, Restart noch unverändert.
@@ -122,7 +121,13 @@
                       (index (list row column)))
                  (if (and (< -1 column 19) (< -1 row 19))
                      (make-package w (cons 'set index))
-                     w))]
+                     (if (and (> y_pos 400)
+                              (< y_pos 450)
+                              (> x_pos 400)
+                              (< x_pos 500))
+                         (make-package w 'passed)
+                         w)))
+                              ]
               [else w])
            w)
        w)))
