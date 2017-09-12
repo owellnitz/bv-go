@@ -88,10 +88,22 @@
                        (list (make-mail wrld (list 'wait empty_board (current_killed univ) 'passsatus)))
                        '())]))
  
-;;Nachrichtenaustausch zwischen den Welten 
+;;Nachrichtenaustausch zwischen den Welten
+;;Hauptfunktion des Servers. Wird vom Client mit make-package aufgerufen und verarbeitet die Nachricht des Clients abhängig vom Nachrichten-Tag und aktuellen Serverstatus.
+;;Funktionsverlauf:
+ ;;Abfrage des Status:
+   ;;current_state: "status"
+   ;;Message: "m"
+ ;;optionaler Funktionsverlauf:
+   ;;Funktion
+ ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
+  ;;neuer Serverstatus: "status
+  ;;Nachricht für Client 1
+  ;;Nachricht für Client 2
 (define (handle-messages univ wrld m)
   (cond 
     ;;Das Spiel gilt als beendet -> Anfrage eines Neustarts durch eine Welt
+     ;;TODO
     [(and (equal? (current_state univ) 'finished) 
               (equal? m 'restart))
          (make-bundle (list
@@ -102,6 +114,15 @@
                             (make-mail (world2 univ) (list 'play empty_board (current_killed univ) 'passsatus)))
                       '())]
     ;;Das Spiel startet -> Spieler wählt Spielstart aus BV oder neues Spiel
+     ;;Abfrage des Status:
+       ;;current_state:  'started
+       ;;Message: 'newgame
+     ;;optionaler Funktionsverlauf:
+       ;;nicht vorhanden
+     ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
+       ;;neuer Serverstatus: 'newgame
+       ;;Nachricht für Client 1: 'choosecolor 
+       ;;Nachricht für Client 2: 'wait
     [(and (equal? (current_state univ) 'started) 
               (equal? m 'newgame))
          (make-bundle (list
@@ -112,29 +133,19 @@
                             (make-mail (world2 univ) (list 'wait empty_board (current_killed univ) 'passsatus)))
                       '())]
 
-    ;Start aus BV
+    ;;Start aus BV
+    ;;Abfrage des Status:
+      ;;current_state:  'started
+      ;;Message: 'newbvgame
+    ;;optionaler Funktionsverlauf:
+      ;;Aufruf der Bildverarbeitung um Spielstand aus Bilddatei zu lesen
+    ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
+      ;;neuer Serverstatus: 'setkilledblack
+      ;;Nachricht für Client 1: 'setkilledblack 
+      ;;Nachricht für Client 2: 'wait
     [(and (equal? (current_state univ) 'started)
       (equal? m 'newbvgame))
- ;;(let* ([new_board bord-state])
- (let* ([new_board '((0 0 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(-1 -1 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 1 0 0 0 -1 -1 1 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 0 -1 1 1 -1 0 0 0 0 0 0 0 0 1 0 0) 
-(0 0 0 -1 1 1 -1 0 0 0 0 0 0 0 0 1 0 1 0) 
-(0 0 0 -1 1 -1 0 0 0 0 0 0 0 0 0 1 1 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1 -1 1 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 1 -1 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 1 0 1 -1 0 0 0 -1 0 0) 
-(0 0 0 0 0 0 0 0 0 0 1 -1 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 1 -1 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))])
+ (let* ([new_board bord-state])
  (make-bundle (list
                (current_worlds univ)
                'setkilledblack
@@ -145,6 +156,15 @@
 
     ;Eingabe der geschlagenen Steine
     ;Zuerst schwarze Steine eingeben
+     ;;Abfrage des Status:
+       ;;current_state:  'setkilledblack
+       ;;Message: ('setkilled Zahl)
+     ;;optionaler Funktionsverlauf:
+       ;;killed_stones wird um Zahl erweitert (z.B. killed_stones = 2 und Zahl = 1 -> killed_stones = 21)
+     ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
+       ;;neuer Serverstatus: 'setkilledblack
+       ;;Nachricht für Client 1: 'setkilledblack 
+       ;;Nachricht für Client 2: 'wait
     [(and (equal? (current_state univ) 'setkilledblack)
           (pair? m)
           (equal? (car m) 'setkilled))
@@ -157,6 +177,15 @@
                             (make-mail (world2 univ) (list 'wait (current_board univ) killed_stones 'passsatus)))
                       '()))]
     ;Löschen der Eingabe
+     ;;Abfrage des Status:
+       ;;current_state:  'setkilledblack
+       ;;Message: 'delete
+     ;;optionaler Funktionsverlauf:
+       ;;killed_stones wird um die letzte Ziffer gekürzt
+     ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
+       ;;neuer Serverstatus: 'setkilledblack
+       ;;Nachricht für Client 1: 'setkilledblack 
+       ;;Nachricht für Client 2: 'wait
         [(and (equal? (current_state univ) 'setkilledblack)
           (equal? m 'delete))
      (let* ([killed_stones (list (/ 10 (- (car (current_killed univ)) (remainder (car (current_killed univ)) 10))) (cadr (current_killed univ)))])
@@ -169,6 +198,15 @@
               '()))]
     
     ;Bestätigen der geschlagenen Schwarzen Steine
+     ;;Abfrage des Status:
+       ;;current_state:  'setkilledblack
+       ;;Message: 'confirm
+     ;;optionaler Funktionsverlauf:
+       ;;nicht vorhanden
+     ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
+       ;;neuer Serverstatus: 'setkilledwhite
+       ;;Nachricht für Client 1: 'setkilledwhite
+       ;;Nachricht für Client 2: 'wait
         [(and (equal? (current_state univ) 'setkilledblack)
           (equal? m 'confirm))
      (make-bundle (list
@@ -180,6 +218,15 @@
                       '())]
         
     ;Dann weiße Steine eingeben
+     ;;Abfrage des Status:
+       ;;current_state:  'setkilledwhite
+       ;;Message: ('setkilled Zahl)
+     ;;optionaler Funktionsverlauf:
+       ;;killed_stones wird um Zahl erweitert (z.B. killed_stones = 2 und Zahl = 1 -> killed_stones = 21)
+     ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
+       ;;neuer Serverstatus: 'setkilledwhite
+       ;;Nachricht für Client 1: 'setkilledwhite 
+       ;;Nachricht für Client 2: 'wait
     [(and (equal? (current_state univ) 'setkilledwhite)
           (pair? m)
           (equal? (car m) 'setkilled))
@@ -192,6 +239,15 @@
                             (make-mail (world2 univ) (list 'wait (current_board univ) killed_stones 'passsatus)))
                       '()))]
     ;Löschen der Eingabe
+     ;;Abfrage des Status:
+       ;;current_state:  'setkilledwhite
+       ;;Message: 'delete
+     ;;optionaler Funktionsverlauf:
+       ;;killed_stones wird um die letzte Ziffer gekürzt
+     ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
+       ;;neuer Serverstatus: 'setkilledwhite
+       ;;Nachricht für Client 1: 'setkilledwhite 
+       ;;Nachricht für Client 2: 'wait
         [(and (equal? (current_state univ) 'setkilledwhite)
           (equal? m 'delete))
      (let* ([killed_stones (list (cadr (current_killed univ)) (/ 10 (- (car (current_killed univ)) (remainder (car (current_killed univ)) 10))))])
@@ -204,6 +260,15 @@
               '()))]
     
     ;Bestätigen der geschlagenen weißen Steine
+     ;;Abfrage des Status:
+       ;;current_state:  'setkilledwhite
+       ;;Message: 'confirm
+     ;;optionaler Funktionsverlauf:
+       ;;nicht vorhanden
+     ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
+       ;;neuer Serverstatus: 'newgame
+       ;;Nachricht für Client 1: 'choosecolor
+       ;;Nachricht für Client 2: 'wait
         [(and (equal? (current_state univ) 'setkilledwhite)
           (equal? m 'confirm))
      (make-bundle (list
@@ -215,8 +280,17 @@
                       '())]
         
       
-    ;Farbwahl bei Spielstart
+    ;;Farbwahl bei Spielstart
     ;;Der Spieler wählt schwarz
+     ;;Abfrage des Status:
+       ;;current_state:  'newgame
+       ;;Message: 'black
+     ;;optionaler Funktionsverlauf:
+       ;;Setzen der Spielerfarbe auf schwarz
+     ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
+       ;;neuer Serverstatus: 'play
+       ;;Nachricht für Client 1: 'play
+       ;;Nachricht für Client 2: 'wait
     [(and (equal? (current_state univ) 'newgame) 
               (equal? m 'black))
      (let* ([choosen_color (list (iworld-name (world1 univ)) -1 (iworld-name (world2 univ)) 1)])
@@ -229,6 +303,15 @@
                       '()))]
 
       ;;Der Spieler wählt weiß
+      ;;Abfrage des Status:
+        ;;current_state:  'newgame
+        ;;Message: 'white
+      ;;optionaler Funktionsverlauf:
+        ;;Setzen der Spielerfarbe auf weiß
+      ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
+        ;;neuer Serverstatus: 'play
+        ;;Nachricht für Client 1: 'wait
+        ;;Nachricht für Client 2: 'play
     [(and (equal? (current_state univ) 'newgame) 
               (equal? m 'white))
      (let* ([choosen_color (list (iworld-name (world2 univ)) -1 (iworld-name (world1 univ)) 1)])
@@ -257,10 +340,16 @@
           (iworld=? wrld (world1 univ)))                           ;; 2.
      (do_set univ wrld m)]
 
-    ;;Ein Spieler passt. Der Client schickt 'passed
-    ;;Prüfen ob es das erste Passen ist oder der andere Spieler im Zug davor schon gepasst hat.
-    ;;
-    ;;Ansonsten ist der andere Spieler am Zug
+    ;;Ein Spieler passt.
+     ;;Abfrage des Status:
+       ;;current_state:  'play
+       ;;Message: 'passed
+     ;;optionaler Funktionsverlauf:
+       ;;Setzen der Spielerfarbe auf schwarz
+     ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
+       ;;neuer Serverstatus: 'passed
+       ;;Nachricht für Client 1: 'wait
+       ;;Nachricht für Client 2: 'play
     [(and (equal? (current_state univ) 'play) 
               (equal? m 'passed))
             (make-bundle (list
@@ -271,6 +360,15 @@
                           (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ)  'passed)))
                     '())]
     ;;Haben beide Spieler hintereinander gepasst -> Auswertung
+      ;;Abfrage des Status:
+        ;;current_state:  'passed
+        ;;Message: 'passed
+      ;;optionaler Funktionsverlauf:
+        ;;TODO Auswertung
+      ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
+        ;;neuer Serverstatus: 'result
+        ;;Nachricht für Client 1: 'result
+        ;;Nachricht für Client 2: 'result
     [(and (equal? (current_state univ) 'passed) 
               (equal? m 'passed))
      ;;ToDO Auswertung
