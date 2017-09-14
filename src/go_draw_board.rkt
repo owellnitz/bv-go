@@ -15,6 +15,10 @@
 
 (provide result-field)
 
+(provide choose-handicap)
+
+(provide set-handicap)
+
 ;;Zeichnen einer Welt
 ;;Hilfsfunktionen
 (define field (rectangle 400 400 "solid" "PeachPuff"))
@@ -135,8 +139,8 @@
   (overlay/offset text-for-image 0 100
                   (overlay/offset text-for-new-game 0 -100 two-areas)))
 
-;;Neues Spiel mit Auswahl der Farbe
-;;Hilfsfunktionen
+;;Neues Spiel mit Auswahl der Farbe und Vorgabe
+;;Hilfsfunktionen für Farbwahl
 (define text-for-black
   (above(text "Klicke hier um die Farbe" 22 'blue)
         (text " schwarz zu wählen" 22 'blue)))
@@ -149,18 +153,46 @@
   (overlay/offset text-for-black 0 100
                   (overlay/offset text-for-white 0 -100 two-areas)))
 
+;;Hilfsfunktionen für Vorgabe
+(define text-for-sethandicap
+  (above(text "Gebe die Höhe der Vorgabe" 22 'blue)
+        (text "mit den Nummerntasten ein." 22 'blue)
+        (text "Bestätige mit der Entertaste" 22 'blue)))
+
+(define (input-for-handicap handicap)
+  (text (if (equal? 'handicap handicap)
+            "0"
+            (number->string handicap)) 22 'blue))
+
+(define (text-for-handicap handicap)
+  (above (text "Verbliebende Vorgabe" 14 'blue)
+         (text (if (equal? 'handicap handicap)
+                   "0"
+                   (number->string handicap)) 14 'blue)))
+
+;Feld zur Eingabe der Vorgabe
+(define (choose-handicap handicap)
+  (overlay/offset text-for-sethandicap 0 100
+                  (overlay/offset (input-for-handicap handicap) 0 -100 two-areas)))
+
+;;Feld zum Setzen der Vorgabe
+(define (set-handicap world)
+  (beside (above (board-state->board 0 game-board (second world))
+                 (text "bitte Zelle markieren!" 16 'darkgreen))            
+          (text-for-handicap (fourth world))))
+
 ;;Start aus BV-Datei
 ;; Hilfsfunktionen
 (define text-for-black-stones
   (above(text "Gebe die Anzahl der" 22 'blue)
         (text "geschlagenen schwarzen Steine" 22 'blue)
-        (text "mit den Nummertasten ein." 22 'blue)
+        (text "mit den Nummerntasten ein." 22 'blue)
         (text "Bestätige mit der Entertaste" 22 'blue)))
 
 (define text-for-white-stones
   (above(text "Gebe die Anzahl der" 22 'blue)
         (text "geschlagenen weißen Steine" 22 'blue)
-        (text "mit den Nummertasten ein." 22 'blue)
+        (text "mit den Nummerntasten ein." 22 'blue)
         (text "Bestätige mit der Entertaste" 22 'blue)))
 
 (define (input-for-killed-stones killed-stones)

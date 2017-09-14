@@ -2,6 +2,7 @@
 (require 2htdp/universe)
 
 (provide do_set)
+(provide do_handicap)
 
 ;;Quick accessors for the universe
 (define (current_worlds univ)
@@ -23,11 +24,36 @@
   (define (current_killed univ)
   (fifth univ))
 
-;;Zugdurchführung, wird vom Server bei 'set aufgerufen.
+;;Vorgabe setzen, wird vom Server bei 'set aufgerufen, wenn Serverstatus 'usehandicap ist.
+(define (do_handicap  univ wrld m)
+  [if (and (equal? (get-field-state (current_board univ) (second m) (third m)) 0)  ;;Prüfung ob Feld frei ist.
+          (check-turn univ (get-color univ (iworld-name wrld)) (second m) (third m))) ;;Prüfung ob Spieler setzen darf
+     (let* ([new_board (set-stone (current_board univ) (second m) (third m) (get-color univ (iworld-name wrld)))];;Setze neuen Stein
+            [new_handicap (- (sixth univ) 1)]) ;;Vorgabe um 1 verringern.
+       (if (< new_handicap 1) ;;Wenn die Vorgabe vollständig gesetzt wurde, wird mit dem Spiel begonnen
+          (make-bundle (list
+                     (current_worlds univ)
+                     'play
+                     new_board (current_color univ) (current_killed univ))
+                    (list (make-mail (world1 univ) (list 'play new_board (current_killed univ)  'passsatus))
+                          (make-mail (world2 univ) (list 'wait new_board (current_killed univ)  'passsatus)))
+                    '()) 
+       ;;Ansonsten setzt Schwarz und die Vorgabe wird um 1 verringert.
+       (make-bundle (list
+                     (current_worlds univ)
+                     'usehandicap
+                     new_board (current_color univ) (current_killed univ) new_handicap)
+                    (list (make-mail (world1 univ) (list 'usehandicap new_board (current_killed univ)  new_handicap))
+                          (make-mail (world2 univ) (list 'wait new_board (current_killed univ) 'passsatus)))
+                    '())))
+    ;;Sonstige Anfragen verändern das Universum nicht
+    [make-bundle univ '() '()]])
+
+;;Zugdurchführung, wird vom Server bei 'set aufgerufen, wenn Serverstatus 'play ist.
 
 (define (do_set  univ wrld m)
-  [if (and (equal? (get-field-state (current_board univ) (second m) (third m)) 0)  ;;3.
-          (check-turn univ (get-color univ (iworld-name wrld)) (second m) (third m))) ;;4.
+  [if (and (equal? (get-field-state (current_board univ) (second m) (third m)) 0)  ;;;Prüfung ob Feld frei ist.
+          (check-turn univ (get-color univ (iworld-name wrld)) (second m) (third m))) ;;Prüfung ob Spieler setzen darf
      (let* ([temp_board (set-stone (current_board univ) (second m) (third m) (get-color univ (iworld-name wrld)))];;Setze neuen Stein
             [new_board_state (find-freedoms temp_board (get-color univ (iworld-name wrld)) '()
                                             (find-opposing-stones
