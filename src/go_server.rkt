@@ -230,7 +230,10 @@
     [(and (equal? (current_state univ) 'setkilledwhite)
           (pair? m)
           (equal? (car m) 'setkilled))
-     (let* ([killed_stones (list (car(current_killed univ)) (+ (* 10 (cadr (current_killed univ))) (string->number(cadr m))))])
+     (let* ([killed_stones
+             (list (car(current_killed univ))
+                   (+ (* 10 (cadr (current_killed univ)))
+                      (string->number(cadr m))))])
        (make-bundle (list
                      (current_worlds univ)
                      'setkilledwhite
@@ -250,7 +253,10 @@
     ;;Nachricht für Client 2: 'wait
     [(and (equal? (current_state univ) 'setkilledwhite)
           (equal? m 'delete))
-     (let* ([killed_stones (list (cadr (current_killed univ)) (/ (- (car (current_killed univ)) (remainder (car (current_killed univ)) 10)) 10))])
+     (let* ([killed_stones
+             (list (cadr (current_killed univ))
+                   (/ (- (car (current_killed univ))
+                         (remainder (car (current_killed univ)) 10)) 10))])
        (make-bundle (list
                      (current_worlds univ)
                      'setkilledwhite
@@ -510,16 +516,21 @@
     [(and (equal? (current_state univ) 'passed) 
           (equal? m 'passed))
      ;;ToDO Auswertung
+     (let* ((final_score (calc_score)))
      (make-bundle (list
                    (current_worlds univ)
                    'result
                    (current_board univ) (current_color univ) (current_killed univ))
                   (list (make-mail (world1 univ) (list 'result (current_board univ) (current_killed univ)  'passed))
                         (make-mail (world2 univ) (list 'result (current_board univ) (current_killed univ)  'passed)))
-                  '())]
+                  '()))]
     ;;Sonstige Anfragen verändern das Universum nicht
     [else (make-bundle univ '() '())]))
 
+
+(define (calc_score board)
+  5
+  )
 
 ;;Erschafft ein Universum
 (universe UNIVERSE0
