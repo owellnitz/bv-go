@@ -50,6 +50,7 @@
     [make-bundle univ '() '()]])
 
 ;;Zugdurchführung, wird vom Server bei 'set aufgerufen, wenn Serverstatus 'play ist.
+
 (define (do_set  univ wrld m)
   [if (and (equal? (get-field-state (current_board univ) (second m) (third m)) 0)  ;;;Prüfung ob Feld frei ist.
           (check-turn univ (get-color univ (iworld-name wrld)) (second m) (third m))) ;;Prüfung ob Spieler setzen darf

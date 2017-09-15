@@ -145,7 +145,25 @@
     ;;Nachricht für Client 2: 'wait
     [(and (equal? (current_state univ) 'started)
           (equal? m 'newbvgame))
-     (let* ([new_board bord-state])
+     (let* ([new_board '((0 0 0 0 0 -1 0 0 0 0 0 0 0 0 0 0 -1 0 0) 
+(0 -1 0 0 0 -1 0 0 0 0 0 0 0 0 0 0 -1 0 0) 
+(0 0 -1 -1 1 -1 0 0 0 0 0 0 0 0 0 0 -1 -1 0) 
+(0 0 1 1 -1 0 0 0 0 0 0 0 0 0 0 0 -1 -1 -1) 
+(-1 -1 -1 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1 -1 -1) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1 -1 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 -1 1) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 -1 1) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 0 0) 
+(1 1 1 0 0 0 0 0 0 0 0 1 0 -1 0 0 1 0 0) 
+(0 0 1 0 0 0 0 0 0 0 0 1 1 1 1 1 1 0 0) 
+(0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))]) ;bord-state
        (make-bundle (list
                      (current_worlds univ)
                      'setkilledblack
@@ -168,7 +186,10 @@
     [(and (equal? (current_state univ) 'setkilledblack)
           (pair? m)
           (equal? (car m) 'setkilled))
-     (let* ([killed_stones (list (+ (* 10 (car (current_killed univ))) (string->number(cadr m))) (cadr(current_killed univ)))])
+     (let* ([killed_stones (list
+                            (+ (* 10 (car (current_killed univ)))
+                               (string->number(cadr m)))
+                            (cadr(current_killed univ)))])
        (make-bundle (list
                      (current_worlds univ)
                      'setkilledblack
@@ -516,7 +537,7 @@
     [(and (equal? (current_state univ) 'passed) 
           (equal? m 'passed))
      ;;ToDO Auswertung
-     (let* ((final_score (calc_score)))
+     (let* ((final_score (calc-score (current_board univ))))
      (make-bundle (list
                    (current_worlds univ)
                    'result
@@ -528,8 +549,18 @@
     [else (make-bundle univ '() '())]))
 
 
-(define (calc_score board)
-  5
+(define (calc-score board)
+  (find-empty-position board 0 0 '() (cons 0 0))
+  )
+
+(define (find-empty-position board x y neutral_Positions conq_Positions)
+  (let* ((inc_X (+ 1 x))
+         (new_X (if (= inc_X 19) 0 inc_X))
+         (new_Y (if (= inc_X 19) (+ y 1) y)))
+  (if (and (= x 0) (= y 19))
+      conq_Positions
+      (find-empty-position board new_X new_Y neutral_Positions conq_Positions)
+      ))
   )
 
 ;;Erschafft ein Universum
