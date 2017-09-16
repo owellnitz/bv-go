@@ -308,23 +308,23 @@
         
       
     ;;Farbwahl bei Spielstart
-    ;;Der Spieler wählt schwarz
+    ;;Der Spieler wählt seine Farbe und der Mitspieler erhält die verbliebende Farbe
     ;;Abfrage des Status:
     ;;current_state:  'newgame or 'handicap
-    ;;Message: 'black
+    ;;Message: 'black oder 'white
     ;;optionaler Funktionsverlauf:
-    ;;Setzen der Spielerfarbe auf schwarz
+    ;;Setzen der Spielerfarben (-1 schwarz und 1 weiß)
     ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
-    ;;neuer Serverstatus: 'play or 'sethandicap
-    ;;Nachricht für Client 1: 'play or 'choosehandicap
+    ;;neuer Serverstatus: 'choosedraw or 'sethandicap
+    ;;Nachricht für Client 1: 'choosedraw or 'choosehandicap
     ;;Nachricht für Client 2: 'wait
     [(and (or (equal? (current_state univ) 'newgame)
               (equal? (current_state univ) 'handicap))
           (or (equal? m 'black)
               (equal? m 'white)))
      (let* ([choosen_color (if (equal? m 'black)
-                               (list (iworld-name (world1 univ)) -1 (iworld-name (world2 univ)) 1)
-                               (list (iworld-name (world2 univ)) -1 (iworld-name (world1 univ)) 1))])
+                               (list (iworld-name (world1 univ)) -1 (iworld-name (world2 univ)) 1) ;;Schwarz gewählt
+                               (list (iworld-name (world2 univ)) -1 (iworld-name (world1 univ)) 1))]) ;;Weiß gewählt
        (if (equal? (current_state univ) 'newgame) ;;Spielstart ohne Vorgabe (z.B. aus BV)
            (make-bundle (list
                          (current_worlds univ)
@@ -343,44 +343,22 @@
                         '())
            ))]
 
-    ;;Der Spieler wählt weiß
+
+    ;;Eingabe der Zugreihenfolge nach Laden des Spielstandes aus einem Bild
+    ;;Der Spieler wählt das Schwarz am Zug ist
     ;;Abfrage des Status:
-    ;;current_state:  'newgame or 'handicap
-    ;;Message: 'white
+    ;;current_state:  'choosedraw
+    ;;Message: 'black
     ;;optionaler Funktionsverlauf:
-    ;;Setzen der Spielerfarbe auf weiß
+    ;;Nicht vorhanden
     ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
-    ;;neuer Serverstatus: 'play or 'sethandicap
-    ;;Nachricht für Client 1: 'wait
-    ;;Nachricht für Client 2:'play or 'choosehandicap
-    [(and (or (equal? (current_state univ) 'newgame)
-              (equal? (current_state univ) 'handicap)) 
-          (equal? m 'white))
-     (let* ([choosen_color (list (iworld-name (world2 univ)) -1 (iworld-name (world1 univ)) 1)])
-       (if (equal? (current_state univ) 'newgame) ;;Spielstart ohne Vorgabe (z.B. aus BV)
-           (make-bundle (list
-                         (reverse (current_worlds univ))
-                         'play
-                         (current_board univ) choosen_color (current_killed univ))
-                        (list (make-mail (world1 univ) (list 'wait (current_board univ) (current_killed univ) 'passsatus))
-                              (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ) 'passsatus)))
-                        '())
-           ;;Spielstart mit Vorgabe
-           (make-bundle (list
-                         (current_worlds univ)
-                         'sethandicap
-                         (current_board univ) choosen_color (current_killed univ) 'handicap)
-                        (list (make-mail (world1 univ) (list 'choosehandicap (current_board univ) (current_killed univ) 'handicap))
-                              (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) 'passsatus)))
-                        '())
-           ))]
-
-
-    ;;Eingabe der Zugreihenfolge
-    ;;Schwarz ist am Zug
+    ;;neuer Serverstatus: 'play
+    ;;Nachricht für Clienten abhängig von der Farbwahl
+    ;;Client mit Spielfarbe "schwarz": 'play
+    ;;Client mit Spielfarbe "weiß": 'wait
     [(and (equal? (current_state univ) 'choosedraw)
           (equal? m 'black))
-           (if (equal? (get-color univ (iworld-name wrld)) -1) 
+           (if (equal? (get-color univ (iworld-name wrld)) -1) ;;Prüfen ob aktive Welt die Farbe schwarz hat und am Zug ist.
              (make-bundle (list
                            (current_worlds univ)
                            'play
@@ -396,10 +374,20 @@
                                 (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ) 'passsatus)))
                           '()))]
 
-    ;;Weiß ist am Zug
+    ;;Der Spieler wählt das Weiß am Zug ist
+    ;;Abfrage des Status:
+    ;;current_state:  'choosedraw
+    ;;Message: 'white
+    ;;optionaler Funktionsverlauf:
+    ;;Nicht vorhanden
+    ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
+    ;;neuer Serverstatus: 'play
+    ;;Nachricht für Clienten abhängig von der Farbwahl
+    ;;Client mit Spielfarbe "schwarz": 'wait
+    ;;Client mit Spielfarbe "weiß": 'play
     [(and (equal? (current_state univ) 'choosedraw)
           (equal? m 'white))
-           (if (equal? (get-color univ (iworld-name wrld)) 1) 
+           (if (equal? (get-color univ (iworld-name wrld)) 1) ;;Prüfung ob aktive Welt die Farbe Weiß hat.
              (make-bundle (list
                            (current_worlds univ)
                            'play
