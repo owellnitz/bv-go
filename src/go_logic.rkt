@@ -292,20 +292,65 @@
 
 
 ;;Auswertung
-
 (define (calc-score board)
   (find-empty-position board 0 0 '())
   )
 
+(define (find-areas empty_positions checked_positions areas)
+  (if (empty? empty_positions)
+      areas
+      (find-areas (cdr empty_positions) areas)
+      )
+  )
+
+(define (check-area empty_positions checked_positions)
+  1
+  )
+
+;;Prüft, ob zwei Steine benachbart sind.
+;;
+;;Parameter
+;;pos1/2: Die Steinpositionen, die überprüft werden sollen.
+;;
+;;return: Boolean-Wert, ob Steine benachbart sind.
+(define (positions-neighbouring? pos1 pos2)
+  (if (and (<= (abs (- (car pos1) (car pos2))) 1)
+           (<= (abs (- (cdr pos1) (cdr pos2))) 1)
+          )
+      #t
+      #f
+      )
+  )
+
+;;Sammelt alle leere Positionen auf dem Spielfeld.
+;;
+;;Parameter
+;;board: Das Spielbrett mit Belegung.
+;;y/x: Die x- und y-Koordinaten des neu zu prüfenden Steines.
+;;
+;;return: Liste mit allen leeren Positionen auf dem Feld.
 (define (find-empty-position board x y empty_positions)
   (let* ((inc_X (+ 1 x))
          (new_X (if (= inc_X 19) 0 inc_X))
          (new_Y (if (= inc_X 19) (+ y 1) y)))
   (if (and (= x 0) (= y 19))
       empty_positions
-      (find-empty-position board new_X new_Y )
-      ))
+      (if (= (position-empty? board x y) 1)
+      (find-empty-position board new_X new_Y (cons (cons y x) empty_positions))
+      (find-empty-position board new_X new_Y empty_positions)
+      )))
   )
 
-(define (position-empty? board position)
-  1)
+;;Prüft ob ein Feld leer ist.
+;;
+;;Parameter
+;;board: Das Spielbrett mit Belegung.
+;;y/x: Die x- und y-Koordinaten des neu zu prüfenden Steines.
+;;
+;;return: Boolean-Wert, ob das Feld leer ist.
+(define (position-empty? board x y)
+  (if (= (get-field-state board x y) 0)
+      1
+      0
+      )
+  )
