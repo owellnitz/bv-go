@@ -62,7 +62,7 @@
        (set-handicap w)]
       ;;Auswertung
       [(equal? (car w) 'result)
-       result-field]
+       draw-final-score w]
       ;;Sonst wird normal gespielt
       [else
        (draw-board-with-score w)])))

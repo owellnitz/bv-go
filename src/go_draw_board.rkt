@@ -13,7 +13,7 @@
 
 (provide choose-killed-white-stones)
 
-(provide result-field)
+(provide draw-final-score)
 
 (provide choose-handicap)
 
@@ -227,7 +227,30 @@
                   (overlay/offset text-for-white-draw 0 -100 two-areas)))
 
 ;;Auswertung Placeholder
-(define result-field
-  (overlay/offset (text "Auswertung" 22 'blue) 0 100
-                  field))
+;;Hilfsfunktionen für die Auswertung
+
+(define (text-for-score score)
+   (overlay/offset (text-for-black-score (car score))
+                  0 200
+                  (text-for-white-score (cadr score))))
+
+(define (text-for-black-score score)
+  (above (text "Finale Punktzahl für Schwarz:" 14 'blue)
+         (text (number->string score) 14 'blue)))
+
+(define (text-for-white-score white_score)
+  (above (text "Finale Punktzahl für Weiß:" 14 'blue)
+         (text (number->string white_score) 14 'blue)))
+
+;;Feld zur Anzeige des finalen Spielstandes mit erreichten Punkten
+(define (draw-final-score world)
+  (overlay/offset (beside (above (board-state->board 0 game-board (second world))
+                                 (if (equal? (fourth world) 'won)
+                                         (text "Du hast gewonnen!" 16 'darkgreen)
+                                         (text "Du hast verloren!" 16 'red)))
+                          (text-for-score (third world)))
+                  155 215
+                  (overlay (text "Neues Spiel" 16 'black)
+                           (rectangle 100 50 "solid" "gray"))))
+
 
