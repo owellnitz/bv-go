@@ -89,8 +89,6 @@
 (define (get-color univ player)
   (second (member player (current_color univ))))
 
-
-
 ;;Zugprüfung auf Gültigkeit.
 ;;Verhindert den Selbstmord eines Spielers, außer der Selbstmord schlägt Steine des Gegners.
 ;;
@@ -296,27 +294,86 @@
   (find-empty-position board 0 0 '())
   )
 
-(define (find-areas empty_positions checked_positions areas)
-  (if (empty? empty_positions)
-      areas
-      (find-areas (cdr empty_positions) areas)
+;;Entfernt die Elemente einer Liste aus einer anderen liste
+;;
+;;Parameter
+;;list1: Liste mit den Elementen, die aus der list2 entfernt werden sollen.
+;;list2: Liste aus denen die Elemente aus list1 entfernt sollen.
+;;
+;;return: Die neue Liste aus denen die Elemente entfernt werden sollen.
+(define (remove-list list1 list2)
+  (if(empty? list1)
+     list2
+     (remove-list (cdr list1) (remove (car list1) list2))
+     )
+  )
+
+;;Findet alle zusammenhängende leere Flächen.
+;;
+;;Parameter
+;;empty_list: Liste mit Positionen ohne Stein.
+;;area_list: Die Liste mit den leeren Flächen.
+;;route-list: 
+;;
+;;return: Liste mit den leeren Fächen, die als Liste mit Koordinaten dargestellt werden.
+(define (find-all-empty-areas empty_list area_list route-list)
+  (let ((new_empty_list (if (= (length area_list) 0) empty_list (remove-list (car area_list) empty_list))))
+  (if (empty? new_empty_list)
+      area_list
+      (find-all-empty-areas new_empty_list (cons (find-area (cons (car new_empty_list) '()) '() new_empty_list route-list) area_list) route-list)
+      )
+  ))
+
+;;Sucht anhand einer Ausgangsposition nach leeren Flächen
+;;
+;;Parameter
+;;list_to_check: Die Liste mit den noch zu prüfenden Positionen.
+;;area: Liste mit den leeren zusammenhängenden Positionen.
+;;empty_list: Liste mit den noch nicht geprüften leeren Positionen.
+;;
+;;return: Boolean-Wert, ob Positionen benachbart sind.
+(define (find-area list_to_check area empty_list route-list)
+  (if (empty? list_to_check)
+      area
+      (find-area (append (find-all-empty-neighbors empty_list (car list_to_check) route-list '())
+                 (cdr list_to_check))
+                 (cons (car list_to_check) area)
+                 (remove-list list_to_check empty_list)
+                 route-list)
       )
   )
 
-(define (check-area empty_positions checked_positions)
-  1
-  )
-
-;;Prüft, ob zwei Steine benachbart sind.
+;;Findet alle benachbarten leeren Positionen
 ;;
 ;;Parameter
-;;pos1/2: Die Steinpositionen, die überprüft werden sollen.
+;;empty_list: Liste mit den noch nicht geprüften leeren Positionen.
+;;empty_pos: Die Positionen, die auf leere Nachbarn untersucht werden soll.
+;;neighbors: Die gefundenen leeren Nachbarn.
 ;;
-;;return: Boolean-Wert, ob Steine benachbart sind.
+;;return: Boolean-Wert, ob Positionen benachbart sind.
+(define (find-all-empty-neighbors empty_list empty_pos route-list neighbors)
+  (if(empty? route-list)
+     neighbors
+     (let ((potential_neighbor_pos (cons (+ (car empty_pos) (car (first route-list)))
+                                         (+ (cdr empty_pos) (cdr (first route-list))))))
+     (if(member? empty_list (car potential_neighbor_pos) (cdr potential_neighbor_pos))
+     (find-all-empty-neighbors empty_list empty_pos (cdr route-list) (cons potential_neighbor_pos neighbors))
+     (find-all-empty-neighbors empty_list empty_pos (cdr route-list) neighbors)
+     )
+     ))
+  )
+
+;;Prüft, ob zwei Positionen benachbart sind.
+;;
+;;Parameter
+;;pos1/2: Die Position, die überprüft werden sollen.
+;;
+;;return: Boolean-Wert, ob Positionen benachbart sind.
 (define (positions-neighbouring? pos1 pos2)
-  (if (and (<= (abs (- (car pos1) (car pos2))) 1)
-           (<= (abs (- (cdr pos1) (cdr pos2))) 1)
-          )
+  (if (= (+ (abs (- (car pos1) (car pos2)))
+            (abs (- (cdr pos1) (cdr pos2))))
+         1
+         )   
       #t
       #f
       )
@@ -326,7 +383,7 @@
 ;;
 ;;Parameter
 ;;board: Das Spielbrett mit Belegung.
-;;y/x: Die x- und y-Koordinaten des neu zu prüfenden Steines.
+;;y/x: Die x- und y-Koordinaten der prüfenden Position.
 ;;
 ;;return: Liste mit allen leeren Positionen auf dem Feld.
 (define (find-empty-position board x y empty_positions)
@@ -354,3 +411,23 @@
       0
       )
   )
+
+(define board1 '((0 0 0 0 0 -1 0 0 0 0 0 0 0 0 0 0 -1 0 0) 
+(0 -1 0 0 0 -1 0 0 0 0 0 0 0 0 0 0 -1 0 0) 
+(0 0 -1 -1 1 -1 0 0 0 0 0 0 0 0 0 0 -1 -1 0) 
+(0 0 1 1 -1 0 0 0 0 0 0 0 0 0 0 0 -1 -1 -1) 
+(-1 -1 -1 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1 -1 -1) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1 -1 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 -1 1) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 -1 1) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 0 0) 
+(1 1 1 0 0 0 0 0 0 0 0 1 0 -1 0 0 1 0 0) 
+(0 0 1 0 0 0 0 0 0 0 0 1 1 1 1 1 1 0 0) 
+(0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)))
