@@ -3,6 +3,7 @@
 
 (provide do_set)
 (provide do_handicap)
+(provide calc-score)
 
 ;;Quick accessors for the universe
 (define (current_worlds univ)
@@ -288,3 +289,23 @@
 (append (take board y)
         (list (list-set (list-ref board y) x color))
                               (take-right board (- 18 y))))
+
+
+;;Auswertung
+
+(define (calc-score board)
+  (find-empty-position board 0 0 '())
+  )
+
+(define (find-empty-position board x y empty_positions)
+  (let* ((inc_X (+ 1 x))
+         (new_X (if (= inc_X 19) 0 inc_X))
+         (new_Y (if (= inc_X 19) (+ y 1) y)))
+  (if (and (= x 0) (= y 19))
+      empty_positions
+      (find-empty-position board new_X new_Y )
+      ))
+  )
+
+(define (position-empty? board position)
+  1)

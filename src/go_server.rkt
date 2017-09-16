@@ -548,21 +548,6 @@
     ;;Sonstige Anfragen verändern das Universum nicht
     [else (make-bundle univ '() '())]))
 
-
-(define (calc-score board)
-  (find-empty-position board 0 0 '() (cons 0 0))
-  )
-
-(define (find-empty-position board x y neutral_Positions conq_Positions)
-  (let* ((inc_X (+ 1 x))
-         (new_X (if (= inc_X 19) 0 inc_X))
-         (new_Y (if (= inc_X 19) (+ y 1) y)))
-  (if (and (= x 0) (= y 19))
-      conq_Positions
-      (find-empty-position board new_X new_Y neutral_Positions conq_Positions)
-      ))
-  )
-
 ;;Erschafft ein Universum
 (universe UNIVERSE0
           (on-new add-world)
