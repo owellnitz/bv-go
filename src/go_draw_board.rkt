@@ -230,9 +230,9 @@
 ;;Hilfsfunktionen für die Auswertung
 
 (define (text-for-score score)
-   (overlay/offset (text-for-black-score (car score))
+   (overlay/offset (text-for-black-score (cadr score))
                   0 200
-                  (text-for-white-score (cadr score))))
+                  (text-for-white-score (car score))))
 
 (define (text-for-black-score score)
   (above (text "Finale Punktzahl für Schwarz:" 14 'blue)
@@ -245,7 +245,7 @@
 ;;Feld zur Anzeige des finalen Spielstandes mit erreichten Punkten
 (define (draw-final-score world)
   (overlay/offset (beside (above (board-state->board 0 game-board (second world))
-                                 (if (equal? (fourth world) 'won)
+                                 (if (equal? (first world) 'won)
                                          (text "Du hast gewonnen!" 16 'darkgreen)
                                          (text "Du hast verloren!" 16 'red)))
                           (text-for-score (third world)))

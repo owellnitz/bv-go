@@ -61,8 +61,9 @@
       [(equal? (car w) 'usehandicap)
        (set-handicap w)]
       ;;Auswertung
-      [(equal? (car w) 'result)
-       draw-final-score w]
+      [(or (equal? (car w) 'won)
+           (equal? (car w) 'lost))
+       (draw-final-score w)]
       ;;Sonst wird normal gespielt
       [else
        (draw-board-with-score w)])))
