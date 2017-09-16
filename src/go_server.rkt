@@ -275,9 +275,9 @@
     [(and (equal? (current_state univ) 'setkilledwhite)
           (equal? m 'delete))
      (let* ([killed_stones
-             (list (cadr (current_killed univ))
-                   (/ (- (car (current_killed univ))
-                         (remainder (car (current_killed univ)) 10)) 10))])
+             (list (car (current_killed univ))
+                   (/ (- (cadr (current_killed univ))
+                         (remainder (cadr (current_killed univ)) 10)) 10))])
        (make-bundle (list
                      (current_worlds univ)
                      'setkilledwhite
