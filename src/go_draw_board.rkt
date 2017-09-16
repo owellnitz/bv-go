@@ -19,6 +19,8 @@
 
 (provide set-handicap)
 
+(provide choose-draworder-field)
+
 ;;Zeichnen einer Welt
 ;;Hilfsfunktionen
 (define field (rectangle 400 400 "solid" "PeachPuff"))
@@ -182,7 +184,7 @@
           (text-for-handicap (fourth world))))
 
 ;;Start aus BV-Datei
-;; Hilfsfunktionen
+;; Hilfsfunktionen für Eingabe der geschlagenen Steine
 (define text-for-black-stones
   (above(text "Gebe die Anzahl der" 22 'blue)
         (text "geschlagenen schwarzen Steine" 22 'blue)
@@ -208,6 +210,21 @@
 (define (choose-killed-white-stones killed-stones)
   (overlay/offset text-for-white-stones 0 100
                   (overlay/offset (input-for-killed-stones killed-stones) 0 -100 two-areas)))
+
+;;Auswahl "Wer ist am Zug" beim Start aus BV
+;;Hilfsfunktionen für Wahl der Zugreihenfolge
+(define text-for-black-draw
+  (above(text "Klicke hier falls die Farbe" 22 'blue)
+        (text " schwarz am Zug ist" 22 'blue)))
+
+(define text-for-white-draw
+  (above(text "Klicke hier falls die Farbe" 22 'blue)
+        (text " weiß am Zug ist" 22 'blue)))
+
+;;Feld zur Wahl der Zugreihenfolge
+(define choose-draworder-field
+  (overlay/offset text-for-black-draw 0 100
+                  (overlay/offset text-for-white-draw 0 -100 two-areas)))
 
 ;;Auswertung Placeholder
 (define result-field

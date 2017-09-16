@@ -33,31 +33,11 @@
 
 
 
-;;Zeichnen einer Welt
-;;Hilfsfunktionen
-
-(define new_game_text (above(text "Für ein neues Spiel" 16 'black)
-                            (text "bitte klicken" 16 'black)))
-
-;;Eigentliches Zeichen mit go_draw_board Schnittstelle
+;;Zeichnen einer Welt mit go_draw_board Schnittstelle
 ;;Aufrufen der jeweiligen Zeichenfunktion aus go_draw_board abhängig vom Zustand der Welt.
 (define (draw name)
   (lambda (w)
-    (cond ;;Won
-      [(equal? (car w) 'won)
-       (above
-        (text "Gewonnen" 22 'darkgreen)
-        new_game_text)]
-      ;;Lost
-      [(equal? (car w) 'lost)
-       (above 
-        (text "Verloren" 22 'red)
-        new_game_text)]
-      ;;Remis
-      [(equal? (car w) 'remis)
-       (above 
-        (text "Remis" 22 'blue) 
-        new_game_text)]
+    (cond 
       ;;Wahl des Spielstarts
       [(equal? (car w) 'started)
        start-field]
@@ -71,6 +51,9 @@
       ;;Wahl der Farbe
       [(equal? (car w) 'choosecolor)
        choose-color-field]
+      ;;Wahl der Zugreihenfolge bei Start aus BV
+      [(equal? (car w) 'choosedraw)
+       choose-draworder-field]
       ;;Eingabe der Vorgabe
       [(equal? (car w) 'choosehandicap)
        (choose-handicap (fourth w))]
@@ -116,6 +99,13 @@
                   (make-package w 'newgame))]
              ;Farbwahl
              [(equal? (car w) 'choosecolor)
+              (if (< y_pos 200)
+                  ;Wahl von Schwarz
+                  (make-package w 'black)
+                  ;Wahl von Weiß
+                  (make-package w 'white))]
+             ;Wahl der Zugreihenfolge
+             [(equal? (car w) 'choosedraw)
               (if (< y_pos 200)
                   ;Wahl von Schwarz
                   (make-package w 'black)

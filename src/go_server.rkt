@@ -320,14 +320,17 @@
     ;;Nachricht für Client 2: 'wait
     [(and (or (equal? (current_state univ) 'newgame)
               (equal? (current_state univ) 'handicap))
-          (equal? m 'black))
-     (let* ([choosen_color (list (iworld-name (world1 univ)) -1 (iworld-name (world2 univ)) 1)])
+          (or (equal? m 'black)
+              (equal? m 'white)))
+     (let* ([choosen_color (if (equal? m 'black)
+                               (list (iworld-name (world1 univ)) -1 (iworld-name (world2 univ)) 1)
+                               (list (iworld-name (world2 univ)) -1 (iworld-name (world1 univ)) 1))])
        (if (equal? (current_state univ) 'newgame) ;;Spielstart ohne Vorgabe (z.B. aus BV)
            (make-bundle (list
                          (current_worlds univ)
-                         'play
+                         'choosedraw
                          (current_board univ) choosen_color (current_killed univ))
-                        (list (make-mail (world1 univ) (list 'play (current_board univ) (current_killed univ) 'passsatus))
+                        (list (make-mail (world1 univ) (list 'choosedraw (current_board univ) (current_killed univ) 'passsatus))
                               (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) 'passsatus)))
                         '())
            ;;Spielstart mit Vorgabe
@@ -372,6 +375,50 @@
                         '())
            ))]
 
+
+    ;;Eingabe der Zugreihenfolge
+    ;;Schwarz ist am Zug
+    [(and (equal? (current_state univ) 'choosedraw)
+          (equal? m 'black))
+           (if (equal? (get-color univ (iworld-name wrld)) -1) 
+             (make-bundle (list
+                           (current_worlds univ)
+                           'play
+                           (current_board univ) (current_color univ) (current_killed univ) (sixth univ))
+                          (list (make-mail (world1 univ) (list 'play (current_board univ) (current_killed univ) (sixth univ)))
+                                (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) 'passsatus)))
+                          '())
+             (make-bundle (list
+                           (reverse (current_worlds univ))
+                           'play
+                           (current_board univ) (current_color univ) (current_killed univ) (sixth univ))
+                          (list (make-mail (world1 univ) (list 'wait (current_board univ) (current_killed univ) 'passstatus))
+                                (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ) (sixth univ))))
+                          '()))]
+
+    ;;Weiß ist am Zug
+    [(and (equal? (current_state univ) 'choosedraw)
+          (equal? m 'black))
+           (if (equal? (get-color univ (iworld-name wrld)) 1) 
+             (make-bundle (list
+                           (current_worlds univ)
+                           'play
+                           (current_board univ) (current_color univ) (current_killed univ) (sixth univ))
+                          (list (make-mail (world1 univ) (list 'play (current_board univ) (current_killed univ) (sixth univ)))
+                                (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) 'passsatus)))
+                          '())
+             (make-bundle (list
+                           (reverse (current_worlds univ))
+                           'play
+                           (current_board univ) (current_color univ) (current_killed univ) (sixth univ))
+                          (list (make-mail (world1 univ) (list 'wait (current_board univ) (current_killed univ) 'passstatus))
+                                (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ) (sixth univ))))
+                          '()))]
+
+
+    
+     
+    
     ;;Eingabe der Vorgabe
     ;;Abfrage des Status:
     ;;current_state:  'sethandicap
@@ -547,6 +594,21 @@
                   '()))]
     ;;Sonstige Anfragen verändern das Universum nicht
     [else (make-bundle univ '() '())]))
+
+
+(define (calc-score board)
+  (find-empty-position board 0 0 '() (cons 0 0))
+  )
+
+(define (find-empty-position board x y neutral_Positions conq_Positions)
+  (let* ((inc_X (+ 1 x))
+         (new_X (if (= inc_X 19) 0 inc_X))
+         (new_Y (if (= inc_X 19) (+ y 1) y)))
+  (if (and (= x 0) (= y 19))
+      conq_Positions
+      (find-empty-position board new_X new_Y neutral_Positions conq_Positions)
+      ))
+  )
 
 ;;Erschafft ein Universum
 (universe UNIVERSE0
