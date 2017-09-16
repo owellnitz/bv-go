@@ -384,35 +384,35 @@
              (make-bundle (list
                            (current_worlds univ)
                            'play
-                           (current_board univ) (current_color univ) (current_killed univ) (sixth univ))
-                          (list (make-mail (world1 univ) (list 'play (current_board univ) (current_killed univ) (sixth univ)))
+                           (current_board univ) (current_color univ) (current_killed univ) 'passsatus)
+                          (list (make-mail (world1 univ) (list 'play (current_board univ) (current_killed univ) 'passsatus))
                                 (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) 'passsatus)))
                           '())
              (make-bundle (list
                            (reverse (current_worlds univ))
                            'play
-                           (current_board univ) (current_color univ) (current_killed univ) (sixth univ))
+                           (current_board univ) (current_color univ) (current_killed univ) 'passsatus)
                           (list (make-mail (world1 univ) (list 'wait (current_board univ) (current_killed univ) 'passstatus))
-                                (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ) (sixth univ))))
+                                (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ) 'passsatus)))
                           '()))]
 
     ;;Weiß ist am Zug
     [(and (equal? (current_state univ) 'choosedraw)
-          (equal? m 'black))
+          (equal? m 'white))
            (if (equal? (get-color univ (iworld-name wrld)) 1) 
              (make-bundle (list
                            (current_worlds univ)
                            'play
-                           (current_board univ) (current_color univ) (current_killed univ) (sixth univ))
-                          (list (make-mail (world1 univ) (list 'play (current_board univ) (current_killed univ) (sixth univ)))
+                           (current_board univ) (current_color univ) (current_killed univ) 'passsatus)
+                          (list (make-mail (world1 univ) (list 'play (current_board univ) (current_killed univ) 'passsatus))
                                 (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) 'passsatus)))
                           '())
              (make-bundle (list
                            (reverse (current_worlds univ))
                            'play
-                           (current_board univ) (current_color univ) (current_killed univ) (sixth univ))
+                           (current_board univ) (current_color univ) (current_killed univ) 'passsatus)
                           (list (make-mail (world1 univ) (list 'wait (current_board univ) (current_killed univ) 'passstatus))
-                                (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ) (sixth univ))))
+                                (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ) 'passsatus)))
                           '()))]
 
 
