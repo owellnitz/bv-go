@@ -21,6 +21,8 @@
 
 (provide choose-draworder-field)
 
+(provide choose-passstatus)
+
 ;;Zeichnen einer Welt
 ;;Hilfsfunktionen
 (define field (rectangle 400 400 "solid" "PeachPuff"))
@@ -211,6 +213,23 @@
   (overlay/offset text-for-white-stones 0 100
                   (overlay/offset (input-for-killed-stones killed-stones) 0 -100 two-areas)))
 
+;;Auswahl ob gepasst wurde beim Start aus BV
+;;Hilfsfunktionen
+(define text-for-passed
+  (above(text "Klicke hier falls im vorherigen" 22 'blue)
+        (text " Zug gepasst wurde" 22 'blue)))
+
+(define text-for-not-passed
+  (above(text "Klicke hier falls im vorherigen" 22 'blue)
+        (text " Zug nicht gepasst wurde" 22 'blue)))
+
+;;Auswahlfeld für den Passstatus nach Start aus BV
+(define choose-passstatus
+  (overlay/offset text-for-passed 0 100
+                  (overlay/offset text-for-not-passed 0 -100 two-areas)))
+
+
+
 ;;Auswahl "Wer ist am Zug" beim Start aus BV
 ;;Hilfsfunktionen für Wahl der Zugreihenfolge
 (define text-for-black-draw
@@ -226,7 +245,7 @@
   (overlay/offset text-for-black-draw 0 100
                   (overlay/offset text-for-white-draw 0 -100 two-areas)))
 
-;;Auswertung Placeholder
+;;Auswertung 
 ;;Hilfsfunktionen für die Auswertung
 
 (define (text-for-score score)

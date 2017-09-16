@@ -54,6 +54,9 @@
       ;;Wahl der Zugreihenfolge bei Start aus BV
       [(equal? (car w) 'choosedraw)
        choose-draworder-field]
+      ;;Wahl des Passstatus bei Start aus BV
+      [(equal? (car w) 'choosepassstatus)
+       choose-passstatus]
       ;;Eingabe der Vorgabe
       [(equal? (car w) 'choosehandicap)
        (choose-handicap (fourth w))]
@@ -71,16 +74,17 @@
 
 ;;Maus-Interaktionen, Restart noch unverändert.
 ;;Funktion abhängig vom Zustand
-;; 1. w=(wait          ) - Welt wird nicht verändert
-;; 2. w=(play          ) - Sendet den gesetzen Stein an den Server ('set y-Koordinate x-Koordinate
-;; 3. w=(won           ) - ToDO
-;; 4. w=(lost          ) - ToDO
-;; 5. w=(remis         ) - ToDO
-;; 6. w=(started       ) - Sendet Start aus Bild ('newbvgame) oder Start eines neuen Spiels ('newgame) an den Server, abhängig vom gewählten Spielstart
-;; 7. w=(setkilledblack) - Wird nicht von handle-mouse behandelt
-;; 8. w=(setkilledwhite) - Wird nicht von handle-mouse behandelt
-;; 9. w=(choosecolor   ) - Sendet die Farbwahl an den Server, für schwarz ('black) und für weiß ('white)
-;;10. w=(choosehandicap) - Setzen der Vorgabe für Schwarz
+;; 1. w=(wait            ) - Welt wird nicht verändert
+;; 2. w=(play            ) - Sendet den gesetzen Stein an den Server ('set y-Koordinate x-Koordinate
+;; 3. w=(won             ) - Neustart des Spiels
+;; 4. w=(lost            ) - Neustart des Spiels
+;; 5. w=(started         ) - Sendet Start aus Bild ('newbvgame) oder Start eines neuen Spiels ('newgame) an den Server, abhängig vom gewählten Spielstart
+;; 6. w=(setkilledblack  ) - Wird nicht von handle-mouse behandelt
+;; 7. w=(setkilledwhite  ) - Wird nicht von handle-mouse behandelt
+;; 8. w=(choosecolor     ) - Sendet die Farbwahl an den Server, für schwarz ('black) und für weiß ('white)
+;; 9. w=(choosepassstatus) - Sendet den Passstatus an den Server, wenn aus einem Bild gestartet wird
+;;10. w=(choosedraw      ) - Sendet die Zugreihenfolge an den Server, wenn aus einem Bild gestartet wird
+;;11. w=(choosehandicap  ) - Setzen der Vorgabe für Schwarz
 (define (handle-mouse name)
   (lambda (w x_pos y_pos mouse_event)
     (if(mouse=? mouse_event "button-up")
@@ -108,7 +112,14 @@
                   (make-package w 'black)
                   ;Wahl von Weiß
                   (make-package w 'white))]
-             ;Wahl der Zugreihenfolge
+             ;Wahl des Passstatus beim Start aus einem Bild
+             [(equal? (car w) 'choosepassstatus)
+              (if (< y_pos 200)
+                  ;Wahl von Schwarz
+                  (make-package w 'passed)
+                  ;Wahl von Weiß
+                  (make-package w 'notpassed))]
+             ;Wahl der Zugreihenfolge beim Start aus einem Bild
              [(equal? (car w) 'choosedraw)
               (if (< y_pos 200)
                   ;Wahl von Schwarz

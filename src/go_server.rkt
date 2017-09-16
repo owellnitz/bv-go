@@ -312,8 +312,8 @@
     ;;optionaler Funktionsverlauf:
     ;;Setzen der Spielerfarben (-1 schwarz und 1 weiß)
     ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
-    ;;neuer Serverstatus: 'choosedraw or 'sethandicap
-    ;;Nachricht für Client 1: 'choosedraw or 'choosehandicap
+    ;;neuer Serverstatus: 'choosepassstatus or 'sethandicap
+    ;;Nachricht für Client 1: 'choosepassstatus or 'choosehandicap
     ;;Nachricht für Client 2: 'wait
     [(and (or (equal? (current_state univ) 'newgame)
               (equal? (current_state univ) 'handicap))
@@ -325,9 +325,9 @@
        (if (equal? (current_state univ) 'newgame) ;;Spielstart ohne Vorgabe (z.B. aus BV)
            (make-bundle (list
                          (current_worlds univ)
-                         'choosedraw
+                         'choosepassstatus
                          (current_board univ) choosen_color (current_killed univ))
-                        (list (make-mail (world1 univ) (list 'choosedraw (current_board univ) (current_killed univ) 'passsatus))
+                        (list (make-mail (world1 univ) (list 'choosepassstatus (current_board univ) (current_killed univ) 'passsatus))
                               (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) 'passsatus)))
                         '())
            ;;Spielstart mit Vorgabe
@@ -340,7 +340,38 @@
                         '())
            ))]
 
-
+    ;;Eingabe des Passstatus nach Laden des Spielstandes aus einem Bild
+    ;;Der Spieler wählt ob im letzten Zug vor dem Bild gepasst wurde
+    ;;Abfrage des Status:
+    ;;current_state:  'choosepassstatus
+    ;;Message: 'passed or 'notpassed
+    ;;optionaler Funktionsverlauf:
+    ;;Nicht vorhanden
+    ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
+    ;;neuer Serverstatus: 'choosedraw
+    ;;Nachricht für Clienten
+    ;;Client 1: 'choosedraw
+    ;;Client 2: 'wait
+    [(and (equal? (current_state univ) 'choosepassstatus)
+          (or (equal? m 'passed)
+              (equal? m 'notpassed)))
+           (if (equal? m 'passed) ;;Es wurde gepasst.
+             (make-bundle (list
+                           (current_worlds univ)
+                           'choosedraw
+                           (current_board univ) (current_color univ) (current_killed univ) 'passed)
+                          (list (make-mail (world1 univ) (list 'choosedraw (current_board univ) (current_killed univ) 'passed))
+                                (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) 'passed)))
+                          '())
+             ;;Es wurde nicht gepasst
+             (make-bundle (list
+                           (current_worlds univ)
+                           'choosedraw
+                           (current_board univ) (current_color univ) (current_killed univ) 'passstatus)
+                          (list (make-mail (world1 univ) (list 'choosedraw (current_board univ) (current_killed univ) 'passstatus))
+                                (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) 'passstatus)))
+                          '()))]
+    
     ;;Eingabe der Zugreihenfolge nach Laden des Spielstandes aus einem Bild
     ;;Der Spieler wählt das Schwarz am Zug ist
     ;;Abfrage des Status:
@@ -359,16 +390,16 @@
              (make-bundle (list
                            (current_worlds univ)
                            'play
-                           (current_board univ) (current_color univ) (current_killed univ) 'passsatus)
-                          (list (make-mail (world1 univ) (list 'play (current_board univ) (current_killed univ) 'passsatus))
-                                (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) 'passsatus)))
+                           (current_board univ) (current_color univ) (current_killed univ) (sixth univ))
+                          (list (make-mail (world1 univ) (list 'play (current_board univ) (current_killed univ) (sixth univ)))
+                                (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) (sixth univ))))
                           '())
              (make-bundle (list
                            (reverse (current_worlds univ))
                            'play
-                           (current_board univ) (current_color univ) (current_killed univ) 'passsatus)
-                          (list (make-mail (world1 univ) (list 'wait (current_board univ) (current_killed univ) 'passstatus))
-                                (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ) 'passsatus)))
+                           (current_board univ) (current_color univ) (current_killed univ) (sixth univ))
+                          (list (make-mail (world1 univ) (list 'wait (current_board univ) (current_killed univ) (sixth univ)))
+                                (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ) (sixth univ))))
                           '()))]
 
     ;;Der Spieler wählt das Weiß am Zug ist
@@ -388,16 +419,16 @@
              (make-bundle (list
                            (current_worlds univ)
                            'play
-                           (current_board univ) (current_color univ) (current_killed univ) 'passsatus)
-                          (list (make-mail (world1 univ) (list 'play (current_board univ) (current_killed univ) 'passsatus))
-                                (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) 'passsatus)))
+                           (current_board univ) (current_color univ) (current_killed univ) (sixth univ))
+                          (list (make-mail (world1 univ) (list 'play (current_board univ) (current_killed univ) (sixth univ)))
+                                (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) (sixth univ))))
                           '())
              (make-bundle (list
                            (reverse (current_worlds univ))
                            'play
-                           (current_board univ) (current_color univ) (current_killed univ) 'passsatus)
-                          (list (make-mail (world1 univ) (list 'wait (current_board univ) (current_killed univ) 'passstatus))
-                                (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ) 'passsatus)))
+                           (current_board univ) (current_color univ) (current_killed univ) (sixth univ))
+                          (list (make-mail (world1 univ) (list 'wait (current_board univ) (current_killed univ) (sixth univ)))
+                                (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ) (sixth univ))))
                           '()))]
 
 
