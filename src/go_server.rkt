@@ -42,19 +42,7 @@
 
 ;;Repräsentation eines Universums
 ;; '((iworld_active iworld_inactive) status (make-list 19 (make-list 19 0) )
-;; 
-;;wobei status: 'wait
-;;Nachrichten an das Universum
-;; (universe world '(set 9)) --> trägt X in den Zustandsraum ein, 
-;;                                   informiert die andere Welt,
-;;                                   vertauscht active/inactive_world
-;; (universe world 'reset)   -->  nur möglich, falls (third universe) == 'finished, 
-;;                                startet ein neues Spiel
-;;                                vertauscht active/inactive_world
 
-
-;;Funktion, die herausfindet, ob jemand gewonnen hat
-;;TODO
 
 ;;Fügt eine neue Welt hinzu 
 (define (add-world univ wrld)
@@ -103,15 +91,24 @@
 (define (handle-messages univ wrld m)
   (cond 
     ;;Das Spiel gilt als beendet -> Anfrage eines Neustarts durch eine Welt
-    ;;TODO
-    [(and (equal? (current_state univ) 'finished) 
+        
+    ;;Abfrage des Status:
+    ;;current_state:  'result
+    ;;Message: 'restart
+    ;;optionaler Funktionsverlauf:
+    ;;nicht vorhanden
+    ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
+    ;;neuer Serverstatus: 'started
+    ;;Nachricht für Client 1: 'started 
+    ;;Nachricht für Client 2: 'wait
+    [(and (equal? (current_state univ) 'result) 
           (equal? m 'restart))
      (make-bundle (list
-                   (reverse (current_worlds univ))
-                   'play
+                   (current_worlds univ)
+                   'started
                    empty_board player_color killed_empty)
-                  (list (make-mail (world1 univ) (list 'wait empty_board (current_killed univ) 'passsatus))
-                        (make-mail (world2 univ) (list 'play empty_board (current_killed univ) 'passsatus)))
+                  (list (make-mail (world1 univ) (list 'started empty_board killed_empty 'passsatus))
+                        (make-mail (world2 univ)   (list 'wait empty_board killed_empty 'passsatus)))
                   '())]
     ;;Das Spiel startet -> Spieler wählt Spielstart als neues Spiel
     ;;Abfrage des Status:
@@ -146,24 +143,24 @@
     [(and (equal? (current_state univ) 'started)
           (equal? m 'newbvgame))
      (let* ([new_board '((0 0 0 0 0 -1 0 0 0 0 0 0 0 0 0 0 -1 0 0) 
-(0 -1 0 0 0 -1 0 0 0 0 0 0 0 0 0 0 -1 0 0) 
-(0 0 -1 -1 1 -1 0 0 0 0 0 0 0 0 0 0 -1 -1 0) 
-(0 0 1 1 -1 0 0 0 0 0 0 0 0 0 0 0 -1 -1 -1) 
-(-1 -1 -1 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1 -1 -1) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1 -1 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 -1 1) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 -1 1) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 0 0) 
-(1 1 1 0 0 0 0 0 0 0 0 1 0 -1 0 0 1 0 0) 
-(0 0 1 0 0 0 0 0 0 0 0 1 1 1 1 1 1 0 0) 
-(0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))]) ;bord-state
+                         (0 -1 0 0 0 -1 0 0 0 0 0 0 0 0 0 0 -1 0 0) 
+                         (0 0 -1 -1 1 -1 0 0 0 0 0 0 0 0 0 0 -1 -1 0) 
+                         (0 0 1 1 -1 0 0 0 0 0 0 0 0 0 0 0 -1 -1 -1) 
+                         (-1 -1 -1 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+                         (0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1 -1 -1) 
+                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1 0 0) 
+                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1 -1 0) 
+                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 -1 1) 
+                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 -1 1) 
+                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1) 
+                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+                         (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+                         (0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 0 0) 
+                         (1 1 1 0 0 0 0 0 0 0 0 1 0 -1 0 0 1 0 0) 
+                         (0 0 1 0 0 0 0 0 0 0 0 1 1 1 1 1 1 0 0) 
+                         (0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))]) ;bord-state
        (make-bundle (list
                      (current_worlds univ)
                      'setkilledblack
@@ -308,29 +305,29 @@
         
       
     ;;Farbwahl bei Spielstart
-    ;;Der Spieler wählt schwarz
+    ;;Der Spieler wählt seine Farbe und der Mitspieler erhält die verbliebende Farbe
     ;;Abfrage des Status:
     ;;current_state:  'newgame or 'handicap
-    ;;Message: 'black
+    ;;Message: 'black oder 'white
     ;;optionaler Funktionsverlauf:
-    ;;Setzen der Spielerfarbe auf schwarz
+    ;;Setzen der Spielerfarben (-1 schwarz und 1 weiß)
     ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
-    ;;neuer Serverstatus: 'play or 'sethandicap
-    ;;Nachricht für Client 1: 'play or 'choosehandicap
+    ;;neuer Serverstatus: 'choosepassstatus or 'sethandicap
+    ;;Nachricht für Client 1: 'choosepassstatus or 'choosehandicap
     ;;Nachricht für Client 2: 'wait
     [(and (or (equal? (current_state univ) 'newgame)
               (equal? (current_state univ) 'handicap))
           (or (equal? m 'black)
               (equal? m 'white)))
      (let* ([choosen_color (if (equal? m 'black)
-                               (list (iworld-name (world1 univ)) -1 (iworld-name (world2 univ)) 1)
-                               (list (iworld-name (world2 univ)) -1 (iworld-name (world1 univ)) 1))])
+                               (list (iworld-name (world1 univ)) -1 (iworld-name (world2 univ)) 1) ;;Schwarz gewählt
+                               (list (iworld-name (world2 univ)) -1 (iworld-name (world1 univ)) 1))]) ;;Weiß gewählt
        (if (equal? (current_state univ) 'newgame) ;;Spielstart ohne Vorgabe (z.B. aus BV)
            (make-bundle (list
                          (current_worlds univ)
-                         'choosedraw
+                         'choosepassstatus
                          (current_board univ) choosen_color (current_killed univ))
-                        (list (make-mail (world1 univ) (list 'choosedraw (current_board univ) (current_killed univ) 'passsatus))
+                        (list (make-mail (world1 univ) (list 'choosepassstatus (current_board univ) (current_killed univ) 'passsatus))
                               (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) 'passsatus)))
                         '())
            ;;Spielstart mit Vorgabe
@@ -343,77 +340,129 @@
                         '())
            ))]
 
-    ;;Der Spieler wählt weiß
+    ;;Eingabe des Passstatus nach Laden des Spielstandes aus einem Bild
+    ;;Der Spieler wählt ob im letzten Zug vor dem Bild gepasst wurde
     ;;Abfrage des Status:
-    ;;current_state:  'newgame or 'handicap
-    ;;Message: 'white
+    ;;current_state:  'choosepassstatus
+    ;;Message: 'passed or 'notpassed
     ;;optionaler Funktionsverlauf:
-    ;;Setzen der Spielerfarbe auf weiß
+    ;;Nicht vorhanden
     ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
-    ;;neuer Serverstatus: 'play or 'sethandicap
-    ;;Nachricht für Client 1: 'wait
-    ;;Nachricht für Client 2:'play or 'choosehandicap
-    [(and (or (equal? (current_state univ) 'newgame)
-              (equal? (current_state univ) 'handicap)) 
-          (equal? m 'white))
-     (let* ([choosen_color (list (iworld-name (world2 univ)) -1 (iworld-name (world1 univ)) 1)])
-       (if (equal? (current_state univ) 'newgame) ;;Spielstart ohne Vorgabe (z.B. aus BV)
-           (make-bundle (list
-                         (reverse (current_worlds univ))
-                         'play
-                         (current_board univ) choosen_color (current_killed univ))
-                        (list (make-mail (world1 univ) (list 'wait (current_board univ) (current_killed univ) 'passsatus))
-                              (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ) 'passsatus)))
-                        '())
-           ;;Spielstart mit Vorgabe
-           (make-bundle (list
-                         (current_worlds univ)
-                         'sethandicap
-                         (current_board univ) choosen_color (current_killed univ) 'handicap)
-                        (list (make-mail (world1 univ) (list 'choosehandicap (current_board univ) (current_killed univ) 'handicap))
-                              (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) 'passsatus)))
-                        '())
-           ))]
-
-
-    ;;Eingabe der Zugreihenfolge
-    ;;Schwarz ist am Zug
+    ;;neuer Serverstatus: 'choosedraw
+    ;;Nachricht für Clienten
+    ;;Client 1: 'choosedraw
+    ;;Client 2: 'wait
+    [(and (equal? (current_state univ) 'choosepassstatus)
+          (or (equal? m 'passed)
+              (equal? m 'notpassed)))
+     (if (equal? m 'passed) ;;Es wurde gepasst.
+         (make-bundle (list
+                       (current_worlds univ)
+                       'choosedraw
+                       (current_board univ) (current_color univ) (current_killed univ) 'passed)
+                      (list (make-mail (world1 univ) (list 'choosedraw (current_board univ) (current_killed univ) 'passed))
+                            (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) 'passed)))
+                      '())
+         ;;Es wurde nicht gepasst
+         (make-bundle (list
+                       (current_worlds univ)
+                       'choosedraw
+                       (current_board univ) (current_color univ) (current_killed univ) 'passstatus)
+                      (list (make-mail (world1 univ) (list 'choosedraw (current_board univ) (current_killed univ) 'passstatus))
+                            (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) 'passstatus)))
+                      '()))]
+    
+    ;;Eingabe der Zugreihenfolge nach Laden des Spielstandes aus einem Bild
+    ;;Der Spieler wählt das Schwarz am Zug ist
+    ;;Abfrage des Status:
+    ;;current_state:  'choosedraw
+    ;;Message: 'black
+    ;;optionaler Funktionsverlauf:
+    ;;Nicht vorhanden
+    ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
+    ;;neuer Serverstatus: 'play
+    ;;Nachricht für Clienten abhängig von der Farbwahl
+    ;;Client mit Spielfarbe "schwarz": 'play
+    ;;Client mit Spielfarbe "weiß": 'wait
     [(and (equal? (current_state univ) 'choosedraw)
           (equal? m 'black))
-           (if (equal? (get-color univ (iworld-name wrld)) -1) 
+     (if (equal? (get-color univ (iworld-name wrld)) -1) ;;Prüfen ob aktive Welt die Farbe schwarz hat und am Zug ist.
+         (if (equal? (sixth univ) 'passed) ;;Prüfen ob mit aktivem Passstatus gestartet wird
+             (make-bundle (list
+                           (current_worlds univ)
+                           'passed
+                           (current_board univ) (current_color univ) (current_killed univ) (sixth univ))
+                          (list (make-mail (world1 univ) (list 'play (current_board univ) (current_killed univ) (sixth univ)))
+                                (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) (sixth univ))))
+                          '())
+                   
              (make-bundle (list
                            (current_worlds univ)
                            'play
-                           (current_board univ) (current_color univ) (current_killed univ) 'passsatus)
-                          (list (make-mail (world1 univ) (list 'play (current_board univ) (current_killed univ) 'passsatus))
-                                (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) 'passsatus)))
-                          '())
-             (make-bundle (list
-                           (reverse (current_worlds univ))
-                           'play
-                           (current_board univ) (current_color univ) (current_killed univ) 'passsatus)
-                          (list (make-mail (world1 univ) (list 'wait (current_board univ) (current_killed univ) 'passstatus))
-                                (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ) 'passsatus)))
-                          '()))]
+                           (current_board univ) (current_color univ) (current_killed univ) (sixth univ))
+                          (list (make-mail (world1 univ) (list 'play (current_board univ) (current_killed univ) (sixth univ)))
+                                (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) (sixth univ))))
+                          '()))
+         (if (equal? (sixth univ) 'passed) ;;Prüfen ob mit aktivem Passstatus gestartet wird
+         (make-bundle (list
+                       (reverse (current_worlds univ))
+                       'passed
+                       (current_board univ) (current_color univ) (current_killed univ) (sixth univ))
+                      (list (make-mail (world1 univ) (list 'wait (current_board univ) (current_killed univ) (sixth univ)))
+                            (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ) (sixth univ))))
+                      '())
+         (make-bundle (list
+                       (reverse (current_worlds univ))
+                       'play
+                       (current_board univ) (current_color univ) (current_killed univ) (sixth univ))
+                      (list (make-mail (world1 univ) (list 'wait (current_board univ) (current_killed univ) (sixth univ)))
+                            (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ) (sixth univ))))
+                      '())))]
 
-    ;;Weiß ist am Zug
+    ;;Der Spieler wählt das Weiß am Zug ist
+    ;;Abfrage des Status:
+    ;;current_state:  'choosedraw
+    ;;Message: 'white
+    ;;optionaler Funktionsverlauf:
+    ;;Nicht vorhanden
+    ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
+    ;;neuer Serverstatus: 'play
+    ;;Nachricht für Clienten abhängig von der Farbwahl
+    ;;Client mit Spielfarbe "schwarz": 'wait
+    ;;Client mit Spielfarbe "weiß": 'play
     [(and (equal? (current_state univ) 'choosedraw)
           (equal? m 'white))
-           (if (equal? (get-color univ (iworld-name wrld)) 1) 
+     (if (equal? (get-color univ (iworld-name wrld)) 1) ;;Prüfung ob aktive Welt die Farbe Weiß hat.
+         (if (equal? (sixth univ) 'passed) ;;Prüfen ob mit aktivem Passstatus gestartet wird
+             (make-bundle (list
+                           (current_worlds univ)
+                           'passed
+                           (current_board univ) (current_color univ) (current_killed univ) (sixth univ))
+                          (list (make-mail (world1 univ) (list 'play (current_board univ) (current_killed univ) (sixth univ)))
+                                (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) (sixth univ))))
+                          '())
              (make-bundle (list
                            (current_worlds univ)
                            'play
-                           (current_board univ) (current_color univ) (current_killed univ) 'passsatus)
-                          (list (make-mail (world1 univ) (list 'play (current_board univ) (current_killed univ) 'passsatus))
-                                (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) 'passsatus)))
+                           (current_board univ) (current_color univ) (current_killed univ) (sixth univ))
+                          (list (make-mail (world1 univ) (list 'play (current_board univ) (current_killed univ) (sixth univ)))
+                                (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) (sixth univ))))
+                          '()))
+         (if (equal? (sixth univ) 'passed) ;;Prüfen ob mit aktivem Passstatus gestartet wird
+             (make-bundle (list
+                           (reverse (current_worlds univ))
+                           'passed
+                           (current_board univ) (current_color univ) (current_killed univ) (sixth univ))
+                          (list (make-mail (world1 univ) (list 'wait (current_board univ) (current_killed univ) (sixth univ)))
+                                (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ) (sixth univ))))
                           '())
              (make-bundle (list
                            (reverse (current_worlds univ))
                            'play
-                           (current_board univ) (current_color univ) (current_killed univ) 'passsatus)
-                          (list (make-mail (world1 univ) (list 'wait (current_board univ) (current_killed univ) 'passstatus))
-                                (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ) 'passsatus)))
-                          '()))]
+                           (current_board univ) (current_color univ) (current_killed univ) (sixth univ))
+                          (list (make-mail (world1 univ) (list 'wait (current_board univ) (current_killed univ) (sixth univ)))
+                                (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ) (sixth univ))))
+                          '())))]
 
 
     
@@ -579,19 +628,45 @@
     ;;TODO Auswertung
     ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
     ;;neuer Serverstatus: 'result
-    ;;Nachricht für Client 1: 'result
-    ;;Nachricht für Client 2: 'result
+    ;;Nachrichten an Clienten abhängig welche Farbe gewonnen hat und welche Farbe der aktive Client hat.
     [(and (equal? (current_state univ) 'passed) 
           (equal? m 'passed))
      ;;ToDO Auswertung
-     (let* ((final_score (calc-score (current_board univ))))
-     (make-bundle (list
-                   (current_worlds univ)
-                   'result
-                   (current_board univ) (current_color univ) (current_killed univ))
-                  (list (make-mail (world1 univ) (list 'result (current_board univ) (current_killed univ)  'passed))
-                        (make-mail (world2 univ) (list 'result (current_board univ) (current_killed univ)  'passed)))
-                  '()))]
+     (let* ((final_score (current_killed univ)));Test(calc-score (current_board univ))))
+       (if (< (car final_score) (cadr final_score))  ;;Schwarz hat gewonnen
+           (if (equal? (get-color univ (iworld-name wrld)) -1) ;;Aktive Welt ist schwarz
+               (make-bundle (list
+                             (current_worlds univ)
+                             'result
+                             (current_board univ) (current_color univ) (current_killed univ))
+                            (list (make-mail (world1 univ) (list 'won (current_board univ) (current_killed univ)  'passed))
+                                  (make-mail (world2 univ) (list 'lost (current_board univ) (current_killed univ)  'passed)))
+                            '())
+               ;;Schwarz hat gewonnen und aktive Welt ist weiß
+               (make-bundle (list
+                             (current_worlds univ)
+                             'result
+                             (current_board univ) (current_color univ) (current_killed univ))
+                            (list (make-mail (world1 univ) (list 'lost (current_board univ) (current_killed univ)  'passed))
+                                  (make-mail (world2 univ) (list 'won (current_board univ) (current_killed univ)  'passed)))
+                            '()))
+           ;;Weiß hat gewonnen
+           (if (equal? (get-color univ (iworld-name wrld)) 1) ;;Aktive Welt ist weiß
+               (make-bundle (list
+                             (current_worlds univ)
+                             'result
+                             (current_board univ) (current_color univ) (current_killed univ))
+                            (list (make-mail (world1 univ) (list 'won (current_board univ) (current_killed univ)  'passed))
+                                  (make-mail (world2 univ) (list 'lost (current_board univ) (current_killed univ)  'passed)))
+                            '())
+               ;;Weiß hat gewonnen und aktive Welt ist schwarz
+               (make-bundle (list
+                             (current_worlds univ)
+                             'result
+                             (current_board univ) (current_color univ) (current_killed univ))
+                            (list (make-mail (world1 univ) (list 'lost (current_board univ) (current_killed univ)  'passed))
+                                  (make-mail (world2 univ) (list 'won (current_board univ) (current_killed univ)  'passed)))
+                            '()))))]
     ;;Sonstige Anfragen verändern das Universum nicht
     [else (make-bundle univ '() '())]))
 
@@ -604,10 +679,10 @@
   (let* ((inc_X (+ 1 x))
          (new_X (if (= inc_X 19) 0 inc_X))
          (new_Y (if (= inc_X 19) (+ y 1) y)))
-  (if (and (= x 0) (= y 19))
-      conq_Positions
-      (find-empty-position board new_X new_Y neutral_Positions conq_Positions)
-      ))
+    (if (and (= x 0) (= y 19))
+        conq_Positions
+        (find-empty-position board new_X new_Y neutral_Positions conq_Positions)
+        ))
   )
 
 ;;Erschafft ein Universum

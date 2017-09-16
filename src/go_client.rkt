@@ -54,6 +54,9 @@
       ;;Wahl der Zugreihenfolge bei Start aus BV
       [(equal? (car w) 'choosedraw)
        choose-draworder-field]
+      ;;Wahl des Passstatus bei Start aus BV
+      [(equal? (car w) 'choosepassstatus)
+       choose-passstatus]
       ;;Eingabe der Vorgabe
       [(equal? (car w) 'choosehandicap)
        (choose-handicap (fourth w))]
@@ -61,8 +64,9 @@
       [(equal? (car w) 'usehandicap)
        (set-handicap w)]
       ;;Auswertung
-      [(equal? (car w) 'result)
-       result-field]
+      [(or (equal? (car w) 'won)
+           (equal? (car w) 'lost))
+       (draw-final-score w)]
       ;;Sonst wird normal gespielt
       [else
        (draw-board-with-score w)])))
@@ -70,26 +74,30 @@
 
 ;;Maus-Interaktionen, Restart noch unverändert.
 ;;Funktion abhängig vom Zustand
-;; 1. w=(wait          ) - Welt wird nicht verändert
-;; 2. w=(play          ) - Sendet den gesetzen Stein an den Server ('set y-Koordinate x-Koordinate
-;; 3. w=(won           ) - ToDO
-;; 4. w=(lost          ) - ToDO
-;; 5. w=(remis         ) - ToDO
-;; 6. w=(started       ) - Sendet Start aus Bild ('newbvgame) oder Start eines neuen Spiels ('newgame) an den Server, abhängig vom gewählten Spielstart
-;; 7. w=(setkilledblack) - Wird nicht von handle-mouse behandelt
-;; 8. w=(setkilledwhite) - Wird nicht von handle-mouse behandelt
-;; 9. w=(choosecolor   ) - Sendet die Farbwahl an den Server, für schwarz ('black) und für weiß ('white)
-;;10. w=(choosehandicap) - Setzen der Vorgabe für Schwarz
+;; 1. w=(wait            ) - Welt wird nicht verändert
+;; 2. w=(play            ) - Sendet den gesetzen Stein an den Server ('set y-Koordinate x-Koordinate
+;; 3. w=(won             ) - Neustart des Spiels
+;; 4. w=(lost            ) - Neustart des Spiels
+;; 5. w=(started         ) - Sendet Start aus Bild ('newbvgame) oder Start eines neuen Spiels ('newgame) an den Server, abhängig vom gewählten Spielstart
+;; 6. w=(setkilledblack  ) - Wird nicht von handle-mouse behandelt
+;; 7. w=(setkilledwhite  ) - Wird nicht von handle-mouse behandelt
+;; 8. w=(choosecolor     ) - Sendet die Farbwahl an den Server, für schwarz ('black) und für weiß ('white)
+;; 9. w=(choosepassstatus) - Sendet den Passstatus an den Server, wenn aus einem Bild gestartet wird
+;;10. w=(choosedraw      ) - Sendet die Zugreihenfolge an den Server, wenn aus einem Bild gestartet wird
+;;11. w=(choosehandicap  ) - Setzen der Vorgabe für Schwarz
 (define (handle-mouse name)
   (lambda (w x_pos y_pos mouse_event)
     (if(mouse=? mouse_event "button-up")
        (if (not (equal? (car w) 'wait))
            (cond
-             ;Restartzeug
-             [(or (equal? (car w) 'won)
-                  (equal? (car w) 'lost)
-                  (equal? (car w) 'remis))
-              (make-package w 'restart)]
+             ;Restart nach ausgewertetem Spiel
+             [(and (or (equal? (car w) 'won)
+                      (equal? (car w) 'lost))
+                  (> y_pos 400)
+                  (< y_pos 450)
+                  (> x_pos 400)
+                  (< x_pos 500))
+                        (make-package w 'restart)]
              ;Start aus BV oder neues Spiel
              [(equal? (car w) 'started)
               (if (< y_pos 200)
@@ -104,7 +112,14 @@
                   (make-package w 'black)
                   ;Wahl von Weiß
                   (make-package w 'white))]
-             ;Wahl der Zugreihenfolge
+             ;Wahl des Passstatus beim Start aus einem Bild
+             [(equal? (car w) 'choosepassstatus)
+              (if (< y_pos 200)
+                  ;Wahl von Schwarz
+                  (make-package w 'passed)
+                  ;Wahl von Weiß
+                  (make-package w 'notpassed))]
+             ;Wahl der Zugreihenfolge beim Start aus einem Bild
              [(equal? (car w) 'choosedraw)
               (if (< y_pos 200)
                   ;Wahl von Schwarz
