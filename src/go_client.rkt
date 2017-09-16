@@ -86,11 +86,14 @@
     (if(mouse=? mouse_event "button-up")
        (if (not (equal? (car w) 'wait))
            (cond
-             ;Restartzeug
-             [(or (equal? (car w) 'won)
-                  (equal? (car w) 'lost)
-                  (equal? (car w) 'remis))
-              (make-package w 'restart)]
+             ;Restart nach ausgewertetem Spiel
+             [(and (or (equal? (car w) 'won)
+                      (equal? (car w) 'lost))
+                  (> y_pos 400)
+                  (< y_pos 450)
+                  (> x_pos 400)
+                  (< x_pos 500))
+                        (make-package w 'restart)]
              ;Start aus BV oder neues Spiel
              [(equal? (car w) 'started)
               (if (< y_pos 200)

@@ -42,19 +42,7 @@
 
 ;;Repräsentation eines Universums
 ;; '((iworld_active iworld_inactive) status (make-list 19 (make-list 19 0) )
-;; 
-;;wobei status: 'wait
-;;Nachrichten an das Universum
-;; (universe world '(set 9)) --> trägt X in den Zustandsraum ein, 
-;;                                   informiert die andere Welt,
-;;                                   vertauscht active/inactive_world
-;; (universe world 'reset)   -->  nur möglich, falls (third universe) == 'finished, 
-;;                                startet ein neues Spiel
-;;                                vertauscht active/inactive_world
 
-
-;;Funktion, die herausfindet, ob jemand gewonnen hat
-;;TODO
 
 ;;Fügt eine neue Welt hinzu 
 (define (add-world univ wrld)
@@ -103,15 +91,24 @@
 (define (handle-messages univ wrld m)
   (cond 
     ;;Das Spiel gilt als beendet -> Anfrage eines Neustarts durch eine Welt
-    ;;TODO
-    [(and (equal? (current_state univ) 'finished) 
+        
+    ;;Abfrage des Status:
+    ;;current_state:  'result
+    ;;Message: 'restart
+    ;;optionaler Funktionsverlauf:
+    ;;nicht vorhanden
+    ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
+    ;;neuer Serverstatus: 'started
+    ;;Nachricht für Client 1: 'started 
+    ;;Nachricht für Client 2: 'wait
+    [(and (equal? (current_state univ) 'result) 
           (equal? m 'restart))
      (make-bundle (list
-                   (reverse (current_worlds univ))
-                   'play
+                   (current_worlds univ)
+                   'started
                    empty_board player_color killed_empty)
-                  (list (make-mail (world1 univ) (list 'wait empty_board (current_killed univ) 'passsatus))
-                        (make-mail (world2 univ) (list 'play empty_board (current_killed univ) 'passsatus)))
+                  (list (make-mail (world1 univ) (list 'started empty_board killed_empty 'passsatus))
+                        (make-mail (world2 univ)   (list 'wait empty_board killed_empty 'passsatus)))
                   '())]
     ;;Das Spiel startet -> Spieler wählt Spielstart als neues Spiel
     ;;Abfrage des Status:
@@ -567,8 +564,7 @@
     ;;TODO Auswertung
     ;;Anpassen des Servers und versenden der Informationen an die Clients mit make-bundle
     ;;neuer Serverstatus: 'result
-    ;;Nachricht für Client 1: 'result
-    ;;Nachricht für Client 2: 'result
+    ;;Nachrichten an Clienten abhängig welche Farbe gewonnen hat und welche Farbe der aktive Client hat.
     [(and (equal? (current_state univ) 'passed) 
           (equal? m 'passed))
      ;;ToDO Auswertung
