@@ -63,11 +63,11 @@
             [new_board (cdr new_board_state)];;Spielbrett nach entfernen der geschlagenen Steine
             [killed_stones (cond
                                [(= 0 (car new_board_state))
-                               (current_killed univ)]
+                                (current_killed univ)]
                                [(equal? 1 (get-color univ (iworld-name wrld)));;Geschlagene Steine im Spielzug
-                               (list (+ (car new_board_state) (car (current_killed univ))) (cadr (current_killed univ)))]
+                                (list (+ (car new_board_state) (car (current_killed univ))) (cadr (current_killed univ)))]
                                [(equal? -1 (get-color univ (iworld-name wrld)))
-                               (list (car (current_killed univ))(+ (car new_board_state) (cadr (current_killed univ))))]
+                                (list (car (current_killed univ))(+ (car new_board_state) (cadr (current_killed univ))))]
                                )])
        ;;Senden des geänderten Spielbretts
        (make-bundle (list
@@ -360,11 +360,31 @@
 ;;
 (define (calc-points points last_area board player-won)
   (let ((area-points (length last_area))
-        (killed-stones (car (find-freedoms board player-won '() last_area))))
+        (killed-stones (count-killed-stones-in-area board last_area player-won 0)))
         (+ points
            area-points
-           0))
+           killed-stones))
   )
+
+(define (count-killed-stones-in-area board empty_area player result)
+  (if (empty? empty_area)
+      result
+      (let ((new-board (find-freedoms (set-stone board (caar empty_area) (cdar empty_area) player)
+                                      player
+                                      '()
+                                      (find-opposing-stones
+                                       (set-stone board (caar empty_area) (cdar empty_area) player)
+                                       (caar empty_area) (cdar empty_area)
+                                       player
+                                       route-list '()))))
+        (count-killed-stones-in-area (cdr new-board)
+                                     (cdr empty_area)
+                                     player
+                                     (+ (car new-board)
+                                        result))
+        )
+      ))
+
 
 ;;Prüft wer die übergebene Fläche gewonnen hat.
 ;;Wenn beide Spieler die Fläche voll besetzten durften, handelt es sich um eine neutrale Fläche.
@@ -406,8 +426,12 @@
       (let ((result (if (= (length empty_area) 1)
                         (check-turn-board board player (caar empty_area) (cdar empty_area));;letzten beiden Paramenter sind y, x
                         #t )))
-      (if result 
-          (set-empty-area (set-stone board (caar empty_area) (cdar empty_area) player) (cdr empty_area) player result)
+      (if result
+          (let ((new-board (set-stone board (caar empty_area) (cdar empty_area) player)))
+          (set-empty-area new-board
+                          (cdr empty_area)
+                          player
+                          result))
           (set-empty-area board (cdr empty_area) player result)
           )
       ))
@@ -553,7 +577,7 @@
 (0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)))
 
 (define board3 '(
-(1 0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0) 
+(-1 0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0) 
 (0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0) 
 (1 1 1 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0) 
 (0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0) 
