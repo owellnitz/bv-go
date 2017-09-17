@@ -201,7 +201,7 @@
     (free? (check-coordinate board x y player proof proofed route-list)))
   (if (equal? free? 'free)
       '()
-      (check-freedom-path board player (cons (cons y x) proofed) (cdr free?)))
+      (check-freedom-path board player (cons (cons y x) proofed) (remove-list proofed (cdr free?))))
     )
   ))
 
@@ -342,19 +342,29 @@
 (define (check-all-empty-areas board empty_areas last_area player-list player-won points)
   (let ((new_points
            (cond
-             [(eqv? player-won -1) (cons (+ (car points)
-                                            (length last_area)
-                                            (car (find-freedoms board player-won '() last_area)))
+             [(eqv? player-won -1) (cons (calc-points (car points) last_area board player-won)
                                          (cdr points))]
              [(eqv? player-won 1)  (cons (car points)
-                                   (+ (cdr points)
-                                      (length last_area)
-                                      (car (find-freedoms board player-won '() last_area))))]
+                                         (calc-points (cdr points) last_area board player-won))]
              [else points])))
   (cond
     [(empty? empty_areas) new_points]
-    [else (check-all-empty-areas board (cdr empty_areas) (car empty_areas) player-list (check-empty-area-for-each-player board (car empty_areas) player-list #t) new_points)]
+    [else (check-all-empty-areas board
+                                 (cdr empty_areas)
+                                 (car empty_areas)
+                                 player-list
+                                 (check-empty-area-for-each-player board (car empty_areas) player-list #t)
+                                 new_points)]
   )))
+
+;;
+(define (calc-points points last_area board player-won)
+  (let ((area-points (length last_area))
+        (killed-stones (car (find-freedoms board player-won '() last_area))))
+        (+ points
+           area-points
+           0))
+  )
 
 ;;Prüft wer die übergebene Fläche gewonnen hat.
 ;;Wenn beide Spieler die Fläche voll besetzten durften, handelt es sich um eine neutrale Fläche.
@@ -521,7 +531,8 @@
       )
   )
 
-(define board1 '((0 0 0 0 0 -1 0 0 0 0 0 0 0 0 0 0 -1 0 0) 
+(define board1 '(
+(0 0 0 0 0 -1 0 0 0 0 0 0 0 0 0 0 -1 0 0) 
 (0 -1 0 0 0 -1 0 0 0 0 0 0 0 0 0 0 -1 0 0) 
 (0 0 -1 -1 1 -1 0 0 0 0 0 0 0 0 0 0 -1 -1 0) 
 (0 0 1 1 -1 0 0 0 0 0 0 0 0 0 0 0 -1 -1 -1) 
@@ -541,7 +552,12 @@
 (0 0 1 0 0 0 0 0 0 0 0 1 1 1 1 1 1 0 0) 
 (0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)))
 
-(define board2 '(
+(define board3 '(
+(1 0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0) 
+(0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0) 
+(1 1 1 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0) 
 (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
 (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
 (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
@@ -553,11 +569,6 @@
 (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
 (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
 (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0)))
+(-1 -1 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)))
