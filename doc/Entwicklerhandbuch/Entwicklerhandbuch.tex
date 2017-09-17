@@ -73,7 +73,7 @@ Der Spielserver leitet das Spiel. Zu Beginn erh"alt der Server die Information, 
 Eine weitere Aufgabe w"ahrend des gesamten Spieles ist die Verwaltung des Spielstandes (\ref{sec:World}) und welcher Spieler am Zug ist. Ebenfalls pr"uft der Server die "ubermittelten Spielz"uge der Spieler auf ihre G"ultigkeit und teilt den Spielern ggf. mit, dass der Spielzug nicht zul"assig ist. Bei zul"assigen Z"ugen passt der Server den Spielstand (\ref{sec:World}) an und "ubermittelt den vollst"andig erstellten Spielstand an die Clients.\\\\ 
 Nach Beendigung eines Spieles, ermittelt der Server den Gewinner und teilt den Spielern (Clients) den Gewinner mit.
 
-\section{Spielserver (go\_logic.rkt)}
+\section{Spiellogik (go\_logic.rkt)}
 In dem Modul go\_logic.rkt ist die Spiellogik implementiert. Diese kann in drei verschieden Aufgaben unterteil werden.
 
 \begin{enumerate}
@@ -81,31 +81,75 @@ In dem Modul go\_logic.rkt ist die Spiellogik implementiert. Diese kann in drei 
 Wenn bei dem Start eines neuen Spiels eine Vorgabe gew"ahrt wird, kann der Spieler vor Spielbeginn die angegebene Anzahl Steine setzen.
 
 \item Stein setzen:\\
-Wenn ein Stein gesetzt wird, muss gepr"uft werden, dass dieser keinen Selbstmord begeht (Abb. ). Das w"urde bedeuten, dass dieser Stein und ggf. seine anliegende Struktur durch das Setzen dieses Steines zerst"ort wird.
+Wenn ein Stein gesetzt wird, muss gepr"uft werden, dass dieser keinen Selbstmord begeht (Abb. 1.7). Das w"urde bedeuten, dass dieser Stein und ggf. seine anliegende Struktur durch das Setzen dieses Steines zerst"ort wird.
 
-Dieser Zug ist nur erlaubt, wenn mit diesem Zug Steine des Gegners geschlagen werden und so der Stein und ggf. seine Struktur neue Freiheiten erhalten (Abb. ).
+\begin{figure}[ht]
+\centering \includegraphics[width=0.3\textwidth]{images/Selbstmord}
+\caption{Selbstmord - Wei"ser Stein darf nicht gesetzt werden}
+\end{figure}
+
+Dieser Zug ist nur erlaubt, wenn mit diesem Zug Steine des Gegners geschlagen werden und so der Stein und ggf. seine Struktur neue Freiheiten erhalten.
 
 Wenn ein Stein normal gesetzt wird, kann das Setzen zur Folge haben, dass durch diesen Zug eine Struktur des Gegners zerst"ort wird. Wenn dieser Fall eintritt m"ussen alle geschlagenen Steine von dem Spielfeld entfernt werden und die Punkte werden dem Spieler gut geschrieben.
+\begin{figure}[ht]
+\centering \includegraphics[width=0.3\textwidth]{images/Vor-Kill}
+\caption{Spielbrett vor dem Schlagen des Steines}
+\end{figure}
 
+\begin{figure}[ht]
+\centering \includegraphics[width=0.3\textwidth]{images/Nach-Kill}
+\caption{Spielbrett nach dem Schlagen des Steines}
+\end{figure}
 \item Auswertung:\\
-Nachdem beide Spieler nacheinander gepasst haben, ist das Spiel beendet. Dann startet die Auswertung. Bei der Auswertung m"ussen eroberte Gebiete gefunden werden. Das sind Fl"achen auf denen kein Stein liegt, die aber von einem Spieler eingeschlossen sind. Wenn ein Spieler eine freie Fl"ache erobert hat, erh"alt dieser die Anzahl an freien Positionen sowie die Anzahl der gegnerischen Steine in diesem Gebiet. Ein erobertes Gebiet ist in Abb. zu sehen. Nachdem alle Fl"achen "uberpr"uft sind, wird die Anzahl der erzielten Punkte auf die bereits erzielten Punkte aufaddiert. 
+Nachdem beide Spieler nacheinander gepasst haben, ist das Spiel beendet. Dann startet die Auswertung. Bei der Auswertung m"ussen eroberte Gebiete gefunden werden. Das sind Fl"achen auf denen kein Stein liegt, die aber von einem Spieler eingeschlossen sind. Wenn ein Spieler eine freie Fl"ache erobert hat, erh"alt dieser die Anzahl an freien Positionen sowie die Anzahl der gegnerischen Steine in diesem Gebiet. Ein erobertes Gebiet ist in Abb. zu sehen. Nachdem alle Fl"achen "uberpr"uft sind, wird die Anzahl der erzielten Punkte auf die bereits erzielten Punkte aufaddiert.
+
+\begin{figure}[ht]
+\centering \includegraphics[width=0.3\textwidth]{images/Gebiet}
+\caption{Gebiet von Schwarz eingenommen - 13 freie Fl"achen + 3 geschlagene wei"se Steine}
+\end{figure}
 
 \end{enumerate}
-
 Diese drei Hauptaufgaben k"onnen "uber Schnittstellen ausgef"uhrt werden. "Anderungen in der Spiellogik bzw. Erweiterungen sind demzufolge in diesem Modul zu erledigen.
 
  \chapter{Schnittstellen}
  \section{Bildverarbeitung}
 \begin{enumerate}
-\item (read-board path):\\
-Das Modul bietet eine Funktion, um die Belegung des Spielfeldes auszulesen. An diese Funktion wird der Dateipfad des Bildes "ubergeben und anschlie"send liefert diese die Belegung des Spielfeldes, wie in \ref{sec:Spielfeld} beschrieben, zur"uck.
+\item (board-state):\\
+Das Modul bietet diese Funktion, um die Belegung eines Spielfeldes aus einem Bild heraus auszulesen. Der Dateipfad des Bildes ist in dem Modul selbst hinterlegt. Durch den Aufruf liefert die Funktion die Belegung des Spielfeldes, wie in \ref{sec:Spielfeld} beschrieben, zur"uck.
 \end{enumerate}
 
 \section{Spielbrett zeichnen}
 
 \begin{enumerate}
-\item (draw-board-with-score game\_score):\\
-Die Funktion zeichnet ein Spielbrett anhand eines in \ref{sec:Spielfeld} definierten Spielfeldes. An diese Funktion wird die Belegung des Spielfeldes "ubergeben und als gezeichnetes Spielfeld mit Belegung zur"uckgeliefert. 
+\item (draw-board-with-score world):\\
+Die Funktion zeichnet das User-Interface w"ahrend des Spieles. Dazu geh"oren das Spielfeld mit der aktuellen Belegung, Anzahl der geschlagenen Steine, welcher Spieler am Zug ist, Passstatus des Gegners sowie ein Button zum Passen oder nach der Auswertung f"ur den Start eines neuen Spieles. Auf dem Spielfeld kann anschlie"send auf die gew"unschte Stelle f"ur einen Steine ausgew"ahlt werden, der Client verarbeitet diese Eingabe und schickt sie zu dem Server.
+
+\item (start-field):\\
+Diese Funktion zeichnet das User-Interface f"ur die Auswahl, ob eine Datei aus der Bilddatei gestartet werden soll oder ob ein komplett neues Spiel gestartet wird. Dazu werden zwei Auswahlbereiche gezeichnet, die der Benutzer per Mausklick ausw"ahlen kann.
+
+\item (choose-color-field):\\
+Diese Funktion zeichnet das User-Interface f"ur die Auswahl, mit welcher der ausw"ahlende Spieler spielt. Dazu werden zwei Auswahlbereiche gezeichnet, die der Benutzer per Mausklick ausw"ahlen kann.
+
+\item (choose-killed-black-stones killed-stones):\\
+Diese Funktion zeichnet das User-Interface f"ur die Eingabe, wie viele schwarze Steine bereits geschlagen worden sind. Dazu wird ein Infotext sowie eine Eingabeanzeige gezeichnet. Die Eingabe erfolgt per Tastatur. Nach jeder Eingabe wird die Anzeige aktualisiert.
+
+\item (choose-killed-white-stones killed-stones):\\
+Diese Funktion zeichnet das User-Interface f"ur die Eingabe, wie viele wei"se Steine bereits geschlagen worden sind. Dazu wird ein Infotext sowie eine Eingabeanzeige gezeichnet. Die Eingabe erfolgt per Tastatur. Nach jeder Eingabe wird die Anzeige aktualisiert.
+
+\item (draw-final-score world):\\
+Diese Funktion zeigt den Gewinner sowie erreichte Punktzahl beider Spieler an.
+
+\item (choose-handicap handicap):\\
+Diese Funktion zeichnet das User-Interface f"ur die Eingabe, wie viele Steine ein Spieler als Vorlage legen darf. Dazu wird ein Infotext sowie eine Eingabeanzeige gezeichnet. Die Eingabe erfolgt per Tastatur. Nach jeder Eingabe wird die Anzeige aktualisiert.
+
+\item (set-handicap world):\\
+Diese Funktion erm"oglicht das Setzen der Vorgabe. Dazu werden das Spielfeld und die Anzahl der Vorgabe angezeigt. Nach jedem gesetzten Stein wird die Anzeige aktualisiert.
+
+\item (choose-draworder-field):\\
+Diese Funktion zeichnet das User-Interface f"ur die Auswahl, welcher Spieler zuletzt am Zug war. Dazu werden zwei Auswahlbereiche gezeichnet, die der Benutzer per Mausklick ausw"ahlen kann.
+
+\item (choose-passstatus):\\
+Diese Funktion zeichnet das User-Interface f"ur die Auswahl, ob ein Spieler im letzten Zug vor der Fotoaufnahme gepasst hat. Dazu werden zwei Auswahlbereiche gezeichnet, die der Benutzer per Mausklick ausw"ahlen kann.
 \end{enumerate}
 
 \section{Spielclient}
@@ -129,6 +173,19 @@ Der Server kann mit der Funktion handle-messages Daten von den Clients empfangen
 
 \item (add-world univ wrld):\\
 Mit der Funktion add-world kann sich ein Client bei dem Server anmelden. Dazu wird das Universum (univ) sowie die World (wrld) ben"otigt. Wenn zwei Clients angemeldet sind, werden weitere Clients abgewiesen.
+\end{enumerate}
+
+\section{Spiellogik}
+\begin{enumerate}
+
+\item (do-set univ wrld m):\\
+Die do-set Funktion erm"oglicht das setzen eines Steines. Wenn ein Spieler einen Stein setzt, wird gepr"uft, ob der Zug zul"assig ist und ob und wie viele Steine von dem Gegner geschlagen wurden. Geschlagene Steine werden ebenfalls von dem Spielbrett entfernt.
+
+\item (do-handicap univ wrld m):\\
+Die do-handicap Funktion erm"oglicht das setzen der Vorgabe. Ein Spieler kann so oft einen Stein hintereinander setzen bis seine Vorgaben verbraucht sind. 
+
+\item (calc-score board):\\
+Die calc-score Methode ermittelt am Ende des Spieles anhand des Spielfeldes das Endergebnis. Dazu werden eroberte Fl"achen gesucht und ausgewertet. Jede freie Position sowie jeder gegnerische Stein in einem eroberten Gebiet sind ein Punkt f"ur den Eroberer. Diese Funktion liefert ein Pair mit den erzielten Punktet zur"uck. (schwarz . wei"s)
 \end{enumerate}
 
  \chapter{Paketstruktur}
