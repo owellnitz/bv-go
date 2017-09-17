@@ -325,7 +325,7 @@
         (check-all-empty-areas board empty_areas '() player-list 0 '(0 . 0))
   )))
 
-;;Liste mit den beiden Spielern
+;;Liste mit den beiden Spielern (für Iterationen)
 (define player-list '(-1 1))
 
 ;;Iteriert über alle leeren Flächen und addiert die erzielten Punkte.
@@ -357,7 +357,16 @@
                                  new_points)]
   )))
 
+;;Berechnet die neue Punktzahl für den Spieler anhand der freien Positionen
+;;und der geschlagenen Steine in der Fläche.
 ;;
+;;Parameter
+;;points: Die alte Punktzahl.
+;;last_area: Die zuletzt ausgewertete Fläche.
+;;board: Das Spielbrett nach Beendigung des Spieles.
+;;player-won: Der Spieler, der die letzte Fläche gewonnen hat. (0 = neutrale Fläche)
+;;
+;;return: Die neue Punktzahl für den Spieler, der die letzte Fläche gewonnen hat.
 (define (calc-points points last_area board player-won)
   (let ((area-points (length last_area))
         (killed-stones (count-killed-stones-in-area board last_area player-won 0)))
@@ -366,20 +375,33 @@
            killed-stones))
   )
 
-(define (count-killed-stones-in-area board empty_area player result)
+;;Besetzt alle leeren Flächen mit der Farbe des Spielers, der die Fläche gewonnen hat.
+;;Dabei wird überprüft, ob währenddessen Steine des Gegners geschlagen werden.
+;;Ist dies der Fall, werden diese während der Füllung des Gebietes aufaddiert und zurückgegeben.
+;;
+;;Parameter
+;;board: Das Spielbrett, das ausgewertet werden soll.
+;;empty_area: Die freie Fläche.
+;;last_area: Die zuletzt ausgewertete Fläche.
+;;player-won: Der Spieler, der die letzte Fläche gewonnen hat. (0 = neutrale Fläche)
+;;result: Die aufaddierten Punkte.
+;;
+;;return: Liefert die aufaddierten Punkte (geschlagene Steine) zurück,
+;;die während des Spielfeld Befüllens aufaddiert wurden.
+(define (count-killed-stones-in-area board empty_area player-won result)
   (if (empty? empty_area)
       result
-      (let ((new-board (find-freedoms (set-stone board (caar empty_area) (cdar empty_area) player)
-                                      player
+      (let ((new-board (find-freedoms (set-stone board (caar empty_area) (cdar empty_area) player-won)
+                                      player-won
                                       '()
                                       (find-opposing-stones
-                                       (set-stone board (caar empty_area) (cdar empty_area) player)
+                                       (set-stone board (caar empty_area) (cdar empty_area) player-won)
                                        (caar empty_area) (cdar empty_area)
-                                       player
+                                       player-won
                                        route-list '()))))
         (count-killed-stones-in-area (cdr new-board)
                                      (cdr empty_area)
-                                     player
+                                     player-won
                                      (+ (car new-board)
                                         result))
         )
@@ -577,7 +599,7 @@
 (0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)))
 
 (define board3 '(
-(-1 0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0) 
+(0 0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0) 
 (0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0) 
 (1 1 1 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0) 
 (0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0) 
@@ -586,13 +608,13 @@
 (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
 (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
 (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1) 
+(-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1) 
 (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
 (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
 (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
 (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
 (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
 (-1 -1 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)))
+(0 0 0 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1) 
+(0 0 0 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0)))
