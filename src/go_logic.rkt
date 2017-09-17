@@ -312,15 +312,33 @@
                               (take-right board (- 18 y))))
 
 
-;;Auswertung
+;;Wertet das übergebene Board aus und ermittelt die eroberten und geschlagenen Steine
+;;
+;;Parameter
+;;board: Das Spielbrett, das ausgewertet werden soll.
+;;
+;;return: Das Ergebnis der Auswertung als Pair (Punkte für Schwarz . Punkte für Weiß)
 (define (calc-score board)
-  (find-all-empty-areas (find-empty-position board 0 0 '()) '() route-list)
-  )
+  (let ((empty_areas (find-all-empty-areas (find-empty-position board 0 0 '()) '() route-list)))
+    (if (= (length empty_areas) 1)
+        '(0 . 0)
+        (check-all-empty-areas board empty_areas '() player-list 0 '(0 . 0))
+  )))
 
 ;;Liste mit den beiden Spielern
 (define player-list '(-1 1))
 
-;(schwarz . weiß)
+;;Iteriert über alle leeren Flächen und addiert die erzielten Punkte.
+;;
+;;Parameter
+;;board: Das Spielbrett, das ausgewertet werden soll.
+;;empty_areas: Die freien Flächen auf dem Spielbrett.
+;;last_area: Die zuletzt ausgewertete Fläche.
+;;player-list:Liste mit den beiden Spielern (nur für iteration).
+;;player-won: Der Spieler, der die letzte Fläche gewonnen hat. (0 = neutrale Fläche)
+;;points: Die Punkte als Pair (Punkte für Schwarz . Punkte für Weiß) gespeichert. 
+;;
+;;return: Das Ergebnis der Auswertung als Pair (Punkte für Schwarz . Punkte für Weiß)
 (define (check-all-empty-areas board empty_areas last_area player-list player-won points)
   (let ((new_points
            (cond
@@ -338,7 +356,19 @@
     [else (check-all-empty-areas board (cdr empty_areas) (car empty_areas) player-list (check-empty-area-for-each-player board (car empty_areas) player-list #t) new_points)]
   )))
 
+;;Prüft wer die übergebene Fläche gewonnen hat.
+;;Wenn beide Spieler die Fläche voll besetzten durften, handelt es sich um eine neutrale Fläche.
+;;Wenn ein Spieler sie nicht voll besetzten darf, hat der gegnerische Spieler diese Fläche erobert.
 ;;
+;;Parameter
+;;board: Das Spielbrett, das ausgewertet werden soll.
+;;empty_area: Die zu prüfende Fläche.
+;;last_area: Die zuletzt ausgewertete Fläche.
+;;player-list: Liste mit den beiden Spielern (nur für iteration).
+;;result: Status, ob dem Spieler zuvor die Fläche gehört.
+;;(Falls nicht, gehört dem Gegner die Fläche. Wenn beide das Feld voll ausfüllen dürfen, dann handelt es sich um eine neutrale Fläche.)
+;;
+;;return: Der Spieler, der die Fläche erobert hat. 0 = neutrale Fläche.
 (define (check-empty-area-for-each-player board empty_area player-list result)
   (cond
     [(not result) (if (= (length player-list) 1) 1 -1)]
@@ -346,14 +376,27 @@
    [else (check-empty-area-for-each-player board empty_area (cdr player-list) (set-empty-area board empty_area (car player-list) #t))])
   )
 
-
+;;Füllt die leere Fläche vollständig mit der Farbe des übergebenen Spielers.
+;;Prüft, ob der Spieler die Fläche bis zum letzten Stein besetzen darf, darf er es nicht, hat der Gegner diese Fläche erobert.
+;;Es wird dazu die Methode genutzt, die während des Spieles den Selbstmord verhinder. Denn wenn ein Spieler beim ausfüllen der Fläche
+;;einen Selbstmord begehen würde, hat der Gegener diese Fläche erobert, weil der setzende Spieler keine Freiheiten mehr hat.
 ;;
+;;Parameter
+;;board: Das Spielbrett, das ausgewertet werden soll.
+;;empty_area: Die zu prüfende Fläche.
+;;last_area: Die zuletzt ausgewertete Fläche.
+;;player: Der zu prüfende player.
+;;result: Ob der Stein gesetzt werden darf, ist nur wichtig beim letzten zu setzenden Stein.
+;;
+;;return: Boolean-Wert, ob der Spieler die Fläche vollständig besetzen darf.
 (define (set-empty-area board empty_area player result)
   (if (or (empty? empty_area)
           (not result))
       result
-      (let ((result (check-turn-board board player (caar empty_area) (cdar empty_area))))
-      (if result ;;letzten beiden Paramenter sind y, x
+      (let ((result (if (= (length empty_area) 1)
+                        (check-turn-board board player (caar empty_area) (cdar empty_area));;letzten beiden Paramenter sind y, x
+                        #t )))
+      (if result 
           (set-empty-area (set-stone board (caar empty_area) (cdar empty_area) player) (cdr empty_area) player result)
           (set-empty-area board (cdr empty_area) player result)
           )
@@ -497,3 +540,24 @@
 (1 1 1 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0) 
 (0 0 1 0 0 0 0 0 0 0 0 1 1 1 1 1 1 0 0) 
 (0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)))
+
+(define board2 '(
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0) 
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0)))

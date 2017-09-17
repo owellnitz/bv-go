@@ -158,7 +158,7 @@
                          (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
                          (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
                          (0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 0 0) 
-                         (1 1 1 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0) 
+                         (1 1 1 0 0 0 0 0 0 0 0 1 0 -1 0 0 1 0 0) 
                          (0 0 1 0 0 0 0 0 0 0 0 1 1 1 1 1 1 0 0) 
                          (0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))]) ;bord-state
        (make-bundle (list
@@ -631,47 +631,59 @@
     ;;Nachrichten an Clienten abhängig welche Farbe gewonnen hat und welche Farbe der aktive Client hat.
     [(and (equal? (current_state univ) 'passed) 
           (equal? m 'passed))
-     (let* ((calculated_score (calc-score (current_board univ)))
-            (final_score (list
-                          (+ (car (current_killed univ)) (cdr calculated_score));Punkte für weiß addieren
-                          (+ (cadr (current_killed univ)) (car calculated_score))))) ;Punkte für schwarz addieren
+     ;;ToDO Auswertung
+     (let* ((final_score (current_killed univ)));Test(calc-score (current_board univ))))
        (if (< (car final_score) (cadr final_score))  ;;Schwarz hat gewonnen
            (if (equal? (get-color univ (iworld-name wrld)) -1) ;;Aktive Welt ist schwarz
                (make-bundle (list
                              (current_worlds univ)
                              'result
-                             (current_board univ) (current_color univ) final_score)
-                            (list (make-mail (world1 univ) (list 'won (current_board univ) final_score  'passed))
-                                  (make-mail (world2 univ) (list 'lost (current_board univ) final_score  'passed)))
+                             (current_board univ) (current_color univ) (current_killed univ))
+                            (list (make-mail (world1 univ) (list 'won (current_board univ) (current_killed univ)  'passed))
+                                  (make-mail (world2 univ) (list 'lost (current_board univ) (current_killed univ)  'passed)))
                             '())
                ;;Schwarz hat gewonnen und aktive Welt ist weiß
                (make-bundle (list
                              (current_worlds univ)
                              'result
-                             (current_board univ) (current_color univ) final_score)
-                            (list (make-mail (world1 univ) (list 'lost (current_board univ) final_score 'passed))
-                                  (make-mail (world2 univ) (list 'won (current_board univ) final_score 'passed)))
+                             (current_board univ) (current_color univ) (current_killed univ))
+                            (list (make-mail (world1 univ) (list 'lost (current_board univ) (current_killed univ)  'passed))
+                                  (make-mail (world2 univ) (list 'won (current_board univ) (current_killed univ)  'passed)))
                             '()))
            ;;Weiß hat gewonnen
            (if (equal? (get-color univ (iworld-name wrld)) 1) ;;Aktive Welt ist weiß
                (make-bundle (list
                              (current_worlds univ)
                              'result
-                             (current_board univ) (current_color univ) final_score)
-                            (list (make-mail (world1 univ) (list 'won (current_board univ) final_score  'passed))
-                                  (make-mail (world2 univ) (list 'lost (current_board univ) final_score  'passed)))
+                             (current_board univ) (current_color univ) (current_killed univ))
+                            (list (make-mail (world1 univ) (list 'won (current_board univ) (current_killed univ)  'passed))
+                                  (make-mail (world2 univ) (list 'lost (current_board univ) (current_killed univ)  'passed)))
                             '())
                ;;Weiß hat gewonnen und aktive Welt ist schwarz
                (make-bundle (list
                              (current_worlds univ)
                              'result
-                             (current_board univ) (current_color univ) final_score)
-                            (list (make-mail (world1 univ) (list 'lost (current_board univ) final_score  'passed))
-                                  (make-mail (world2 univ) (list 'won (current_board univ) final_score 'passed)))
+                             (current_board univ) (current_color univ) (current_killed univ))
+                            (list (make-mail (world1 univ) (list 'lost (current_board univ) (current_killed univ)  'passed))
+                                  (make-mail (world2 univ) (list 'won (current_board univ) (current_killed univ)  'passed)))
                             '()))))]
     ;;Sonstige Anfragen verändern das Universum nicht
     [else (make-bundle univ '() '())]))
 
+
+(define (calc-score board)
+  (find-empty-position board 0 0 '() (cons 0 0))
+  )
+
+(define (find-empty-position board x y neutral_Positions conq_Positions)
+  (let* ((inc_X (+ 1 x))
+         (new_X (if (= inc_X 19) 0 inc_X))
+         (new_Y (if (= inc_X 19) (+ y 1) y)))
+    (if (and (= x 0) (= y 19))
+        conq_Positions
+        (find-empty-position board new_X new_Y neutral_Positions conq_Positions)
+        ))
+  )
 
 ;;Erschafft ein Universum
 (universe UNIVERSE0
