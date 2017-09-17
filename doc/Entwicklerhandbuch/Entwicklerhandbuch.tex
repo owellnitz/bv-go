@@ -13,11 +13,56 @@
 \author{Harry Flohr (6811837)\\und\\Jan Ole Wellnitz (6796226)}
 \maketitle
  
+ \chapter{Strukturen}
+
+\section{Spielfeld}
+\label{sec:Spielfeld}
+Ein Spielfeld besteht aus 19x19 Felder, auf denen Steine positioniert werden k"onnen. Das Spielfeld wird in dem Programm als eine Liste mit 19 weiteren Listen dargestellt. Diese 19 Listen stehen f"ur die y-Koordinaten des Spielfeldes. Jede dieser 19 Listen enth"alt 19 Positionen, um einen Wert einzutragen. Diese Unterlisten stehen f"ur die x-Koordinaten.\\\\
+Wenn an einer Position eine 0 steht, befindet sich kein Stein auf dem Spielfeld. Befindet sich dort eine 1, liegt an der Position ein wei"ser Stein. Bei einer -1, liegt an der Position ein schwarzer Stein.\\
+\\Darstellung des Spielstandes in Abbildung 2.3:\\\\
+'((0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)\\
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)\\
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)\\
+  (0 0 0 0 0 0 0 1 0 0 -1 0 0 0 0 0 0 0 0)\\
+  (0 0 0 0 0 0 1 -1 0 0 -1 0 0 0 0 0 0 0 0)\\
+  (0 0 0 0 0 0 1 -1 0 1 -1 -1 0 0 0 0 0 0 0)\\
+  (0 0 0 0 0 1 1 -1 0 1 1 -1 -1 1 0 0 0 0 0)\\
+  (0 0 0 0 0 1 -1 -1 0 1 -1 0 0 0 0 0 0 0 0)\\
+  (0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0)\\
+  (0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0)\\
+  (0 0 0 0 0 0 0 0 0 0 0 0 -1 0 0 0 0 0 0)\\
+  (0 0 0 0 0 0 0 0 0 0 -1 -1 -1 0 0 0 0 0 0)\\
+  (0 0 0 0 0 0 0 0 0 -1 1 1 -1 0 0 0 0 0 0)\\
+  (0 0 0 0 1 1 1 1 1 -1 1 1 -1 0 1 1 0 0 0)\\
+  (0 0 0 0 1 -1 -1 -1 -1 1 0 1 0 -1 0 -1 1 0 0)\\
+  (0 0 0 1 -1 0 -1 1 1 0 0 1 -1 -1 -1 1 0 0 0)\\
+  (0 0 0 -1 0 0 -1 1 0 0 0 0 0 0 0 0 0 0 0)\\
+  (0 0 0 0 0 0 -1 1 0 0 0 0 0 0 0 0 0 0 0)\\
+  (0 0 0 0 0 0 -1 1 0 0 0 0 0 0 0 0 0 0 0))\\
+
+\section{World (Spielzustand)}
+\label{sec:World}
+Die World setzt sich aus mehreren Informationen zu einer Liste zusammen:
+
+\begin{enumerate}
+\item Spielfeld (siehe \ref{sec:Spielfeld})
+\item Weltzustand\\
+Der Weltzustand gibt an, ob der Client ziehen darf, warten muss oder das Spiel beendet wurde (Zustände: wait, play, lost, won).
+\item Geschlagene Steine\\
+Die bereits geschlagenen Steine werden als Pair '(schwarz . weiß) übergeben.
+\item Gepasster Spielzug\\
+Hat der vorherige Spieler in seinem Spielzug gepasst und der Spieler an der Reihe passt ebenfalls, ist das Spiel beendet und die Auswertung startet (Gepasst: true/false). 
+\end{enumerate}
+Als Beispiel eine mögliche World-Darstellung bei der der aktuelle Spieler am Zug ist, 5 schwarze und 8 weiße Steine geschlagen wurden und der vorherige Spieler nicht gepasst hat. Der Spielstand ist zur Übersicht vereinfacht:
+\begin{quotation}
+ '(play '(spielfeld) '(5 . 8) false)
+\end{quotation}
+ 
 \chapter{Module der Software}
  
 \section{Bildverarbeitung (go\_bv.rkt)}
 Das Modul Bildverarbeitung ist f"ur das Auslesen der Spielfeldbelegung eines Bildes zust"andig. Ein Bild wird in das Modul geladen und dann verarbeitet. Es wird zuerst das Spielbrett aus dem Bild extrahiert und in ein Schwarz-Wei"s-Bild gewandelt. Die Graustufen stellen die Anteile der blauen Farbe in dem originalen Bild dar. Das Bild wird anschlie"send noch verwaschen, um die Spielfeldlinien und Reflexionen leichter von den Spielsteinen unterscheiden zu k"onnen.\\\\
-In diesem Bild wird die Koordinaten des ersten Spielfeldes (oben links) gesucht. An dieser Koordinate wird geschaut, ob die Schwellenwerte f"ur einen wei"sen oder schwarzen Stein getroffen wird. Diese "Uberpr"ufung wird an insgesamt neun Stellen pro Koordinate vorgenommen. Es wird quadratisch um die Koordinate kontrolliert (siehe Abb. 1.1). 
+In diesem Bild wird die Koordinaten des ersten Spielfeldes (oben links) gesucht. An dieser Koordinate wird geschaut, ob die Schwellenwerte f"ur einen wei"sen oder schwarzen Stein getroffen wird. Diese "Uberpr"ufung wird an insgesamt neun Stellen pro Koordinate vorgenommen. Es wird quadratisch um die Koordinate kontrolliert (siehe Abb. 2.1). 
 \begin{figure}[ht]
 \centering \includegraphics[width=0.3\textwidth]{images/koordinate}
 \caption{Suchemuster an Koordinate}
@@ -41,7 +86,7 @@ Es zeichnet zum einen aus einer g"ultigen Spielfeldbelegung (\ref{sec:Spielfeld}
 \end{figure}
 \newpage 
 
-Zudem zeichnet das Modul beim Start eines Spieles die ben"otigten Auswahloptionen, die der Benutzer vor dem Starten eingeben muss. Das kann zum einen "uber das Darstellen einer Auswahlfl"ache (Abb. 1.4) geschehen, auf die der Benutzer klicken muss. Zum anderen aber auch eine Aufforderung zur Eingabe von Zahlen "uber die Tastatur (Abb. 1.5). 
+Zudem zeichnet das Modul beim Start eines Spieles die ben"otigten Auswahloptionen, die der Benutzer vor dem Starten eingeben muss. Das kann zum einen "uber das Darstellen einer Auswahlfl"ache (Abb. 2.4) geschehen, auf die der Benutzer klicken muss. Zum anderen aber auch eine Aufforderung zur Eingabe von Zahlen "uber die Tastatur (Abb. 2.5). 
 \begin{figure}[ht]
 \centering \includegraphics[width=0.5\textwidth]{images/Optionsauswahl}
 \caption{Auswahl "uber Optionsfelder}
@@ -52,7 +97,7 @@ Zudem zeichnet das Modul beim Start eines Spieles die ben"otigten Auswahloptione
 \caption{Zahleneingabe}
 \end{figure}
 \newpage
-Nach Eingabe aller Parameter erstellt die Komponente das User-Interface f"ur das Spielen selbst. Dazu geh"oren das Spielfeld, Spielstatus des Spielers,die erzielten Punkte und Buttons (f"ur Passen oder ein neues Spiel starten) (Abb. 1.6).
+Nach Eingabe aller Parameter erstellt die Komponente das User-Interface f"ur das Spielen selbst. Dazu geh"oren das Spielfeld, Spielstatus des Spielers,die erzielten Punkte und Buttons (f"ur Passen oder ein neues Spiel starten) (Abb. 2.6).
 
 \begin{figure}[ht]
 \centering \includegraphics[width=0.5\textwidth]{images/Spielfeld}
@@ -194,51 +239,11 @@ Die calc-score Methode ermittelt am Ende des Spieles anhand des Spielfeldes das 
 \caption{Paketstruktur}
 \end{figure}
 
-\chapter{Strukturen}
-
-\section{Spielfeld}
-\label{sec:Spielfeld}
-Ein Spielfeld besteht aus 19x19 Felder, auf denen Steine positioniert werden k"onnen. Das Spielfeld wird in dem Programm als eine Liste mit 19 weiteren Listen dargestellt. Diese 19 Listen stehen f"ur die y-Koordinaten des Spielfeldes. Jede dieser 19 Listen enth"alt 19 Positionen, um einen Wert einzutragen. Diese Unterlisten stehen f"ur die x-Koordinaten.\\\\
-Wenn an einer Position eine 0 steht, befindet sich kein Stein auf dem Spielfeld. Befindet sich dort eine 1, liegt an der Position ein wei"ser Stein. Bei einer -1, liegt an der Position ein schwarzer Stein.\\
-\\Darstellung des Spielstandes in Abbildung 1.3:\\\\
-'((0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)\\
-  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)\\
-  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)\\
-  (0 0 0 0 0 0 0 1 0 0 -1 0 0 0 0 0 0 0 0)\\
-  (0 0 0 0 0 0 1 -1 0 0 -1 0 0 0 0 0 0 0 0)\\
-  (0 0 0 0 0 0 1 -1 0 1 -1 -1 0 0 0 0 0 0 0)\\
-  (0 0 0 0 0 1 1 -1 0 1 1 -1 -1 1 0 0 0 0 0)\\
-  (0 0 0 0 0 1 -1 -1 0 1 -1 0 0 0 0 0 0 0 0)\\
-  (0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0)\\
-  (0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0)\\
-  (0 0 0 0 0 0 0 0 0 0 0 0 -1 0 0 0 0 0 0)\\
-  (0 0 0 0 0 0 0 0 0 0 -1 -1 -1 0 0 0 0 0 0)\\
-  (0 0 0 0 0 0 0 0 0 -1 1 1 -1 0 0 0 0 0 0)\\
-  (0 0 0 0 1 1 1 1 1 -1 1 1 -1 0 1 1 0 0 0)\\
-  (0 0 0 0 1 -1 -1 -1 -1 1 0 1 0 -1 0 -1 1 0 0)\\
-  (0 0 0 1 -1 0 -1 1 1 0 0 1 -1 -1 -1 1 0 0 0)\\
-  (0 0 0 -1 0 0 -1 1 0 0 0 0 0 0 0 0 0 0 0)\\
-  (0 0 0 0 0 0 -1 1 0 0 0 0 0 0 0 0 0 0 0)\\
-  (0 0 0 0 0 0 -1 1 0 0 0 0 0 0 0 0 0 0 0))\\
-
-\section{World (Spielzustand)}
-\label{sec:World}
-Die World setzt sich aus mehreren Informationen zu einer Liste zusammen:
-
-\begin{enumerate}
-\item Spielfeld (siehe \ref{sec:Spielfeld})
-\item Weltzustand\\
-Der Weltzustand gibt an, ob der Client ziehen darf, warten muss oder das Spiel beendet wurde (Zustände: wait, play, lost, won).
-\item Geschlagene Steine\\
-Die bereits geschlagenen Steine werden als Pair '(schwarz . weiß) übergeben.
-\item Gepasster Spielzug\\
-Hat der vorherige Spieler in seinem Spielzug gepasst und der Spieler an der Reihe passt ebenfalls, ist das Spiel beendet und die Auswertung startet (Gepasst: true/false). 
-\end{enumerate}
-Als Beispiel eine mögliche World-Darstellung bei der der aktuelle Spieler am Zug ist, 5 schwarze und 8 weiße Steine geschlagen wurden und der vorherige Spieler nicht gepasst hat. Der Spielstand ist zur Übersicht vereinfacht:
-\begin{quotation}
- '(play '(spielfeld) '(5 . 8) false)
-\end{quotation}
-
+\chapter{Programmablauf}
+\begin{figure}[ht]
+\centering \includegraphics[width=1.1\textwidth]{images/Ablauf}
+\caption{Ablaufdiagramm}
+\end{figure}
 \chapter{ToDo's}
 
 \section{Dateiverarbeitung (go\_datei.rkt)}
