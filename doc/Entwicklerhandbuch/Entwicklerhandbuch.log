@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.7.28)  17 SEP 2017 17:33
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.7.28)  17 SEP 2017 19:38
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -717,7 +717,7 @@ Package babel Info: Redefining german shorthand "|
 (babel)             in language  on input line 18.
 Package babel Info: Redefining german shorthand "~
 (babel)             in language  on input line 18.
-<images/koordinate.png, id=75, 80.3pt x 74.2775pt>
+<images/koordinate.png, id=79, 80.3pt x 74.2775pt>
 File: images/koordinate.png Graphic file (type png)
  <use images/koordinate.png>
 Package pdftex.def Info: images/koordinate.png used on input line 22.
@@ -754,13 +754,13 @@ Package babel Info: Redefining german shorthand "|
 Package babel Info: Redefining german shorthand "~
 (babel)             in language  on input line 28.
 
-<images/emptyBoard.png, id=86, 403.5075pt x 404.51125pt>
+<images/emptyBoard.png, id=90, 403.5075pt x 404.51125pt>
 File: images/emptyBoard.png Graphic file (type png)
 
 <use images/emptyBoard.png>
 Package pdftex.def Info: images/emptyBoard.png used on input line 32.
 (pdftex.def)             Requested size: 125.47794pt x 125.78604pt.
- <images/board.png, id=87, 401.5pt x 402.50375pt>
+ <images/board.png, id=91, 401.5pt x 402.50375pt>
 File: images/board.png Graphic file (type png)
 
 <use images/board.png>
@@ -896,12 +896,12 @@ Package babel Info: Redefining german shorthand "|
 (babel)             in language  on input line 99.
 Package babel Info: Redefining german shorthand "~
 (babel)             in language  on input line 99.
-<images/Paketstruktur.png, id=124, 1032.85875pt x 938.50626pt>
+<images/Paketstruktur.png, id=128, 795.97375pt x 660.4675pt>
 File: images/Paketstruktur.png Graphic file (type png)
 
 <use images/Paketstruktur.png>
 Package pdftex.def Info: images/Paketstruktur.png used on input line 101.
-(pdftex.def)             Requested size: 418.25555pt x 380.04999pt.
+(pdftex.def)             Requested size: 418.25555pt x 347.05296pt.
 Package babel Info: Redefining german shorthand "f
 (babel)             in language  on input line 105.
 Package babel Info: Redefining german shorthand "|
@@ -1017,35 +1017,25 @@ Package atveryend Info: Empty hook `AfterLastShipout' on input line 163.
  (./Entwicklerhandbuch.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 163.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 163.
-
-
-Package rerunfilecheck Warning: File `Entwicklerhandbuch.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `Entwicklerhandbuch.out':
-(rerunfilecheck)             Before: 00DBC7D6292FEB72F8A7DF9BE5242B0F;1097
-(rerunfilecheck)             After:  2E52C5981B5665E51469006CEEE81572;1141.
+Package rerunfilecheck Info: File `Entwicklerhandbuch.out' has not changed.
+(rerunfilecheck)             Checksum: 2E52C5981B5665E51469006CEEE81572;1141.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 163.
  ) 
 Here is how much of TeX's memory you used:
  8299 strings out of 492995
  131266 string characters out of 6132704
  314487 words of memory out of 5000000
- 11707 multiletter control sequences out of 15000+600000
+ 11708 multiletter control sequences out of 15000+600000
  18503 words of font info for 39 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  42i,6n,66p,8829b,427s stack positions out of 5000i,500n,10000p,200000b,80000s
-pdfTeX warning (dest): name{section.1.5} has been referenced but does not exi
-st, replaced by a fixed one
-
-</usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></
-usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></us
-r/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb>
-Output written on Entwicklerhandbuch.pdf (10 pages, 153951 bytes).
+</usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb>
+</usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></
+usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb>
+Output written on Entwicklerhandbuch.pdf (10 pages, 140148 bytes).
 PDF statistics:
- 184 PDF objects out of 1000 (max. 8388607)
- 159 compressed objects within 2 object streams
- 50 named destinations out of 1000 (max. 500000)
- 149 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 186 PDF objects out of 1000 (max. 8388607)
+ 161 compressed objects within 2 object streams
+ 49 named destinations out of 1000 (max. 500000)
+ 157 words of extra memory for PDF output out of 10000 (max. 10000000)
 
