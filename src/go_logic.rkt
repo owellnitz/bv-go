@@ -112,6 +112,29 @@
     )
   )
 
+;;Zugprüfung auf Gültigkeit.
+;;Verhindert den Selbstmord eines Spielers, außer der Selbstmord schlägt Steine des Gegners.
+;;
+;;Parameter
+;;univ: Das Universum des Spieles.
+;;player: Der Spieler, der am Zug ist.
+;;y/x:Die y- und x-Koordinaten des neuen Steines.
+;;
+;;return: Die Zulässigkeit des Zuges.
+(define (check-turn-board board player y x)
+  (let ((new_board (set-stone board y x player)))
+    (if(> (car (find-freedoms new_board player '()
+                                      (find-opposing-stones new_board y x player route-list '()))) 0)
+       #t
+       (if(equal?
+           (get-field-state (cdr (find-freedoms new_board (inverse-player player) '() (list (cons y x)))) y x)
+           0)
+          #f
+          #t
+          ))
+    )
+  )
+
 ;;Gibt den gegnerischen Spieler zurück.
 ;;
 ;;Parameter
@@ -291,7 +314,17 @@
 
 ;;Auswertung
 (define (calc-score board)
-  (find-empty-position board 0 0 '())
+  (find-all-empty-areas (find-empty-position board 0 0 '()) '() route-list)
+  )
+
+(define (set-empty-area board empty_area player)
+  (if (empty? empty_area)
+      #t
+      (if (check-turn-board board player (caar empty_area) (cdar empty_area))
+          (set-empty-area (set-stone board (caar empty_area) (cdar empty_area) player) (cdr empty_area) player)
+          (set-empty-area board (cdr empty_area) player )
+          )
+      )
   )
 
 ;;Entfernt die Elemente einer Liste aus einer anderen liste
@@ -406,7 +439,7 @@
 ;;
 ;;return: Boolean-Wert, ob das Feld leer ist.
 (define (position-empty? board x y)
-  (if (= (get-field-state board x y) 0)
+  (if (= (get-field-state board y x) 0)
       1
       0
       )
