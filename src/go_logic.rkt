@@ -8,23 +8,30 @@
 ;;Quick accessors for the universe
 (define (current_worlds univ)
   (first univ))
+
+;;Welt der ersten Spielers
 (define (world1 univ)
   (first (current_worlds univ)))
+
+;;Welt des zweiten Spielers
 (define (world2 univ)
   (second (current_worlds univ)))
 
+;;Aktueller Zustand des Spiels
 (define (current_state univ)
   (second univ))
 
+;;Die aktuelle Spielbrettbelegung
 (define (current_board univ)
   (third univ))
 
+;;Der Spieler, der am Zug ist
 (define (current_color univ)
   (fourth univ))
 
-  (define (current_killed univ)
+;;Die Anzahl der getöteten Steine als Liste '(schwarz weiß)
+(define (current_killed univ)
   (fifth univ))
-
 ;;Vorgabe setzen, wird vom Server bei 'set aufgerufen, wenn Serverstatus 'usehandicap ist.
 (define (do_handicap  univ wrld m)
   [if (and (equal? (get-field-state (current_board univ) (second m) (third m)) 0)  ;;Prüfung ob Feld frei ist.
@@ -311,6 +318,14 @@
         (list (list-set (list-ref board y) x color))
                               (take-right board (- 18 y))))
 
+
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                     AUSWERTUNG                      ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;Wertet das übergebene Board aus und ermittelt die eroberten und geschlagenen Steine
 ;;

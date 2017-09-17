@@ -18,20 +18,28 @@
 ;;Quick accessors for the universe
 (define (current_worlds univ)
   (first univ))
+
+;;Welt der ersten Spielers
 (define (world1 univ)
   (first (current_worlds univ)))
+
+;;Welt des zweiten Spielers
 (define (world2 univ)
   (second (current_worlds univ)))
 
+;;Aktueller Zustand des Spiels
 (define (current_state univ)
   (second univ))
 
+;;Die aktuelle Spielbrettbelegung
 (define (current_board univ)
   (third univ))
 
+;;Der Spieler, der am Zug ist
 (define (current_color univ)
   (fourth univ))
 
+;;Die Anzahl der getöteten Steine als Liste '(schwarz weiß)
 (define (current_killed univ)
   (fifth univ))
 

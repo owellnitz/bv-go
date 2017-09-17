@@ -1,7 +1,6 @@
 #lang racket 
 (require 2htdp/image)
 (require 2htdp/universe)
-(require test-engine/racket-tests)
 (require "go_draw_board.rkt")
 
 ;;Der go_client hat in jeder Instanz eine eigene Welt, welche ihm vom Server mitgeteilt wird.

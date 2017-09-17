@@ -214,5 +214,7 @@
   (value->pixel (* (stepsizeX pic) 0.75))
   (value->pixel (* (stepsizeY pic) 0.75))))
 
-;Ermitteln des Spielstandes
+;;Liest den Spielstand aus einem Bild heraus und gibt diesen Spielstand in der definierten Struktur zurück.
+;;
+;;Return: Spielstand in definierter Struktur
 (define bord-state (check-board-state (car (start smoothedImage)) (cdr (start smoothedImage)) '() 0 smoothedImage))
