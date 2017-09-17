@@ -594,12 +594,12 @@
     ;;
     ;;return: Bei gültigem Zug das veränderte Universum nach dem Zug.
     ;;        Bei ungültigem Zug das unveränderte Universum.
-    ;;Aufruf von "do_handicap" aus "go_logic". Dort wird die Zuggültigkeit geprüft, der Stein gesetzt und die Vorgabe um 1 verringert.
+    ;;Aufruf von "do-handicap" aus "go_logic". Dort wird die Zuggültigkeit geprüft, der Stein gesetzt und die Vorgabe um 1 verringert.
 
     [(and (equal? (current_state univ) 'usehandicap)
           (list? m) (= (length m) 3) (equal? (first m) 'set)      ;; 1.
           (iworld=? wrld (world1 univ)))                           ;; 2.
-     (do_handicap univ wrld m)]
+     (do-handicap univ wrld m)]
 
     
     ;;Eine Welt möchte ein Feld markieren, dazu schickt sie (set Y-Koordinate X-Koordinate) an das Universum
@@ -613,13 +613,13 @@
     ;;
     ;;return: Bei gültigem Zug das veränderte Universum nach dem Zug.
     ;;        Bei ungültigem Zug das unveränderte Universum.
-    ;;Aufruf von "do_set" aus "go_logic". Dort wird Zuggültigkeit und Folgen des Zuges geprüft und verarbeitet.
+    ;;Aufruf von "do-set" aus "go_logic". Dort wird Zuggültigkeit und Folgen des Zuges geprüft und verarbeitet.
     
     [(and (or (equal? (current_state univ) 'play)
               (equal? (current_state univ) 'passed))
           (list? m) (= (length m) 3) (equal? (first m) 'set)      ;; 1.
           (iworld=? wrld (world1 univ)))                           ;; 2.
-     (do_set univ wrld m)]
+     (do-set univ wrld m)]
 
     ;;Ein Spieler passt.
     ;;Abfrage des Status:
