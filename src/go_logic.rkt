@@ -317,14 +317,47 @@
   (find-all-empty-areas (find-empty-position board 0 0 '()) '() route-list)
   )
 
-(define (set-empty-area board empty_area player)
-  (if (empty? empty_area)
-      #t
-      (if (check-turn-board board player (caar empty_area) (cdar empty_area))
-          (set-empty-area (set-stone board (caar empty_area) (cdar empty_area) player) (cdr empty_area) player)
-          (set-empty-area board (cdr empty_area) player )
+;;Liste mit den beiden Spielern
+(define player-list '(-1 1))
+
+;(schwarz . weiß)
+(define (check-all-empty-areas board empty_areas last_area player-list player-won points)
+  (let ((new_points
+           (cond
+             [(eqv? player-won -1) (cons (+ (car points)
+                                            (length last_area)
+                                            (car (find-freedoms board player-won '() last_area)))
+                                         (cdr points))]
+             [(eqv? player-won 1)  (cons (car points)
+                                   (+ (cdr points)
+                                      (length last_area)
+                                      (car (find-freedoms board player-won '() last_area))))]
+             [else points])))
+  (cond
+    [(empty? empty_areas) new_points]
+    [else (check-all-empty-areas board (cdr empty_areas) (car empty_areas) player-list (check-empty-area-for-each-player board (car empty_areas) player-list #t) new_points)]
+  )))
+
+;;
+(define (check-empty-area-for-each-player board empty_area player-list result)
+  (cond
+    [(not result) (if (= (length player-list) 1) 1 -1)]
+   [(empty? player-list) 0]
+   [else (check-empty-area-for-each-player board empty_area (cdr player-list) (set-empty-area board empty_area (car player-list) #t))])
+  )
+
+
+;;
+(define (set-empty-area board empty_area player result)
+  (if (or (empty? empty_area)
+          (not result))
+      result
+      (let ((result (check-turn-board board player (caar empty_area) (cdar empty_area))))
+      (if result ;;letzten beiden Paramenter sind y, x
+          (set-empty-area (set-stone board (caar empty_area) (cdar empty_area) player) (cdr empty_area) player result)
+          (set-empty-area board (cdr empty_area) player result)
           )
-      )
+      ))
   )
 
 ;;Entfernt die Elemente einer Liste aus einer anderen liste
@@ -461,6 +494,6 @@
 (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
 (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
 (0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 0 0) 
-(1 1 1 0 0 0 0 0 0 0 0 1 0 -1 0 0 1 0 0) 
+(1 1 1 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0) 
 (0 0 1 0 0 0 0 0 0 0 0 1 1 1 1 1 1 0 0) 
 (0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)))
