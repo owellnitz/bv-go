@@ -112,11 +112,11 @@
     )
   )
 
-;;Zugprüfung auf Gültigkeit.
-;;Verhindert den Selbstmord eines Spielers, außer der Selbstmord schlägt Steine des Gegners.
+;;Prüft während des Auffüllens bei der Auswertung, ob das Auffüllen zulässig ist.
+;;Ist das Auffüllen nicht mehr zulässig, hat der Gegener das gebiet erobert
 ;;
 ;;Parameter
-;;univ: Das Universum des Spieles.
+;;board Die aktuelle Spielfeldbelegung
 ;;player: Der Spieler, der am Zug ist.
 ;;y/x:Die y- und x-Koordinaten des neuen Steines.
 ;;
@@ -319,11 +319,12 @@
 ;;
 ;;return: Das Ergebnis der Auswertung als Pair (Punkte für Schwarz . Punkte für Weiß)
 (define (calc-score board)
-  (let ((empty_areas (find-all-empty-areas (find-empty-position board 0 0 '()) '() route-list)))
-    (if (= (length empty_areas) 1)
-        '(0 . 0)
-        (check-all-empty-areas board empty_areas '() player-list 0 '(0 . 0))
-  )))
+  (let ((empty_areas (find-all-empty-areas (find-empty-position board 0 0 '()) '() route-list))) 
+    (cond
+      [(= (length empty_areas) 1) '(0 . 0)] ;Wenn es nur ein leere Feld gibt, dann hat niemand eins erobert, also 0 . 0
+      ;[(= (length empty_areas) 2) '(0 . 0)];TODO: Es gibt zwei Felder und einst ist erobert. Dann kriegt der, der das eine Gebiet hält, auch das neutrale Gebiet
+      [else (check-all-empty-areas board empty_areas '() player-list 0 '(0 . 0))]))
+  )
 
 ;;Liste mit den beiden Spielern (für Iterationen)
 (define player-list '(-1 1))
@@ -481,6 +482,7 @@
 ;;route-list: 
 ;;
 ;;return: Liste mit den leeren Fächen, die als Liste mit Koordinaten dargestellt werden.
+;;TODO: Felder, die durch Steiner derselben Farbe getrennt sind und eingeschlossen sind, zusammenfassen.
 (define (find-all-empty-areas empty_list area_list route-list)
   (let ((new_empty_list (if (= (length area_list) 0) empty_list (remove-list (car area_list) empty_list))))
   (if (empty? new_empty_list)
@@ -597,24 +599,3 @@
 (1 1 1 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0) 
 (0 0 1 0 0 0 0 0 0 0 0 1 1 1 1 1 1 0 0) 
 (0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)))
-
-(define board3 '(
-(0 0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0) 
-(0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0) 
-(1 1 1 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1) 
-(-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(-1 -1 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0) 
-(0 0 0 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1) 
-(0 0 0 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0)))

@@ -103,26 +103,41 @@
             (vector-ref canny_bbox 2)
             (vector-ref canny_bbox 3)))
 
-;Spielstand auslesen
 
+;Spielstand auslesen
 ;Setzen des Smooth-Faktors
 (define smoothFactor 2.5)
 
 ;"Verwischen" des Bildes, um den Spielstand besser auslesen zu könenn
 (define smoothedImage (image->blue (gsmooth canny_crop smoothFactor)))
 
-;Zeige verwaschenes Bild
-;(present-image smoothedImage "go-smoothed.png")
-
-;Größe eines x-Schrittes
+;;Berechnet den Offset in x-Richtung
+;;
+;;Parameter
+;;pic Das Bild.
+;;
+;;Return: Der Offset in x-Richtung.
 (define (stepsizeX pic)
   (value->pixel (+ 0 (/ (image-width pic) 19.5))))
 
-;Größe eines y-Schrittes
+;;Berechnet den Offset in y-Richtung
+;;
+;;Parameter
+;;pic Das Bild.
+;;
+;;Return: Der Offset iny-Richtung.
 (define (stepsizeY pic)
   (value->pixel ( + 0 (/ (image-height pic) 19.5))))
 
-;Alle Reihen in y-Richtung durchlaufen
+;;Iteriert über alle Listen in y-Richtung
+;;
+;;Parameter
+;;start x/y: Startpositionen im Bild.
+;;list: y-Listen mit den x-Koordinaten
+;;count: Aktuelle y-Position
+;;pic: Das bild.
+;;
+;;Return: Der Offset iny-Richtung.
 (define (check-board-state startX startY list count pic)
   (if(= count 19)
      list
@@ -130,7 +145,15 @@
            (check-board-state startX (+ startY (stepsizeY pic)) list (+ 1 count) pic))
   ))
 
-;Alle Reihe in x-Richtung durchlaufen
+;;Iteriert über alle Positionen in x-Richtung
+;;
+;;Parameter
+;;start x/y: Startpositionen im Bild.
+;;list: x-Listen mit den x-Koordinaten
+;;count: Aktuelle y-Position
+;;pic: Das bild.
+;;
+;;Return: Der Offset iny-Richtung.
 (define (check-x-coordiantes startX startY list count pic)
   (if(= count 19)
   list
@@ -152,7 +175,12 @@
 ;Definition des Schwellenwertes für schwarze Steine
 (define border-black 40)
 
-;Überprüfen eines Steines, quadratisch um den ermittelten Pixel
+;Überprüfen einer Position, quadratisch um den ermittelten Pixel.
+;Prüfen, welche Farbe auf dem Stein liegt.
+; 1: Weiß
+;-1: Schwarz
+; 0: Leer
+;
 ;x  x  x
 ;x  x  x
 ;x  x  x
