@@ -7,6 +7,19 @@
 
 (provide bord-state)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;            Eingabe-Bild                  ;;
+;;                                          ;;
+;; An dieser den Namen des Bildes eingeben, ;;
+;; das bei Spielstart geladen werden soll.  ;; 
+;;                                          ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                                            ;;
+(define img-path "IMG_0986.jpg")            ;:
+                                            ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
 ;Directories
 (define src_dir  (current-directory))
 (define base_dir (build-path src_dir 'up))
@@ -52,7 +65,7 @@
                         (show-image img name)))
 
 ;Laden des Bildes aus dem der Spielstand ausgelesen werden soll
-(define img (load-image-rel "IMG_0986.jpg"))
+(define img (load-image-rel img-path))
 
 ;Bild in Schwarz/Weiß
 (define img_gray (list (car img)))
