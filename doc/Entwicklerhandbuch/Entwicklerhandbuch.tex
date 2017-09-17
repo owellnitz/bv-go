@@ -28,7 +28,8 @@ Dieser Prozess wird an jeder m"oglichen Koordinate f"ur einen Stein durchgef"uhr
 
 \section{Spielbrett zeichnen (go\_draw\_board.rkt)}
 Das Modul go\_draw\_board.rkt ist f"ur die Anzeige des gesamten User-Interfaces zust"andig.\\\\
-Es zeichnet zum aus einer g"ultigen Spielfeldbelegung (\ref{sec:Spielfeld}) das belegte Spielbrett. Zuerst wird das Grundbrett gezeichnet. Anschlie"send werden die Listen des Spielstandes ausgelesen und die ben"otigten Steine auf das Spielfeld gezeichnet. Die Leserichtung der Listen erfolgt von oben links nach unten rechts.\\
+Es zeichnet zum einen aus einer g"ultigen Spielfeldbelegung (\ref{sec:Spielfeld}) das belegte Spielbrett. Zuerst wird das Grundbrett gezeichnet. Anschlie"send werden die Listen des Spielstandes ausgelesen und die ben"otigten Steine auf das Spielfeld gezeichnet. Die Leserichtung der Listen erfolgt von oben links nach unten rechts.\\
+
 \begin{figure}[ht]
 \centering \includegraphics[width=0.3\textwidth]{images/emptyBoard}
 \caption{Leeres Spielfeld}
@@ -38,30 +39,60 @@ Es zeichnet zum aus einer g"ultigen Spielfeldbelegung (\ref{sec:Spielfeld}) das 
 \centering \includegraphics[width=0.3\textwidth]{images/board}
 \caption{Belegtes Spielfeld}
 \end{figure}
-\newpage
-Zudem zeichnet das Modul beim Start eines Spieles die ben"otigten Auswahloptionen, die der Benutzer vor dem Starten eingeben muss. Das kann zum einen "uber das Darstellen einer Auswahlfl"ache (Abb. 1.4) geschehen, auf die der Benutzer klicken muss. Zum anderen aber auch Aufforderung zur Eingabe von Zahlen "uber die Tastatur (Abb. 1.5). 
+\newpage 
 
+Zudem zeichnet das Modul beim Start eines Spieles die ben"otigten Auswahloptionen, die der Benutzer vor dem Starten eingeben muss. Das kann zum einen "uber das Darstellen einer Auswahlfl"ache (Abb. 1.4) geschehen, auf die der Benutzer klicken muss. Zum anderen aber auch eine Aufforderung zur Eingabe von Zahlen "uber die Tastatur (Abb. 1.5). 
 \begin{figure}[ht]
-\centering \includegraphics[width=0.3\textwidth]{images/Optionsauswahl}
+\centering \includegraphics[width=0.5\textwidth]{images/Optionsauswahl}
 \caption{Auswahl "uber Optionsfelder}
 \end{figure}
 
 \begin{figure}[ht]
-\centering \includegraphics[width=0.3\textwidth]{images/Zahleneingabe}
+\centering \includegraphics[width=0.5\textwidth]{images/Zahleneingabe}
 \caption{Zahleneingabe}
 \end{figure}
+\newpage
+Nach Eingabe aller Parameter erstellt die Komponente das User-Interface f"ur das Spielen selbst. Dazu geh"oren das Spielfeld, Spielstatus des Spielers,die erzielten Punkte und Buttons (f"ur Passen oder ein neues Spiel starten) (Abb. 1.6).
+
+\begin{figure}[ht]
+\centering \includegraphics[width=0.5\textwidth]{images/Spielfeld}
+\caption{Das Spielfeld w"ahrend des Spiels}
+\end{figure}
+
+Alle Darstellung des User-Interfaces k"onnen "uber die Schnittstellen des Moduls angezeigt werden. Soll eine z. B. Eingabeoption erstellt werden, muss dazu eine neue Funktion erstellt werden und als Schnittstelle bereit gestellt werden. Um bestehende Darstellungen zu "andern, m"ussen die entsprechenden Funktionen in diesem Modul angepasst werden.
 
 \newpage
 
 \section{Spielclient (go\_client.rkt)}
-Der Spielclient steuert die Kommunikation des Spielers mit dem Server. Mit dem Spielclient kann  auf drei verschiedene Arten ein Spiel gestartet werden. Es kann ein komplett neues Spiel gestartet werden, es kann ein Spielstand mit einem Bild-Spielstand gestartet werden und es kann ein Spielstand aus einer Datei geladen und gespielt werden. Bei dem Start aus einem Bild-Spielstand muss der Client abfragen, wie viele Steine bereits geschlagen wurden, ob ein Spieler gepasst hat und welcher Spieler am Zug ist. Diese Informationen werden dann zu dem Server geschickt und dieser initialisiert den ersten Spielstand (\ref{sec:World}). \\\\
-Ebenfalls ist der Spielclient f"ur die Erstellung des Interfaces zust"andig. "Uber dieses zeigt er den Spielern w"ahrend eines Spiels den aktuellen Spielstand an, ob sie an der Reihe sind, die Anzahl der geschlagenen Steine, ob der Gegner gepasst hat, sie einen ung"ultigen Zug vorgenommen haben und wer gewonnen hat.\\\\ 
-Der Spieler kann "uber den Client seinen Zug vornehmen und dem Server mitteilen, wo er seinen Stein gesetzt hat. Auch kann er seinen Spielzug passen. Der Spielclient kann w"ahrend des Spiels dem Server mitteilen, dass das aktuelle Spiel in einer Datei gespeichert werden soll.
+Der Spielclient steuert die Kommunikation des Spielers mit dem Server. Mit dem Spielclient kann  auf zwei verschiedene Arten ein Spiel gestartet werden. Es kann ein komplett neues Spiel gestartet werden und es kann ein Spielstand mit einem Bild-Spielstand gestartet werden. Bei dem Start aus einem Bild-Spielstand fragt der Client ab, wie viele Steine bereits geschlagen wurden, welche Farbe der Spieler hat, ob ein Spieler gepasst hat und welcher Spieler am Zug ist. Diese Informationen werden dann zu dem Server geschickt und dieser initialisiert den ersten Spielstand (\ref{sec:World}). Die Funktionen zum zeichnen der Auswahloptionen und Eingaben stammen aus dem go\_draw\_board.rkt Modul.\\\\
+Ebenfalls ist der Spielclient f"ur die Erstellung des Interfaces zust"andig. "Uber dieses zeigt er den Spielern w"ahrend eines Spiels den aktuellen Spielstand an, ob sie an der Reihe sind, die Anzahl der geschlagenen Steine, ob der Gegner gepasst hat, sie einen ung"ultigen Zug vorgenommen haben und wer gewonnen hat. Auch die Buttons zum Passen oder f"ur das Starten eines neuen Spiels, werden angezeigt. Diese Anzeige wird "mit Hilfe das  go\_draw\_board.rkt Modul erstellt.\\\\ 
+Die Hauptaufgabe des Clients ist aber die Entgegennahme von Benutzereingaben. Der Client nimmt Click-Events und Tastatureingaben entgegen, leitet sie zum Server weiter, empf"angt das Ergebnis und stellt das Ergebnis dar. So kann der Benutzer "uber den Client ein Spiel starten, die Spiel-Parameter eingeben, das Spiel bis zum Ende durchf"uhren und anschlie"send ein neues Spiel starten.
 
 \section{Spielserver (go\_server.rkt)}
-Der Spielserver leitet das Spiel. Zu Beginn erh"alt der Server die Information, ob er ein neues Spiel starten oder ein Spiel aus einem Bild oder einer Datei laden soll. Der Server l"adt das Bild bzw. die Datei und ermittelt den Spielstand. Der Server schickt dann ggf. eine Abfrage f"ur die weiteren ben"otigten Informationen an den Client. Diese sind bei einem neuen Spiel die Vorgabe und bei einem Spielstand aus einem Bild die geschlagene Steine, der Spieler, der am Zug ist, und ob der vorherige Spieler gepasst hat. Anschlie"send sendet der Server den vollst"andigen Startzustand an die Clients.\\\\
+Der Spielserver leitet das Spiel. Zu Beginn erh"alt der Server die Information, ob er ein neues Spiel starten oder ein Spiel aus einem Bild laden soll. Der Server l"adt das Bild und ermittelt den Spielstand. Der Server schickt dann ggf. eine Abfrage f"ur die weiteren ben"otigten Informationen an den Client. Diese sind bei einem neuen Spiel die Vorgabe und bei einem Spielstand aus einem Bild die geschlagene Steine, der Spieler, der am Zug ist, und ob der vorherige Spieler gepasst hat. Anschlie"send sendet der Server den vollst"andigen Startzustand an die Clients.\\\\
 Eine weitere Aufgabe w"ahrend des gesamten Spieles ist die Verwaltung des Spielstandes (\ref{sec:World}) und welcher Spieler am Zug ist. Ebenfalls pr"uft der Server die "ubermittelten Spielz"uge der Spieler auf ihre G"ultigkeit und teilt den Spielern ggf. mit, dass der Spielzug nicht zul"assig ist. Bei zul"assigen Z"ugen passt der Server den Spielstand (\ref{sec:World}) an und "ubermittelt den vollst"andig erstellten Spielstand an die Clients.\\\\ 
-Nach Beendigung eines Spieles, ermittelt der Server den Gewinner und teilt den Spielern (Clients) den Gewinner mit. Erh"alt der Server den Befehl, dass das Spiel gespeichert werden soll, erstellt der Server eine Datei und teilt den Clients mit, dass das Spiel gespeichert wurde.
+Nach Beendigung eines Spieles, ermittelt der Server den Gewinner und teilt den Spielern (Clients) den Gewinner mit.
+
+\section{Spielserver (go\_logic.rkt)}
+In dem Modul go\_logic.rkt ist die Spiellogik implementiert. Diese kann in drei verschieden Aufgaben unterteil werden.
+
+\begin{enumerate}
+\item Vorgaben machen:\\
+Wenn bei dem Start eines neuen Spiels eine Vorgabe gew"ahrt wird, kann der Spieler vor Spielbeginn die angegebene Anzahl Steine setzen.
+
+\item Stein setzen:\\
+Wenn ein Stein gesetzt wird, muss gepr"uft werden, dass dieser keinen Selbstmord begeht (Abb. ). Das w"urde bedeuten, dass dieser Stein und ggf. seine anliegende Struktur durch das Setzen dieses Steines zerst"ort wird.
+
+Dieser Zug ist nur erlaubt, wenn mit diesem Zug Steine des Gegners geschlagen werden und so der Stein und ggf. seine Struktur neue Freiheiten erhalten (Abb. ).
+
+Wenn ein Stein normal gesetzt wird, kann das Setzen zur Folge haben, dass durch diesen Zug eine Struktur des Gegners zerst"ort wird. Wenn dieser Fall eintritt m"ussen alle geschlagenen Steine von dem Spielfeld entfernt werden und die Punkte werden dem Spieler gut geschrieben.
+
+\item Auswertung:\\
+Nachdem beide Spieler nacheinander gepasst haben, ist das Spiel beendet. Dann startet die Auswertung. Bei der Auswertung m"ussen eroberte Gebiete gefunden werden. Das sind Fl"achen auf denen kein Stein liegt, die aber von einem Spieler eingeschlossen sind. Wenn ein Spieler eine freie Fl"ache erobert hat, erh"alt dieser die Anzahl an freien Positionen sowie die Anzahl der gegnerischen Steine in diesem Gebiet. Ein erobertes Gebiet ist in Abb. zu sehen. Nachdem alle Fl"achen "uberpr"uft sind, wird die Anzahl der erzielten Punkte auf die bereits erzielten Punkte aufaddiert. 
+
+\end{enumerate}
+
+Diese drei Hauptaufgaben k"onnen "uber Schnittstellen ausgef"uhrt werden. "Anderungen in der Spiellogik bzw. Erweiterungen sind demzufolge in diesem Modul zu erledigen.
 
  \chapter{Schnittstellen}
  \section{Bildverarbeitung}
@@ -70,16 +101,6 @@ Nach Beendigung eines Spieles, ermittelt der Server den Gewinner und teilt den S
 Das Modul bietet eine Funktion, um die Belegung des Spielfeldes auszulesen. An diese Funktion wird der Dateipfad des Bildes "ubergeben und anschlie"send liefert diese die Belegung des Spielfeldes, wie in \ref{sec:Spielfeld} beschrieben, zur"uck.
 \end{enumerate}
 
-\section{Dateiverarbeitung}
-
-\begin{enumerate}
-\item (read-file file\_path):\\
-Die Funktion erh"alt als Parameter einen Dateipfad. Die Datei wird daraufhin in das Modul geladen und ausgelesen. Aus dieser Datei wird dann eine World erstellt, die den Startzustand des Spieles festlegt. 
-
-\item (save-game-state world player):\\
-Die Funktion speichert den aktuellen Spielstand (world) in eine Datei. Dazu werden alle Informationen der World in die Datei geschrieben sowie der Spieler (player), der aktuell am Zug ist. 
-
-\end{enumerate}
 \section{Spielbrett zeichnen}
 
 \begin{enumerate}
@@ -88,7 +109,6 @@ Die Funktion zeichnet ein Spielbrett anhand eines in \ref{sec:Spielfeld} definie
 \end{enumerate}
 
 \section{Spielclient}
-
 
 \begin{enumerate}
 \item (receive w m):\\
@@ -113,7 +133,7 @@ Mit der Funktion add-world kann sich ein Client bei dem Server anmelden. Dazu wi
 
  \chapter{Paketstruktur}
  \begin{figure}[ht]
-\centering \includegraphics[width=1\textwidth]{images/Paketstruktur}
+\centering \includegraphics[width=1.1\textwidth]{images/Paketstruktur}
 \caption{Paketstruktur}
 \end{figure}
 
