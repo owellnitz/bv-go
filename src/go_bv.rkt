@@ -13,11 +13,20 @@
 (define img_dir  (build-path base_dir "images"))
 (define res_dir  (build-path base_dir "results"))
 
-;;Lädt ein Bild aus dem "images" Ordner
+;;Lädt das Bild aus dem Pfad.
+;;
+;;Parameter
+;;rel-path: Der Dateipfad des Bildes.
+;;
+;;Return: Das geladene Bild.
 (define (load-image-rel rel-path) ;rel-path: filename in "images" folder
     (load-image  (build-path img_dir rel-path)))
   
-;;Speichert ein Bild in den "results" Ordner
+;;Speichert das Bild im results-Ordner
+;;
+;;Parameter
+;;img: Das geladene Bild.
+;;rel-path: Der Speicherpfad des Bildes.
 (define (save-image-rel img rel-path) ;rel-path: filename in “images" folder
     (save-image img (build-path res_dir rel-path)))
 
@@ -45,12 +54,10 @@
 ;Laden des Bildes aus dem der Spielstand ausgelesen werden soll
 (define img (load-image-rel "IMG_0986.jpg"))
 
-;Zeige
+;Bild in Schwarz/Weiß
 (define img_gray (list (car img)))
-;(present-image img_gray "image_gray.png")
 
-;(present-image (cannyedgeimage img_gray 1.0 6.0 255.0) "go-canny.png")
-
+;Das Canny-Image
 (define canny_img (cannyedgeimage img 1.0 6.0 255.0))
 
 ;; BBox: 0 - left, 1 - upper, 2 - right, 3 - lower
@@ -62,7 +69,14 @@
       (when (> y (vector-ref bbox 3))    (vector-set! bbox 3 y))
       (when (< y (vector-ref bbox 1))    (vector-set! bbox 1 y)))))
 
-;Zeichne bBox
+;;Zeichnet die Canny-Box
+;;
+;;Parameter
+;;img: Das Bild
+;;bboxes: Die Koordinaten der Box.
+;;colors. Die Farbe der Box.
+;;
+;;Return: Bild mit gezeichneter Box.
 (define (overlay-bboxes img bboxes colors)
   (if (empty? bboxes)
        (image->bitmap img)
@@ -81,15 +95,13 @@
 ;Box zum Bild hinzufügen
 (void (image-for-each-pixel (curryr findBBox canny_bbox)  canny_img))
 
-;Zeigen des Bildes mit Canny-Box
-;(present-image (plt-image->image (overlay-bboxes img (list canny_bbox) '(green))) "go-canny-bbox.png")
-
 ;Ausschneiden des Spielfeldes
-(define canny_crop (subimage img  (vector-ref canny_bbox 0) (vector-ref canny_bbox 1) (vector-ref canny_bbox 2) (vector-ref canny_bbox 3)))
-
-;Zeigen des ausgeschnittenen Spielfeldes
-;(present-image canny_crop  "go-canny-crop.png")
-
+(define canny_crop
+  (subimage img
+            (vector-ref canny_bbox 0)
+            (vector-ref canny_bbox 1)
+            (vector-ref canny_bbox 2)
+            (vector-ref canny_bbox 3)))
 
 ;Spielstand auslesen
 
