@@ -1,8 +1,8 @@
 #lang racket
 (require 2htdp/universe)
 
-(provide do-set)
-(provide do-handicap)
+(provide do_set)
+(provide do_handicap)
 (provide calc-score)
 
 ;;Quick accessors for the universe
@@ -32,9 +32,8 @@
 ;;Die Anzahl der getöteten Steine als Liste '(schwarz weiß)
 (define (current_killed univ)
   (fifth univ))
-
 ;;Vorgabe setzen, wird vom Server bei 'set aufgerufen, wenn Serverstatus 'usehandicap ist.
-(define (do-handicap univ wrld m)
+(define (do_handicap  univ wrld m)
   [if (and (equal? (get-field-state (current_board univ) (second m) (third m)) 0)  ;;Prüfung ob Feld frei ist.
           (check-turn univ (get-color univ (iworld-name wrld)) (second m) (third m))) ;;Prüfung ob Spieler setzen darf
      (let* ([new_board (set-stone (current_board univ) (second m) (third m) (get-color univ (iworld-name wrld)))];;Setze neuen Stein
@@ -59,7 +58,7 @@
     [make-bundle univ '() '()]])
 
 ;;Zugdurchführung, wird vom Server bei 'set aufgerufen, wenn Serverstatus 'play ist.
-(define (do-set univ wrld m)
+(define (do_set  univ wrld m)
   [if (and (equal? (get-field-state (current_board univ) (second m) (third m)) 0)  ;;;Prüfung ob Feld frei ist.
           (check-turn univ (get-color univ (iworld-name wrld)) (second m) (third m))) ;;Prüfung ob Spieler setzen darf
      (let* ([temp_board (set-stone (current_board univ) (second m) (third m) (get-color univ (iworld-name wrld)))];;Setze neuen Stein
@@ -318,6 +317,9 @@
 (append (take board y)
         (list (list-set (list-ref board y) x color))
                               (take-right board (- 18 y))))
+
+
+
 
 
 

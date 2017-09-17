@@ -3,6 +3,7 @@
 (require "go_bv.rkt")
 (require "go_logic.rkt")
 
+
 ;;Maximale Anzahl an Spieler
 (define NUM_PLAYERS 2)
 
@@ -117,8 +118,6 @@
                   (list (make-mail (world1 univ) (list 'started empty_board killed_empty 'passsatus))
                         (make-mail (world2 univ)   (list 'wait empty_board killed_empty 'passsatus)))
                   '())]
-
-    
     ;;Das Spiel startet -> Spieler wählt Spielstart als neues Spiel
     ;;Abfrage des Status:
     ;;current_state:  'started
@@ -139,7 +138,6 @@
                         (make-mail (world2 univ) (list 'wait empty_board (current_killed univ) 'passsatus)))
                   '())]
 
-    
     ;;Das Spiel startet -> Spieler wählt Spielstart aus Bilddatei
     ;;Abfrage des Status:
     ;;current_state:  'started
@@ -179,7 +177,6 @@
                           (make-mail (world2 univ) (list 'wait new_board (current_killed univ) 'passsatus)))
                     '()))]
 
-    
     ;Eingabe der geschlagenen Steine
     ;Zuerst schwarze Steine eingeben
     ;;Abfrage des Status:
@@ -205,8 +202,6 @@
                     (list (make-mail (world1 univ) (list 'setkilledblack (current_board univ) killed_stones 'passsatus))
                           (make-mail (world2 univ) (list 'wait (current_board univ) killed_stones 'passsatus)))
                     '()))]
-
-    
     ;Löschen der Eingabe
     ;;Abfrage des Status:
     ;;current_state:  'setkilledblack
@@ -227,7 +222,6 @@
                     (list (make-mail (world1 univ) (list 'setkilledblack (current_board univ) killed_stones 'passsatus))
                           (make-mail (world2 univ) (list 'wait (current_board univ) killed_stones 'passsatus)))
                     '()))]
-
     
     ;Bestätigen der geschlagenen Schwarzen Steine
     ;;Abfrage des Status:
@@ -248,8 +242,7 @@
                   (list (make-mail (world1 univ) (list 'setkilledwhite (current_board univ) (current_killed univ) 'passsatus))
                         (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) 'passsatus)))
                   '())]
-
-    
+        
     ;Dann weiße Steine eingeben
     ;;Abfrage des Status:
     ;;current_state:  'setkilledwhite
@@ -274,8 +267,6 @@
                     (list (make-mail (world1 univ) (list 'setkilledwhite (current_board univ) killed_stones 'passsatus))
                           (make-mail (world2 univ) (list 'wait (current_board univ) killed_stones 'passsatus)))
                     '()))]
-
-    
     ;Löschen der Eingabe
     ;;Abfrage des Status:
     ;;current_state:  'setkilledwhite
@@ -299,7 +290,6 @@
                     (list (make-mail (world1 univ) (list 'setkilledwhite (current_board univ) killed_stones 'passsatus))
                           (make-mail (world2 univ) (list 'wait (current_board univ) killed_stones 'passsatus)))
                     '()))]
-
     
     ;Bestätigen der geschlagenen weißen Steine
     ;;Abfrage des Status:
@@ -358,7 +348,6 @@
                         '())
            ))]
 
-    
     ;;Eingabe des Passstatus nach Laden des Spielstandes aus einem Bild
     ;;Der Spieler wählt ob im letzten Zug vor dem Bild gepasst wurde
     ;;Abfrage des Status:
@@ -390,7 +379,6 @@
                       (list (make-mail (world1 univ) (list 'choosedraw (current_board univ) (current_killed univ) 'passstatus))
                             (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) 'passstatus)))
                       '()))]
-
     
     ;;Eingabe der Zugreihenfolge nach Laden des Spielstandes aus einem Bild
     ;;Der Spieler wählt das Schwarz am Zug ist
@@ -439,7 +427,6 @@
                             (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ) (sixth univ))))
                       '())))]
 
-    
     ;;Der Spieler wählt das Weiß am Zug ist
     ;;Abfrage des Status:
     ;;current_state:  'choosedraw
@@ -484,6 +471,10 @@
                           (list (make-mail (world1 univ) (list 'wait (current_board univ) (current_killed univ) (sixth univ)))
                                 (make-mail (world2 univ) (list 'play (current_board univ) (current_killed univ) (sixth univ))))
                           '())))]
+
+
+    
+     
     
     ;;Eingabe der Vorgabe
     ;;Abfrage des Status:
@@ -508,8 +499,6 @@
                     (list (make-mail (world1 univ) (list 'choosehandicap (current_board univ) (current_killed univ) handicap))
                           (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) 'passsatus)))
                     '()))]
-
-    
     ;Löschen der Eingabe
     ;;Abfrage des Status:
     ;;current_state:  'sethandicap
@@ -532,7 +521,6 @@
                     (list (make-mail (world1 univ) (list 'choosehandicap (current_board univ) (current_killed univ) handicap))
                           (make-mail (world2 univ) (list 'wait (current_board univ) (current_killed univ) 'passsatus)))
                     '()))]
-
     
     ;Bestätigen der Vorgabe
     ;;Abfrage des Status:
