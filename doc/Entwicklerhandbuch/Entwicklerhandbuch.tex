@@ -25,9 +25,10 @@ In diesem Bild wird die Koordinaten des ersten Spielfeldes (oben links) gesucht.
 \\\\
 Dieser Prozess wird an jeder m"oglichen Koordinate f"ur einen Stein durchgef"uhrt und so eine Spielfeldbelegung, wie in \ref{sec:Spielfeld} beschreiben, erstellt. Die Koordinaten werden anhand zweier Schrittweiten (in x - und y-Richtung) ermittelt. Ist das ganze Spielfeld kontrolliert, hat das Modul die vollst"andige Spielfeldbelegung des Bildes projiziert.
 \newpage
-\section{Spielbrett zeichnen (go\_draw\_board.rkt)}
-Dieses Modul zeichnet aus der Spielfeldbelegung (\ref{sec:Spielfeld}) das belegte Spielbrett. Zuerst wird das Grundbrett gezeichnet. Anschlie"send werden die Listen des Spielstandes ausgelesen und die ben"otigten Steine auf das Spielfeld gezeichnet. Die Leserichtung der Listen erfolgt von oben links nach unten rechts.
 
+\section{Spielbrett zeichnen (go\_draw\_board.rkt)}
+Das Modul go\_draw\_board.rkt ist f"ur die Anzeige des gesamten User-Interfaces zust"andig.\\\\
+Es zeichnet zum aus einer g"ultigen Spielfeldbelegung (\ref{sec:Spielfeld}) das belegte Spielbrett. Zuerst wird das Grundbrett gezeichnet. Anschlie"send werden die Listen des Spielstandes ausgelesen und die ben"otigten Steine auf das Spielfeld gezeichnet. Die Leserichtung der Listen erfolgt von oben links nach unten rechts.\\
 \begin{figure}[ht]
 \centering \includegraphics[width=0.3\textwidth]{images/emptyBoard}
 \caption{Leeres Spielfeld}
@@ -37,6 +38,20 @@ Dieses Modul zeichnet aus der Spielfeldbelegung (\ref{sec:Spielfeld}) das belegt
 \centering \includegraphics[width=0.3\textwidth]{images/board}
 \caption{Belegtes Spielfeld}
 \end{figure}
+\newpage
+Zudem zeichnet das Modul beim Start eines Spieles die ben"otigten Auswahloptionen, die der Benutzer vor dem Starten eingeben muss. Das kann zum einen "uber das Darstellen einer Auswahlfl"ache (Abb. 1.4) geschehen, auf die der Benutzer klicken muss. Zum anderen aber auch Aufforderung zur Eingabe von Zahlen "uber die Tastatur (Abb. 1.5). 
+
+\begin{figure}[ht]
+\centering \includegraphics[width=0.3\textwidth]{images/Optionsauswahl}
+\caption{Auswahl "uber Optionsfelder}
+\end{figure}
+
+\begin{figure}[ht]
+\centering \includegraphics[width=0.3\textwidth]{images/Zahleneingabe}
+\caption{Zahleneingabe}
+\end{figure}
+
+\newpage
 
 \section{Spielclient (go\_client.rkt)}
 Der Spielclient steuert die Kommunikation des Spielers mit dem Server. Mit dem Spielclient kann  auf drei verschiedene Arten ein Spiel gestartet werden. Es kann ein komplett neues Spiel gestartet werden, es kann ein Spielstand mit einem Bild-Spielstand gestartet werden und es kann ein Spielstand aus einer Datei geladen und gespielt werden. Bei dem Start aus einem Bild-Spielstand muss der Client abfragen, wie viele Steine bereits geschlagen wurden, ob ein Spieler gepasst hat und welcher Spieler am Zug ist. Diese Informationen werden dann zu dem Server geschickt und dieser initialisiert den ersten Spielstand (\ref{sec:World}). \\\\
