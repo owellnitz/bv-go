@@ -12,9 +12,9 @@
 \title{Entwicklerhandbuch f"ur die Umsetzung des Brettspieles 'Go'}
 \author{Harry Flohr (6811837)\\und\\Jan Ole Wellnitz (6796226)}
 \maketitle
+ \tableofcontents 
  
  \chapter{Strukturen}
-
 \section{Spielfeld}
 \label{sec:Spielfeld}
 Ein Spielfeld besteht aus 19x19 Felder, auf denen Steine positioniert werden k"onnen. Das Spielfeld wird in dem Programm als eine Liste mit 19 weiteren Listen dargestellt. Diese 19 Listen stehen f"ur die y-Koordinaten des Spielfeldes. Jede dieser 19 Listen enth"alt 19 Positionen, um einen Wert einzutragen. Diese Unterlisten stehen f"ur die x-Koordinaten.\\\\
@@ -138,12 +138,12 @@ Dieser Zug ist nur erlaubt, wenn mit diesem Zug Steine des Gegners geschlagen we
 Wenn ein Stein normal gesetzt wird, kann das Setzen zur Folge haben, dass durch diesen Zug eine Struktur des Gegners zerst"ort wird. Wenn dieser Fall eintritt m"ussen alle geschlagenen Steine von dem Spielfeld entfernt werden und die Punkte werden dem Spieler gut geschrieben.
 \begin{figure}[ht]
 \centering \includegraphics[width=0.3\textwidth]{images/Vor-Kill}
-\caption{Spielbrett vor dem Schlagen des Steines}
+\caption{Spielbrett vor dem Schlagen der Steine}
 \end{figure}
 
 \begin{figure}[ht]
 \centering \includegraphics[width=0.3\textwidth]{images/Nach-Kill}
-\caption{Spielbrett nach dem Schlagen des Steines}
+\caption{Spielbrett nach dem Schlagen der Steine}
 \end{figure}
 \item Auswertung:\\
 Nachdem beide Spieler nacheinander gepasst haben, ist das Spiel beendet. Dann startet die Auswertung. Bei der Auswertung m"ussen eroberte Gebiete gefunden werden. Das sind Fl"achen auf denen kein Stein liegt, die aber von einem Spieler eingeschlossen sind. Wenn ein Spieler eine freie Fl"ache erobert hat, erh"alt dieser die Anzahl an freien Positionen sowie die Anzahl der gegnerischen Steine in diesem Gebiet. Ein erobertes Gebiet ist in Abb. zu sehen. Nachdem alle Fl"achen "uberpr"uft sind, wird die Anzahl der erzielten Punkte auf die bereits erzielten Punkte aufaddiert.
@@ -239,13 +239,48 @@ Die calc-score Methode ermittelt am Ende des Spieles anhand des Spielfeldes das 
 \caption{Paketstruktur}
 \end{figure}
 
-\chapter{Programmablauf}
+\chapter{Programmabl"aufe}
+\section{Programmablauf}
 \begin{figure}[ht]
 \centering \includegraphics[width=1.1\textwidth]{images/Ablauf}
-\caption{Ablaufdiagramm}
+\caption{Ablaufdiagramm des Programmes}
+\end{figure}
+
+\section{Stein setzen}
+\begin{figure}[ht]
+\centering \includegraphics[width=1.1\textwidth]{images/SteinSetzenAblauf}
+\caption{Ablaufdiagramm f"ur das Setzen eines Steines}
+\end{figure}
+\newpage
+\section{Auswertung}
+\begin{figure}[ht]
+\centering \includegraphics[width=1.1\textwidth]{images/AuswertungAblauf}
+\caption{Ablaufdiagramm der Auswertung}
+\end{figure}
+\newpage
+\section{Gebietszuweisung}
+\begin{figure}[ht]
+\centering \includegraphics[width=1.1\textwidth]{images/GebietZuweisungAblauf}
+\caption{Ablaufdiagramm der Gebietszuweisung}
+\end{figure}
+
+\chapter{Beispiele}
+\section{Erlaubter Selbstmord}
+\begin{figure}[ht]
+\centering \includegraphics[width=0.4\textwidth]{images/VorErlSelbstmord}
+\caption{Spielbrett vor erlaubten Selbstmord}
+\end{figure}
+\begin{figure}[ht]
+\centering \includegraphics[width=0.4\textwidth]{images/NachErlSelbstmord}
+\caption{Spielbrett nach dem erlaubten Selbstmord}
+\end{figure}
+\newpage
+\section{Auswertung}
+\begin{figure}[ht]
+\centering \includegraphics[width=1.2\textwidth]{images/Auswertung}
+\caption{Beispielhafte Auswertung}
 \end{figure}
 \chapter{ToDo's}
-
 \section{Dateiverarbeitung (go\_datei.rkt)}
 Dieses Modul l"adt aus einer Spielstand-Datei den aktuellen Spielstand und gibt diesen als World (\ref{sec:World}) zur"uck. Ebenfalls kann dieses Modul einen Spielstand in die Datei schreiben. Die Datei enth"alt folgende Informationen:
 
@@ -256,5 +291,20 @@ Dieses Modul l"adt aus einer Spielstand-Datei den aktuellen Spielstand und gibt 
 \item Passstatus des vorherigen Spielers
 \end{enumerate}
 
+\section{Bug in Auswertung}
+Aufgrund der hohen Komplexit"at der Auswertung war keine Zeit mehr einen Sonderfall in der Auswertung zu behandeln. Dieser tritt auf wenn eine eroberte Fl"ache durch gegnerische Steine unterbrochen wird (Abb. 6.1). Die Funktion, die die leeren Fl"achen sucht, erkennt dieses Gebiet als zwei leere Fl"achen, die von keiner Partei erobert wurden. Normalerweise muss bei der Auswertung erkannt werden, dass es sich nur um eine eroberte Fl"ache handelt und die gegnerischen Steine m"ussen geschlagen werden.
+\begin{figure}[ht]
+\centering \includegraphics[width=0.3\textwidth]{images/AuswertungBug}
+\caption{Spielbrett nach dem Schlagen des Steines}
+\end{figure}
+L"osungsansatz:\\
+Es m"ussen drei Bedienungen gepr"uft werden, damit zwei getrennte Fl"achen als gemeinsame erkannt werden mu"ssen:
+\begin{enumerate}
+\item Beide Fl"achen d"urfen einzeln noch nicht erobert sein
+\item Sie m"ussen "uber gegnerische Steine miteiander verbunden sein
+\item Gemeinsam mit den gegnerischen Steinen muss die Fl"ache als erobert gelten
+\end{enumerate}
+Treten alle drei F"alle ein, d"urfen die leeren Fl"achen als gemeinsame betrachtet werden. Dann bekommt der Eroberer sowohl die Punkte f"ur die leeren Positionen als auch die Punkte f"ur die geschlagenen Steine.\\
+Diese "Anderung muss in der Spiellogik implementiert werden, bevor die eigentliche Auswertung startet. Dann m"ussen alle gefundenen freien Fl"achen gepr"uft werden, ob sie zusammen geh"oren und anschlie"send in der Auswertung auch als gemeinsame Fl"ache betrachtet werden. Wir erachten den Aufwand als erheblich.
 
 \end{document}
