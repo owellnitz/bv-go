@@ -25,16 +25,17 @@
 
 ;;Zeichnen einer Welt
 ;;Hilfsfunktionen
+
+;Spielfeld
 (define field (rectangle 400 400 "solid" "PeachPuff"))
 
+;Setzen der seitlichen Begrenzungen
 (define field2 (add-line field 380 20 20 20 "black"))
-
 (define field3 (add-line field2 380 380 20 380 "black"))
-
 (define field4 (add-line field3 20 380 20 20 "black"))
-
 (define fieldBasic (add-line field4 380 380 380 20 "black"))
 
+;Füge y-Spiellinien hinzu (18 Stück)
 (define (yLines field count y)
   (if (= count 18)
       field
@@ -42,6 +43,7 @@
       )
   )
 
+;Füge x-Spiellinien hinzu (18 Stück)
 (define (xLines field count x)
   (if (= count 18)
       field
@@ -49,8 +51,17 @@
       )
   )
 
+;Leeres Spielbrett
 (define game-board (xLines (yLines fieldBasic 1 40) 1 40))
 
+;;Setzt einen Stein an die gewünschte Position.
+;;
+;;Paramter:
+;;field: Das Spielbrett.
+;;x/y: Die Gewünschte Position des neuen Steines
+;;color: Die Farbe des zu setzenden Steines.
+;;
+;;Return: Spielbrett mit neuen Stein.
 (define (set-stone field x y color)
   (if (= (string-length color) 0 )
       field
@@ -61,6 +72,16 @@
       )
   )
 
+;;Wandelt einen board-state (19x19-Liste) in ein gezeichnetes Spielbrett
+;;mit entsprechender Belegung. (Funktion durchläuft die Listen in y-Richtung
+;;und füllt mit (board-list->board county countx field list) die x-Reihen)
+;;
+;;Parameter:
+;;county: Aktuelle y-Position
+;;field: Das Spielbrett.
+;;list: Der board-state in Listenform (19x19)
+;;
+;;Return: Das gezeichnete Spielbrett mit der gegeben Belegung.
 (define (board-state->board county field list)
   (if (empty? list)
       field
@@ -70,6 +91,15 @@
       )
   )
 
+;;Setzt die Steine in x-Richtung
+;;
+;;Parameter:
+;;county: Aktuelle y-Position
+;;countx: Aktuelle x-Position
+;;field: Das Spielbrett.
+;;list: Der board-state in Listenform (19x19)
+;;
+;;Return: Das Spielbrett mit der neuen belegten x-Reihe.
 (define (board-list->board county countx field list)
   (if (empty? list)
       field
@@ -80,6 +110,10 @@
       )
   )
 
+;Gibt die Farbe anhand der Belegung des Spielfeldes zurück.
+; 1: weiß
+;-1: schwarz
+; 0: keine Farbe
 (define (number->color num)
   (cond
     [(= num 1) "white"]
