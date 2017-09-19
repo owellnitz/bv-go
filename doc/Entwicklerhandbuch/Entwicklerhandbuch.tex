@@ -47,7 +47,7 @@ Die World setzt sich aus mehreren Informationen zu einer Liste zusammen:
 \begin{enumerate}
 \item Spielfeld (siehe \ref{sec:Spielfeld})
 \item Weltzustand\\
-Der Weltzustand gibt an, ob der Client ziehen darf, warten muss oder das Spiel beendet wurde (Zustände: wait, play, lost, won).
+Der Weltzustand gibt an, ob der Client ziehen darf, warten muss oder das Spiel beendet wurde (Zustände: wait, play, lost, won, started, setkilledblack, setkilledwhite, choosedraw, choosepassstatus, choosehandicap, usehandicap).
 \item Geschlagene Steine\\
 Die bereits geschlagenen Steine werden als Pair '(schwarz . weiß) übergeben.
 \item Gepasster Spielzug\\
@@ -57,6 +57,21 @@ Als Beispiel eine mögliche World-Darstellung bei der der aktuelle Spieler am Zu
 \begin{quotation}
  '(play '(spielfeld) '(5 . 8) false)
 \end{quotation}
+ 
+\section{Weltzust"ande}
+\begin{enumerate}
+\item wait: Abwarten
+\item play: An der Reihe
+\item won: Gewonnen
+\item lost: verloren
+\item started: Wahl des Spielstarts als neues Spiel oder aus einer Bilddatei
+\item setkilledblack: Eingabe der geschlagenen schwarzen Steine bei Spielstart
+\item setkilledwhite: Eingabe der geschlagenen wei"sen Steine bei Spielstart
+\item choosedraw: Wahl der Zugreihenfolge
+\item choosepassstatus: Wahl ob vor Spielstart gepasst wurde
+\item choosehandicap: Setzen der H"ohe der Vorgabe
+\item usehandicap: Setzen der Vorgabe auf dem Spielfeld
+\end{enumerate}
  
 \chapter{Module der Software}
  
@@ -247,9 +262,18 @@ Die calc-score Methode ermittelt am Ende des Spieles anhand des Spielfeldes das 
 \end{figure}
 
 \section{Stein setzen}
+\label{sec:SteinSetzen}
 \begin{figure}[ht]
 \centering \includegraphics[width=1.1\textwidth]{images/SteinSetzenAblauf}
 \caption{Ablaufdiagramm f"ur das Setzen eines Steines}
+\end{figure}
+Wenn ein Spieler einen Stein setzt muss die g"ultigkeit dieses Zuges gepr"uft werden. Wenn keine Freiheit direkt bei dem zu setzenden Stein zu finden ist, m"ussen alle direkten Steine der gleichen links, rechts, oben und unten von dem gesetzten Stein auf vorhandene Freiheiten "uberpr"uft werden. Diese benachbarten Steine werden als Startpunkte genommen. Von diesen werden weitere benachbarte Steine der gleichen Farbe gesucht. Diese Suche wird so lange fortgesetzt bis eine Freiheit gefunden wird. Wird eine Freiheit gefunden, kann der Stein gesetzt werden. Wird keine Freiheit gefunden, ist der Zug ung"ultig, weil der Spieler die eigene Struktur mit diesen Zug selbst schlagen w"urde. Diesen Zug nennt man dann Selbstmord und das ist nicht erlaubt.\\\\
+Dieser Zug ist nur zugelassen, wenn man mit diesen Zug Steine des Gegners schlagen w"urde. Dazu muss der gleiche Prozess nur mit benachbarten Steinen der gegnerischen Farbe durchlaufen werden. Wird keine Freiheit gefunden, werden die Steine des Gegners geschlagen und die eigene Struktur erh"alt neue Freiheiten.\\\\
+Die Pr"ufung auf geschlagene Steine des Gegners wird ebenfalls durchgef"uhrt, wenn ein Zug sofort als g"ultig erkannt wird. Das hei"st, dass der Zug keinen Selbstmord hervorruft, aber Steine schl"agt. Das hei"st, dass bei jedem regul"ar gesetzten Steine die benachbarten gegnerischen Strukturen auf Freiheiten "uberpr"uft werden. Findet sich bei einer Struktur wiederum keine Freiheit, werden die Steine entfernt und die Punkte werden dem setzenden Spieler hinzugef"ugt.
+
+\begin{figure}[ht]
+\centering \includegraphics[width=1\textwidth]{images/Freiheit_code}
+\caption{Funktionen f"ur das Suchen von Freiheiten benachbarter Steinen}
 \end{figure}
 \newpage
 \section{Auswertung}
@@ -257,13 +281,26 @@ Die calc-score Methode ermittelt am Ende des Spieles anhand des Spielfeldes das 
 \centering \includegraphics[width=1.1\textwidth]{images/AuswertungAblauf}
 \caption{Ablaufdiagramm der Auswertung}
 \end{figure}
+Die Auswertung startet mit der Suche nach allen freien Positionen auf dem Spielfeld. Diese freien Positionen werden zu freien Fl"achen (=Gebiete) zusammengefasst. Anschlie"send wird jede freie Fl"ache "uberpr"uft, ob die Fl"ache von einem Spieler erobert wurde. Diese Funktionalit"at wird in dem Kapitel Gebietszuweisen (\ref{sec:Gebietszuweisung}) genauer erl"autert. Wurde ein Gebiet von einem Spieler erobert, wird die Anzahl der freien Positionen zu den Punkten des Spielers hinzugef"ugt. Liegen in dem eroberten Gebiet Steine des Gegners, werden diese geschlagen und ebenfalls dem Spieler als Punkte hinzugef"ugt. F"ur das Finden der geschlagenen Steine wird das eroberte Gebiet mit den Steinen des Eroberes aufgef"ullt. F"ur diesen Prozess werden die Funktionen zum Setzen eines Steines benutzt, um geschlagene Steine zu finden. Diese Funktionen sind in dem Kapitel Stein setzen (\ref{sec:SteinSetzen}) genauer beschrieben. Wird keinem Spieler ein Gebiet zugeschrieben, ist es neutral und kein Spieler erh"alt Punkte.\\\\
+Diese Pr"ufung wird mit allen freien F"lachen durchlaufen, um so den Gesamtspielstand zu bestimmen. Am Ende werden die erzielten Punkte in der Auswertung auf die geschlagenen Steine w"ahrend des Spiels aufaddiert und der Sieger bestimmt.
+\begin{figure}[ht]
+\centering \includegraphics[width=1\textwidth]{images/CountKilledStones_code}
+\caption{Z"ahlt die geschlagenen Steine aller eroberten Fl"ache}
+\end{figure}
 \newpage
 \section{Gebietszuweisung}
+\label{sec:Gebietszuweisung}
 \begin{figure}[ht]
+\newpage
 \centering \includegraphics[width=1.1\textwidth]{images/GebietZuweisungAblauf}
 \caption{Ablaufdiagramm der Gebietszuweisung}
 \end{figure}
-
+Um ein Gebiet einem Spieler zuzuweisen, muss gepr"uft werden, ob dieser das Gebiet erobert bzw. eingeschlossen hat. Auch hier werden die Funktionen der Stein setzen Funktionalit"at (\ref{sec:SteinSetzen}) verwendet. Das freie Fl"ache wird zuerst vollst"andig mit schwarzen Steinen aufgef"ullt. Ist die Fl"ache vollst"andig mit schwarzen Steinen auff"ullbar, dann ist Schwarz ein potentieller Eroberer der Fl"ache, weil sie nicht von Wei"s eingeschlossen ist. W"are dies der Fall, dann w"are die Fl"ache nicht vollst"andig auff"ullbar, weil Schwarz bei dem letzten Stein einen Selbstmord begehen w"urde. Dies ist aber in der Stein setzen Funktionalit"at (\ref{sec:SteinSetzen}) nicht erlaubt. Ist die Fl"ache also nicht vollst"andig auff"ullbar, dann ist wei"s der Eroberer dieser Fl"ache.\\\\
+Davon ausgehend, dass Schwarz ein potentieller Eroberer ist, muss anschlie"send noch gepr"uft werden, ob Wei"s die Fl"ache ebenfalls auff"ullen darf. Darf Wei"s dies nicht, geh"ort die Fl"ache Schwarz. Darf Wei"s die Fl"ache ebenfalls komplett auff"ullen, ist die Fl"ache neutral, weil sie somit von keiner Farbe erobert ist.
+\begin{figure}[ht]
+\centering \includegraphics[width=1.1\textwidth]{images/checkAllAreas_code}
+\caption{Pr"uft alle leeren Fl"achen auf eine Eroberung und addiert die freien eroberten Positionen zu den Punkten hinzu}
+\end{figure}
 \chapter{Beispiele}
 \section{Erlaubter Selbstmord}
 \begin{figure}[ht]
