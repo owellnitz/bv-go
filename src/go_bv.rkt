@@ -5,7 +5,7 @@
                     (image-width  plt-image-width)
                     (image-height plt-image-height)))
 
-(provide bord-state)
+(provide board-state)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;            Eingabe-Bild                  ;;
@@ -230,4 +230,4 @@
 ;;Liest den Spielstand aus einem Bild heraus und gibt diesen Spielstand in der definierten Struktur zurück.
 ;;
 ;;Return: Spielstand in definierter Struktur
-(define bord-state (check-board-state (car (start smoothedImage)) (cdr (start smoothedImage)) '() 0 smoothedImage))
+(define board-state (check-board-state (car (start smoothedImage)) (cdr (start smoothedImage)) '() 0 smoothedImage))
