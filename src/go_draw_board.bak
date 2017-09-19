@@ -122,43 +122,25 @@
     ))
 
 
-;;Komplettes Spielfeld mit gesetzen Steinen, geschlagenen Steinen und dem aktuellen Passstatus
+;;Spielfeld mit gesetzen Steinen + geschlagenen Steine
 ;;Hilfsfunktionen
 
-;;Anzeige der geschlagenen Steine mit Schwarz über Weiß.
-;;Parameter:
-;;killed_stones: Anzahl der geschlagenen Steine als Paar
-;;
-;;Return: Ein Textfeld mit der Anzahl der geschlagenen Steine nach Farbe
+;;Anzeige der geschlagenen Steine mit Schwarz über Weiß
 (define (text-for-killed-stones killed_stones)
   (overlay/offset (text-for-black-killed (car killed_stones))
                   0 200
                   (text-for-white-killed (cadr killed_stones))))
 
-;;Anzeige der geschlagenen Steine für Schwarz.
-;;Parameter:
-;;black_killed: Anzahl der geschlagenen schwarzen Steine
-;;
-;;Return: Ein Text mit der Anzahl der geschlagenen schwarzen Steine
 (define (text-for-black-killed black_killed)
   (above (text "Geschlagene schwarze Steine" 14 'blue)
          (text (number->string black_killed) 14 'blue)))
 
-;;Anzeige der geschlagenen Steine für Weiß.
-;;Parameter:
-;;white_killed: Anzahl der geschlagenen weißen Steine
-;;
-;;Return: Ein Text mit der Anzahl der geschlagenen weißen Steine
 (define (text-for-white-killed white_killed)
   (above (text "Geschlagene weiße Steine" 14 'blue)
          (text (number->string white_killed) 14 'blue)))
 
 
 ;;Anzeige des Spielfelds mit den geschlagenen Steinen und Pass-Status am rechten Rand.
-;;Parameter:
-;;world: Alle Informationen des Clients zum aktuellen Spielstands
-;;
-;;Return: Das Spielfeld mit gesetzten Steinen, Spielstatus und geschlagenen Steinen
 (define (draw-board-with-score world)
   (overlay/offset (beside (above (board-state->board 0 game-board (second world))
                                  (if (equal? (first world) 'wait)
@@ -181,117 +163,101 @@
 ;;Teilung des Feldes in zwei horizontale Bereiche
 (define two-areas (add-line field 0 200 400 200  "black"))
 
-;;Startfeld zur Auswahl vom Spielstart aus einer Bilddatei oder als neues Spiel
-;;Hilfsfunktionen für die Textfelder
-
-;;Auswahltext für den Start aus einer Bilddatei
+;;Startfeld zur Auswahl vom Spielstart aus Bilddatei oder als neues Spiel
+;;Hilfsfunktionen  
 (define text-for-image
   (above (text "Klicke hier um ein Spiel" 22 'blue)
          (text "aus einer Bilddatei zu laden" 22 'blue)))
 
-;;Auswahltext für den Start eines neuen Spieles
 (define text-for-new-game
   (text "Klicke hier um ein neues Spiel zu starten" 22 'blue))
 
-;;Startfeld mit den Textfeldern
+;;Startfeld
 (define start-field
   (overlay/offset text-for-image 0 100
                   (overlay/offset text-for-new-game 0 -100 two-areas)))
 
 ;;Neues Spiel mit Auswahl der Farbe und Vorgabe
-;;Hilfsfunktionen für die Farbwahl
-
-;;Auswahltext für die Farbe Schwarz
+;;Hilfsfunktionen für Farbwahl
 (define text-for-black
   (above(text "Klicke hier um die Farbe" 22 'blue)
         (text " schwarz zu wählen" 22 'blue)))
 
-;;Auswahltext für die Farbe Weiß
 (define text-for-white
   (above(text "Klicke hier um die Farbe" 22 'blue)
         (text " weiß zu wählen" 22 'blue)))
-
-;;Farbwahlfeld mit beiden Textfeldern
+;;Farbwahlfeld
 (define choose-color-field
   (overlay/offset text-for-black 0 100
                   (overlay/offset text-for-white 0 -100 two-areas)))
 
 ;;Hilfsfunktionen für Vorgabe
-
-;;Text zur Beschreibung der Eingabe der Vorgabe
 (define text-for-sethandicap
   (above(text "Gebe die Höhe der Vorgabe" 22 'blue)
         (text "mit den Nummerntasten ein." 22 'blue)
         (text "Bestätige mit der Entertaste" 22 'blue)))
 
-;;Anzeige der eingegebenen Vorgabe. Wurde noch keine Vorgabe eingegeben wird "0" angezeigt.
 (define (input-for-handicap handicap)
   (text (if (equal? 'handicap handicap)
             "0"
             (number->string handicap)) 22 'blue))
 
-;;Anzeige der verbliebenden Vorgabe. Wird beim Setzen der Vorgabe benötigt.
 (define (text-for-handicap handicap)
   (above (text "Verbliebende Vorgabe" 14 'blue)
          (text (if (equal? 'handicap handicap)
                    "0"
                    (number->string handicap)) 14 'blue)))
 
-;Feld zur Eingabe der Vorgabe bestehend aus dem Beschreibungstext und der Anzeige der eingebenen Vorgabe
+;Feld zur Eingabe der Vorgabe
 (define (choose-handicap handicap)
   (overlay/offset text-for-sethandicap 0 100
                   (overlay/offset (input-for-handicap handicap) 0 -100 two-areas)))
 
-;;Feld zum Setzen der Vorgabe. Spielfeld mit gesetzen Vorgabesteinen und der Anzeige der verbliebenden Vorgabe.
+;;Feld zum Setzen der Vorgabe
 (define (set-handicap world)
   (beside (above (board-state->board 0 game-board (second world))
                  (text "bitte Zelle markieren!" 16 'darkgreen))            
           (text-for-handicap (fourth world))))
 
-;;Spielstart aus BV-Datei
+;;Start aus BV-Datei
 ;; Hilfsfunktionen für Eingabe der geschlagenen Steine
-;;Text zur Beschreibung der Eingabe der geschlagenen schwarzen Steine
 (define text-for-black-stones
   (above(text "Gebe die Anzahl der" 22 'blue)
         (text "geschlagenen schwarzen Steine" 22 'blue)
         (text "mit den Nummerntasten ein." 22 'blue)
         (text "Bestätige mit der Entertaste" 22 'blue)))
 
-;;Text zur Beschreibung der Eingabe der geschlagenen weißen Steine
 (define text-for-white-stones
   (above(text "Gebe die Anzahl der" 22 'blue)
         (text "geschlagenen weißen Steine" 22 'blue)
         (text "mit den Nummerntasten ein." 22 'blue)
         (text "Bestätige mit der Entertaste" 22 'blue)))
 
-;;Anzeige der eingebenen geschlagenen Steine
 (define (input-for-killed-stones killed-stones)
   (text (number->string killed-stones) 22 'blue))
 
-;Felder zur Eingabe der geschlagenen Steine
-;;Eingabe der schwarzen Steine mit Beschreibungstext und Anzeige der Eingabe
+;Feld zur Eingabe der geschlagenen Steine
+;;Schwarz
 (define (choose-killed-black-stones killed-stones)
   (overlay/offset text-for-black-stones 0 100
                   (overlay/offset (input-for-killed-stones killed-stones) 0 -100 two-areas)))
 
-;;Eingabe der weißen Steine mit Beschreibungstext und Anzeige der Eingabe
+;;Weiß
 (define (choose-killed-white-stones killed-stones)
   (overlay/offset text-for-white-stones 0 100
                   (overlay/offset (input-for-killed-stones killed-stones) 0 -100 two-areas)))
 
 ;;Auswahl ob gepasst wurde beim Start aus BV
 ;;Hilfsfunktionen
-;;Auswahltext falls vorher gepasst wurde
 (define text-for-passed
   (above(text "Klicke hier falls im vorherigen" 22 'blue)
         (text " Zug gepasst wurde" 22 'blue)))
 
-;;Auswahltext falls vorher nicht gepasst wurde
 (define text-for-not-passed
   (above(text "Klicke hier falls im vorherigen" 22 'blue)
         (text " Zug nicht gepasst wurde" 22 'blue)))
 
-;;Auswahlfeld für den Passstatus nach Start aus BV mit beiden Auswahltexten
+;;Auswahlfeld für den Passstatus nach Start aus BV
 (define choose-passstatus
   (overlay/offset text-for-passed 0 100
                   (overlay/offset text-for-not-passed 0 -100 two-areas)))
@@ -300,17 +266,15 @@
 
 ;;Auswahl "Wer ist am Zug" beim Start aus BV
 ;;Hilfsfunktionen für Wahl der Zugreihenfolge
-;;Auswahltext für Schwarz
 (define text-for-black-draw
   (above(text "Klicke hier falls die Farbe" 22 'blue)
         (text " schwarz am Zug ist" 22 'blue)))
 
-;;Auswahltext für Weiß
 (define text-for-white-draw
   (above(text "Klicke hier falls die Farbe" 22 'blue)
         (text " weiß am Zug ist" 22 'blue)))
 
-;;Feld zur Wahl der Zugreihenfolge mit beiden Auswahltexten
+;;Feld zur Wahl der Zugreihenfolge
 (define choose-draworder-field
   (overlay/offset text-for-black-draw 0 100
                   (overlay/offset text-for-white-draw 0 -100 two-areas)))
@@ -318,23 +282,20 @@
 ;;Auswertung 
 ;;Hilfsfunktionen für die Auswertung
 
-;;Anzeige der Gesamtpunktzahl für Schwarz
-(define (text-for-black-score score)
-  (above (text "Finale Punktzahl für Schwarz:" 14 'blue)
-         (text (number->string score) 14 'blue)))
-
-;;Anzeige der Gesamtpunktzahl für Weiß
-(define (text-for-white-score white_score)
-  (above (text "Finale Punktzahl für Weiß:" 14 'blue)
-         (text (number->string white_score) 14 'blue)))
-
-;;Anzeige der Punkte beider Farben.
 (define (text-for-score score)
    (overlay/offset (text-for-black-score (cadr score))
                   0 200
                   (text-for-white-score (car score))))
 
-;;Feld zur Anzeige des finalen Spielstandes mit erreichten Punkten am rechten Rand.
+(define (text-for-black-score score)
+  (above (text "Finale Punktzahl für Schwarz:" 14 'blue)
+         (text (number->string score) 14 'blue)))
+
+(define (text-for-white-score white_score)
+  (above (text "Finale Punktzahl für Weiß:" 14 'blue)
+         (text (number->string white_score) 14 'blue)))
+
+;;Feld zur Anzeige des finalen Spielstandes mit erreichten Punkten
 (define (draw-final-score world)
   (overlay/offset (beside (above (board-state->board 0 game-board (second world))
                                  (if (equal? (first world) 'won)

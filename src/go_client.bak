@@ -6,18 +6,15 @@
 ;;Der go_client hat in jeder Instanz eine eigene Welt, welche ihm vom Server mitgeteilt wird.
 ;;Eine Welt setzt sich zusammen aus: (Zustand Spielfeldbelegung Geschlagene_Steine Passstatus)
 ;;Mögliche Zustände:
-;; 1. w=(wait            ) - Abwarten
-;; 2. w=(play            ) - An der Reihe
-;; 3. w=(won             ) - Gewonnen
-;; 4. w=(lost            ) - Verloren
-;; 5. w=(started         ) - Wahl des Spielstarts als neues Spiel oder aus einer Bilddatei
-;; 6. w=(setkilledblack  ) - Eingabe der geschlagenen schwarzen Steine bei Spielstart
-;; 7. w=(setkilledwhite  ) - Eingabe der geschlagenen weißen Steine bei Spielstart
-;; 8. w=(choosedraw      ) - Wahl der Zugreihenfolge
-;; 9. w=(choosepassstatus) - Wahl ob vor Spielstart gepasst wurde
-;;10. w=(choosehandicap  ) - Setzen der Höhe der Vorgabe
-;;11. w=(usehandicap     ) - Setzen der Vorgabe auf dem Spielfeld
-
+;; 1. w=(wait          ) - Abwarten
+;; 2. w=(play          ) - An der Reihe
+;; 3. w=(won           ) - Gewonnen
+;; 4. w=(lost          ) - Verloren
+;; 5. w=(remis         ) - Unentschieden
+;; 6. w=(started       ) - Wahl des Spielstarts als neues Spiel oder aus einer Bilddatei
+;; 7. w=(setkilledblack) - Eingabe der geschlagenen schwarzen Steine bei Spielstart
+;; 8. w=(setkilledwhite) - Eingabe der geschlagenen weißen Steine bei Spielstart
+;; 9. w=(choosecolor   ) - Farbwahl
  
 
 ;;Startzustand als wartender Zustand mit leerem Spielfeld und keinen geschlagenen Steinen
