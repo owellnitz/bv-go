@@ -335,7 +335,6 @@
   (let ((empty_areas (find-all-empty-areas (find-empty-position board 0 0 '()) '() route-list))) 
     (cond
       [(= (length empty_areas) 1) '(0 . 0)] ;Wenn es nur ein leere Feld gibt, dann hat niemand eins erobert, also 0 . 0
-      ;[(= (length empty_areas) 2) '(0 . 0)];TODO: Es gibt zwei Felder und einst ist erobert. Dann kriegt der, der das eine Gebiet hält, auch das neutrale Gebiet
       [else (check-all-empty-areas board empty_areas '() player-list 0 '(0 . 0))]))
   )
 
