@@ -1,0 +1,18 @@
+\select@language {german}
+\contentsline {chapter}{\numberline {1}Spielregeln}{3}{chapter.1}
+\contentsline {section}{\numberline {1.1}Grundlegende Regeln}{3}{section.1.1}
+\contentsline {subsection}{\numberline {1.1.1}Vorgabe}{3}{subsection.1.1.1}
+\contentsline {subsection}{\numberline {1.1.2}Ketten und Freiheiten}{3}{subsection.1.1.2}
+\contentsline {subsection}{\numberline {1.1.3}Schlagen}{4}{subsection.1.1.3}
+\contentsline {section}{\numberline {1.2}Selbstmord und erlaubter Selbstmord}{4}{section.1.2}
+\contentsline {section}{\numberline {1.3}Auswertung}{5}{section.1.3}
+\contentsline {chapter}{\numberline {2}Spielen mit der Software}{7}{chapter.2}
+\contentsline {section}{\numberline {2.1}Bedienung der Software}{7}{section.2.1}
+\contentsline {section}{\numberline {2.2}Start der Software}{7}{section.2.2}
+\contentsline {section}{\numberline {2.3}Start eines neuen Spiel}{7}{section.2.3}
+\contentsline {section}{\numberline {2.4}Start eines Spiels aus einem Bild}{8}{section.2.4}
+\contentsline {subsection}{\numberline {2.4.1}Anforderungen an das Bild}{8}{subsection.2.4.1}
+\contentsline {subsection}{\numberline {2.4.2}Speicherort und Einlesen des Bildes}{10}{subsection.2.4.2}
+\contentsline {subsection}{\numberline {2.4.3}Auswahlm\IeC {\"o}glichkeiten beim Start aus einer Bilddatei}{10}{subsection.2.4.3}
+\contentsline {section}{\numberline {2.5}Spielen}{11}{section.2.5}
+\contentsline {section}{\numberline {2.6}Auswertung)}{12}{section.2.6}

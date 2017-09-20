@@ -17,7 +17,7 @@
  \chapter{Strukturen}
 \section{Spielfeld}
 \label{sec:Spielfeld}
-Ein Spielfeld besteht aus 19x19 Felder, auf denen Steine positioniert werden k"onnen. Das Spielfeld wird in dem Programm als eine Liste mit 19 weiteren Listen dargestellt. Diese 19 Listen stehen f"ur die y-Koordinaten des Spielfeldes. Jede dieser 19 Listen enth"alt 19 Positionen, um einen Wert einzutragen. Diese Unterlisten stehen f"ur die x-Koordinaten.\\\\
+Ein Spielfeld besteht aus 19x19 Feldern, auf denen Steine positioniert werden k"onnen. Das Spielfeld wird in dem Programm als eine Liste mit 19 weiteren Listen dargestellt. Diese 19 Listen stehen f"ur die y-Koordinaten des Spielfeldes. Jede dieser 19 Listen enth"alt 19 Positionen, um einen Wert einzutragen. Diese Unterlisten stehen f"ur die x-Koordinaten.\\\\
 Wenn an einer Position eine 0 steht, befindet sich kein Stein auf dem Spielfeld. Befindet sich dort eine 1, liegt an der Position ein wei"ser Stein. Bei einer -1, liegt an der Position ein schwarzer Stein.\\
 \\Darstellung des Spielstandes in Abbildung 2.3:\\\\
 '((0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)\\
@@ -134,7 +134,7 @@ Eine weitere Aufgabe w"ahrend des gesamten Spieles ist die Verwaltung des Spiels
 Nach Beendigung eines Spieles ermittelt der Server den Gewinner und teilt den Spielern (Clients) den Gewinner mit.
 
 \section{Spiellogik (go\_logic.rkt)}
-In dem Modul go\_logic.rkt ist die Spiellogik implementiert. Diese kann in drei verschieden Aufgaben unterteil werden.
+In dem Modul go\_logic.rkt ist die Spiellogik implementiert. Diese kann in drei verschiedene Hauptaufgaben unterteilt werden.
 
 \begin{enumerate}
 \item Vorgaben setzen:\\
@@ -150,7 +150,7 @@ Wenn ein Stein gesetzt wird, muss gepr"uft werden, dass dieser keinen Selbstmord
 
 Dieser Zug ist nur erlaubt, wenn mit diesem Zug Steine des Gegners geschlagen werden und so der Stein und ggf. seine Struktur neue Freiheiten erhalten.
 
-Wenn ein Stein normal gesetzt wird, kann das Setzen zur Folge haben, dass durch diesen Zug eine Struktur des Gegners zerst"ort wird. Wenn dieser Fall eintritt m"ussen alle geschlagenen Steine von dem Spielfeld entfernt werden und die Punkte werden dem Spieler gut geschrieben.
+Wenn ein normal zul"assiger Stein gesetzt wird, kann das Setzen zur Folge haben, dass durch diesen Zug eine Struktur des Gegners zerst"ort wird. Wenn dieser Fall eintritt, m"ussen alle geschlagenen Steine von dem Spielfeld entfernt werden und die Punkte werden dem Spieler gut geschrieben.
 \begin{figure}[ht]
 \centering \includegraphics[width=0.3\textwidth]{images/Vor-Kill}
 \caption{Spielbrett vor dem Schlagen der Steine}
@@ -161,7 +161,7 @@ Wenn ein Stein normal gesetzt wird, kann das Setzen zur Folge haben, dass durch 
 \caption{Spielbrett nach dem Schlagen der Steine}
 \end{figure}
 \item Auswertung:\\
-Nachdem beide Spieler nacheinander gepasst haben, ist das Spiel beendet. Dann startet die Auswertung. Bei der Auswertung m"ussen eroberte Gebiete gefunden werden. Das sind Fl"achen auf denen kein Stein liegt, die aber von einem Spieler eingeschlossen sind. Wenn ein Spieler eine Fl"ache erobert hat, erh"alt er die Anzahl an freien Positionen sowie die Anzahl der gegnerischen Steine in diesem Gebiet als Punkte. Ein erobertes Gebiet ist in Abb. zu sehen. Nachdem alle Fl"achen "uberpr"uft sind, wird die Anzahl der erzielten Punkte auf die bereits erzielten Punkte w"ahrend des Spiels aufaddiert.
+Nachdem beide Spieler nacheinander gepasst haben, ist das Spiel beendet. Dann startet die Auswertung. Bei der Auswertung m"ussen eroberte Gebiete gefunden werden. Das sind Fl"achen auf denen kein Stein liegt, die aber von einem Spieler eingeschlossen sind. Wenn ein Spieler eine Fl"ache erobert hat, erh"alt er die Anzahl an freien Positionen sowie die Anzahl der gegnerischen Steine in diesem Gebiet als Punkte. Ein erobertes Gebiet ist in Abb. 2.10 zu sehen. Nachdem alle Fl"achen "uberpr"uft sind, wird die Anzahl der erzielten Punkte auf die bereits erzielten Punkte w"ahrend des Spiels aufaddiert.
 
 \begin{figure}[ht]
 \centering \includegraphics[width=0.3\textwidth]{images/Gebiet}
@@ -267,9 +267,9 @@ Die calc-score Methode ermittelt am Ende des Spieles anhand des Spielfeldes das 
 \centering \includegraphics[width=1.1\textwidth]{images/SteinSetzenAblauf}
 \caption{Ablaufdiagramm f"ur das Setzen eines Steines}
 \end{figure}
-Wenn ein Spieler einen Stein setzt, muss die g"ultigkeit dieses Zuges gepr"uft werden. Wenn keine Freiheit direkt bei dem zu setzenden Stein zu finden ist, m"ussen alle benachbarten Steine der gleichen Farbe links, rechts, oben und unten von dem gesetzten Stein auf vorhandene Freiheiten "uberpr"uft werden. Diese benachbarten Steine werden als Startpunkte genommen. Von diesen werden weitere benachbarte Steine der gleichen Farbe gesucht. Diese Suche wird so lange fortgesetzt bis eine Freiheit gefunden wird. Wird eine Freiheit gefunden, kann der Stein gesetzt werden. Wird keine Freiheit gefunden, ist der Zug ung"ultig, weil der Spieler die eigene Struktur mit diesen Zug selbst schlagen w"urde. Diesen Zug nennt man Selbstmord und ist nicht zugelassen.\\\\
+Wenn ein Spieler einen Stein setzt, muss die G"ultigkeit des Zuges gepr"uft werden. Ist keine Freiheit direkt an dem zu setzenden Stein zu finden, m"ussen alle benachbarten Steine der gleichen Farbe links, rechts, oben und unten von dem gesetzten Stein auf vorhandene Freiheiten "uberpr"uft werden. Diese benachbarten Steine werden als Startpunkte genommen. Von diesen werden weitere benachbarte Steine der gleichen Farbe gesucht. Diese Suche wird so lange fortgesetzt, bis eine Freiheit gefunden wird. Wird eine Freiheit gefunden, kann der Stein gesetzt werden. Wird keine Freiheit gefunden, ist der Zug ung"ultig, weil der Spieler die eigene Struktur mit diesen Zug selbst schlagen w"urde. Diesen Zug nennt man Selbstmord und ist nur in einen einzigen Fall zugelassen.\\\\
 Dieser Zug ist nur zugelassen, wenn man mit diesen Zug Steine des Gegners schlagen w"urde. Dazu muss der gleiche Prozess nur mit benachbarten Steinen der gegnerischen Farbe durchlaufen werden. Wird keine Freiheit gefunden, werden die Steine des Gegners geschlagen und der Stein wird gesetzt, weil die eigene Struktur neue Freiheiten erh"alt.\\\\
-Die Pr"ufung auf geschlagene Steine des Gegners wird ebenfalls durchgef"uhrt, wenn ein Zug sofort als g"ultig erkannt wird. Das hei"st, dass bei jedem regul"ar gesetzten Steine die benachbarten gegnerischen Strukturen auf Freiheiten "uberpr"uft werden. Findet sich bei einer Struktur wiederum keine Freiheit, werden die Steine entfernt und die Punkte werden dem setzenden Spieler hinzugef"ugt.
+Die Pr"ufung auf geschlagene Steine des Gegners wird ebenfalls durchgef"uhrt, wenn ein Zug sofort als g"ultig erkannt wird. Das hei"st, dass bei jedem regul"ar gesetzten Stein die benachbarten gegnerischen Strukturen auf Freiheiten "uberpr"uft werden. Findet sich bei einer Struktur wiederum keine Freiheit, werden die Steine entfernt und die Punkte werden dem setzenden Spieler hinzugef"ugt.
 
 \begin{figure}[ht]
 \centering \includegraphics[width=1\textwidth]{images/Freiheit_code}
@@ -281,7 +281,7 @@ Die Pr"ufung auf geschlagene Steine des Gegners wird ebenfalls durchgef"uhrt, we
 \centering \includegraphics[width=1.1\textwidth]{images/AuswertungAblauf}
 \caption{Ablaufdiagramm der Auswertung}
 \end{figure}
-Die Auswertung startet mit der Suche nach allen freien Positionen auf dem Spielfeld. Diese freien Positionen werden zu freien Fl"achen (=Gebiete) zusammengefasst. Anschlie"send wird jede freie Fl"ache "uberpr"uft, ob die Fl"ache von einem Spieler erobert wurde. Diese Funktionalit"at wird in dem Kapitel Gebietszuweisen (\ref{sec:Gebietszuweisung}) genauer erl"autert.\\\\Wurde ein Gebiet von einem Spieler erobert, wird die Anzahl der freien Positionen zu den Punkten des Spielers hinzugef"ugt. Liegen in dem eroberten Gebiet Steine des Gegners, werden diese geschlagen und ebenfalls dem Spieler als Punkte hinzugef"ugt. F"ur das Finden der geschlagenen Steine wird das eroberte Gebiet mit den Steinen des Eroberes aufgef"ullt. Beim Setzen jedes Steines werden die gleichen Funktionen verwendet, die w"ahrend des Spieles f"ur das Setzen verwendet werden. Diese Funktionen sind in dem Kapitel Stein setzen (\ref{sec:SteinSetzen}) genauer beschrieben. Wird keinem Spieler ein Gebiet zugeschrieben, ist es neutral und kein Spieler erh"alt Punkte.\\\\
+Die Auswertung startet mit der Suche nach allen freien Positionen auf dem Spielfeld. Diese freien Positionen werden zu freien Fl"achen (=Gebiete) zusammengefasst. Anschlie"send wird jede freie Fl"ache "uberpr"uft, ob die Fl"ache von einem Spieler erobert wurde. Diese Funktionalit"at wird in dem Kapitel Gebietszuweisen (\ref{sec:Gebietszuweisung}) genauer erl"autert.\\\\Wurde ein Gebiet von einem Spieler erobert, wird die Anzahl der freien Positionen zu den Punkten des Spielers hinzugef"ugt. Liegen in dem eroberten Gebiet Steine des Gegners, werden diese geschlagen und ebenfalls dem Spieler als Punkte hinzugef"ugt. F"ur das Finden der geschlagenen Steine wird das eroberte Gebiet mit den Steinen des Eroberes aufgef"ullt. Beim Setzen jedes Steines werden die gleichen Funktionen verwendet, die w"ahrend des Spieles f"ur das Setzen verwendet werden. Diese Funktionen sind in dem Kapitel Stein setzen (\ref{sec:SteinSetzen}) genauer beschrieben. Durch das Auff"ullen der Fl"ache haben die gegnerischen Strukturen keine Freiheiten mehr und werden geschlagen. Wird keinem Spieler ein Gebiet zugeschrieben, ist es neutral und kein Spieler erh"alt Punkte.\\\\
 Diese Pr"ufung wird auf allen freien Fl"achen angewendet, um so den Gesamtspielstand zu bestimmen. Am Ende werden die erzielten Punkte aus der Auswertung auf die geschlagenen Steine w"ahrend des Spiels aufaddiert und der Sieger bestimmt.
 \begin{figure}[ht]
 \centering \includegraphics[width=1\textwidth]{images/CountKilledStones_code}
@@ -295,7 +295,7 @@ Diese Pr"ufung wird auf allen freien Fl"achen angewendet, um so den Gesamtspiels
 \centering \includegraphics[width=1.1\textwidth]{images/GebietZuweisungAblauf}
 \caption{Ablaufdiagramm der Gebietszuweisung}
 \end{figure}
-Um ein Gebiet einem Spieler zuzuweisen, muss gepr"uft werden, ob dieser das Gebiet erobert bzw. eingeschlossen hat. Auch hier werden die Funktionen der Stein setzen Funktionalit"at (\ref{sec:SteinSetzen}) verwendet. Die freie Fl"ache wird zuerst vollst"andig mit schwarzen Steinen aufgef"ullt. Ist die Fl"ache vollst"andig mit schwarzen Steinen auff"ullbar, dann ist Schwarz ein potentieller Eroberer der Fl"ache. Kann die Fl"ache nicht vollst"andig mit schwarzen Steinen aufgef"ullt werden, weil mit einem Stein ein Selbstmord begangen wird, ist die Fl"ache von Wei"s eingeschlossen. Dieser Fall wird mit Hilfe der Stein setzen Funktionalit"at (\ref{sec:SteinSetzen}) gepr"uft. Ist die Fl"ache also nicht vollst"andig auff"ullbar, dann ist wei"s der Eroberer dieser Fl"ache.\\\\
+Um ein Gebiet einem Spieler zuzuweisen, muss gepr"uft werden, ob dieser das Gebiet erobert bzw. eingeschlossen hat. Auch hier werden die Funktionen der Stein setzen Funktionalit"at (\ref{sec:SteinSetzen}) verwendet. Die freie Fl"ache wird zuerst vollst"andig mit schwarzen Steinen aufgef"ullt. Ist die Fl"ache vollst"andig mit schwarzen Steinen auff"ullbar, dann ist Schwarz ein potentieller Eroberer der Fl"ache. Kann die Fl"ache nicht vollst"andig mit schwarzen Steinen aufgef"ullt werden, weil w"ahrend des Auff"ullens ein Selbstmord erkannt wird, ist die Fl"ache von Wei"s eingeschlossen. Dieser Fall wird mit Hilfe der Stein setzen Funktionalit"at (\ref{sec:SteinSetzen}) gepr"uft. Ist die Fl"ache also nicht vollst"andig auff"ullbar, dann ist wei"s der Eroberer dieser Fl"ache.\\\\
 Davon ausgehend, dass Schwarz ein potentieller Eroberer ist, muss anschlie"send noch gepr"uft werden, ob Wei"s die Fl"ache ebenfalls auff"ullen darf. Darf Wei"s dies nicht, geh"ort die Fl"ache Schwarz. Darf Wei"s die Fl"ache ebenfalls komplett auff"ullen, ist die Fl"ache neutral, weil sie von keiner Farbe erobert ist.
 \begin{figure}[ht]
 \centering \includegraphics[width=1.1\textwidth]{images/checkAllAreas_code}
@@ -334,19 +334,19 @@ L"osungsansatz:\\
 Es muss ein neues Modul erstellt werden. Dieses Modul muss die Informationen entgegennehmen und die Daten in einer Datei speichern. Als zweite Schnittstelle wird eine Funktion f"ur das Auslesen der Daten ben"otigt. Ebenfalls muss das Men"u f"ur das Starten des Spieles erweitert werden. In dem Interface w"ahrend des Spieles muss ein Button f"ur das Speichern des Spielstandes eingebaut werden. Hierf"ur ist das go\_draw\_board-Modul anzupassen.
 
 \section{Bug in Auswertung}
-Kurz nach der Fertigstellung ist ein Bug in der Auswertung aufgefallen, der zeitlich leider nicht mehr behoben werden konnte. Dieser tritt auf wenn eine eroberte Fl"ache durch gegnerische Steine unterbrochen wird (Abb. 6.1). Die Funktion, die die leeren Fl"achen sucht, erkennt dieses Gebiet als zwei leere Fl"achen, die von keiner Partei erobert wurden. Normalerweise muss bei der Auswertung erkannt werden, dass es sich nur um eine eroberte Fl"ache handelt und die gegnerischen Steine m"ussen geschlagen werden.\newpage
+Kurzfristig ist ein Bug in der Auswertung aufgefallen, der leider nicht mehr behoben werden konnte. Dieser tritt auf wenn eine eroberte Fl"ache durch gegnerische Steine unterbrochen wird (Abb. 6.1). Die Funktion, die die leeren Fl"achen sucht, erkennt dieses Gebiet als verschiedene leere Fl"achen, die von keiner Partei erobert wurden. Normalerweise muss bei der Auswertung erkannt werden, dass es sich nur um eine eroberte Fl"ache handelt und die gegnerischen Steine m"ussen geschlagen werden.\newpage
 \begin{figure}[ht]
 \centering \includegraphics[width=0.3\textwidth]{images/AuswertungBug}
-\caption{Spielbrett nach dem Schlagen des Steines}
+\caption{Durch gegnerischen Stein getrenntes Gebiet}
 \end{figure}
 L"osungsansatz:\\
-Es m"ussen drei Bedienungen gepr"uft werden, damit getrennte Fl"achen als gemeinsame erkannt werden mu"ssen:
+Es m"ussen drei Bedienungen gepr"uft werden, damit getrennte Fl"achen als gemeinsame erkannt werden:
 \begin{enumerate}
 \item Die Fl"achen d"urfen einzeln noch nicht erobert sein
 \item Sie m"ussen "uber gegnerische Steine miteinander verbunden sein
 \item Gemeinsam mit den gegnerischen Steinen muss die Fl"ache als erobert gelten
 \end{enumerate}
 Treten alle drei F"alle ein, d"urfen die leeren Fl"achen als gemeinsame betrachtet werden. Dann bekommt der Eroberer sowohl die Punkte f"ur die leeren Positionen als auch die Punkte f"ur die geschlagenen Steine.\\
-Diese "Anderung muss in der Spiellogik implementiert werden, bevor die eigentliche Auswertung startet. Dann m"ussen alle gefundenen freien Fl"achen gepr"uft werden, ob sie zusammen geh"oren und anschlie"send in der Auswertung als gemeinsame Fl"ache betrachtet werden.
+Diese "Anderung muss in der Spiellogik implementiert werden, nachdem die eigentliche Auswertung bereits durchlaufen ist. Es m"ussen alle neutralen freien Fl"achen "uberpr"uft werden, ob sie zusammen geh"oren k"onnen. Anschlie"send m"ussen zusammengeh"orende Fl"achen noch einmal seperat ausgewertet werden.
 
 \end{document}
