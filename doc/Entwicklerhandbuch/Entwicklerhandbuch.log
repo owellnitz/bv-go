@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.7.28)  19 SEP 2017 22:39
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.7.28)  20 SEP 2017 19:31
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1229,6 +1229,12 @@ File: images/Freiheit_code.png Graphic file (type png)
 <use images/Freiheit_code.png>
 Package pdftex.def Info: images/Freiheit_code.png used on input line 275.
 (pdftex.def)             Requested size: 418.25555pt x 228.28535pt.
+
+Underfull \hbox (badness 2846) in paragraph at lines 276--276
+[][]\T1/aer/m/n/10.95 Funktionen für das Su-chen von Frei-hei-ten be-nach-bar-t
+er Stei-nen
+ []
+
 Package babel Info: Redefining german shorthand "f
 (babel)             in language  on input line 278.
 Package babel Info: Redefining german shorthand "|
@@ -1241,7 +1247,7 @@ Package babel Info: Redefining german shorthand "|
 (babel)             in language  on input line 278.
 Package babel Info: Redefining german shorthand "~
 (babel)             in language  on input line 278.
- [18 <./images/Freiheit_code.png>]
+[18 <./images/Freiheit_code.png>]
 Package babel Info: Redefining german shorthand "f
 (babel)             in language  on input line 279.
 Package babel Info: Redefining german shorthand "|
@@ -1267,6 +1273,11 @@ File: images/CountKilledStones_code.png Graphic file (type png)
 Package pdftex.def Info: images/CountKilledStones_code.png used on input line 2
 87.
 (pdftex.def)             Requested size: 418.25555pt x 259.60912pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 284--290
+
+ []
+
 
 Underfull \hbox (badness 10000) in paragraph at lines 284--290
 
@@ -1418,87 +1429,84 @@ Overfull \hbox (83.64983pt too wide) in paragraph at lines 317--318
  []
 
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 320.
+(babel)             in language  on input line 321.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 320.
+(babel)             in language  on input line 321.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 320.
+(babel)             in language  on input line 321.
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 320.
+(babel)             in language  on input line 321.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 320.
+(babel)             in language  on input line 321.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 320.
+(babel)             in language  on input line 321.
 [24 <./images/Auswertung.png>]
 chapter 7.
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 320.
-Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 320.
-Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 320.
-Package babel Info: Redefining german shorthand "f
 (babel)             in language  on input line 321.
 Package babel Info: Redefining german shorthand "|
 (babel)             in language  on input line 321.
 Package babel Info: Redefining german shorthand "~
 (babel)             in language  on input line 321.
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 331.
+(babel)             in language  on input line 322.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 331.
+(babel)             in language  on input line 322.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 331.
-<images/AuswertungBug.png, id=366, 404.51125pt x 403.5075pt>
+(babel)             in language  on input line 322.
+
+Underfull \hbox (badness 10000) in paragraph at lines 323--325
+
+ []
+
+Package babel Info: Redefining german shorthand "f
+(babel)             in language  on input line 336.
+Package babel Info: Redefining german shorthand "|
+(babel)             in language  on input line 336.
+Package babel Info: Redefining german shorthand "~
+(babel)             in language  on input line 336.
+Package babel Info: Redefining german shorthand "f
+(babel)             in language  on input line 337.
+Package babel Info: Redefining german shorthand "|
+(babel)             in language  on input line 337.
+Package babel Info: Redefining german shorthand "~
+(babel)             in language  on input line 337.
+Package babel Info: Redefining german shorthand "f
+(babel)             in language  on input line 337.
+Package babel Info: Redefining german shorthand "|
+(babel)             in language  on input line 337.
+Package babel Info: Redefining german shorthand "~
+(babel)             in language  on input line 337.
+[25
+
+] <images/AuswertungBug.png, id=375, 404.51125pt x 403.5075pt>
 File: images/AuswertungBug.png Graphic file (type png)
 
 <use images/AuswertungBug.png>
-Package pdftex.def Info: images/AuswertungBug.png used on input line 334.
+Package pdftex.def Info: images/AuswertungBug.png used on input line 339.
 (pdftex.def)             Requested size: 125.47794pt x 125.16606pt.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 352.
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 342.
+(babel)             in language  on input line 352.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 342.
+(babel)             in language  on input line 352.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 342.
+(babel)             in language  on input line 352.
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 342.
+(babel)             in language  on input line 352.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 342.
+(babel)             in language  on input line 352.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 342.
- [25
-
- <./images/AuswertungBug.png>]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 347.
-Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 347.
-Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 347.
-Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 347.
-Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 347.
-Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 347.
-Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 347.
- [26]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 347.
+(babel)             in language  on input line 352.
+ [26 <./images/AuswertungBug.png>]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 352.
 
 (./Entwicklerhandbuch.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 347.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 347.
-
-
-Package rerunfilecheck Warning: File `Entwicklerhandbuch.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `Entwicklerhandbuch.out':
-(rerunfilecheck)             Before: 874762F0C06B6C671066AF3846232106;1841
-(rerunfilecheck)             After:  6419AE33AD0DDBCABC0ACB4D276BB239;1840.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 347.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 352.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 352.
+Package rerunfilecheck Info: File `Entwicklerhandbuch.out' has not changed.
+(rerunfilecheck)             Checksum: 6419AE33AD0DDBCABC0ACB4D276BB239;1840.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 352.
  ) 
 Here is how much of TeX's memory you used:
  8506 strings out of 492995
@@ -1511,7 +1519,7 @@ Here is how much of TeX's memory you used:
 </usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb>
 </usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></
 usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb>
-Output written on Entwicklerhandbuch.pdf (26 pages, 776461 bytes).
+Output written on Entwicklerhandbuch.pdf (26 pages, 778066 bytes).
 PDF statistics:
  426 PDF objects out of 1000 (max. 8388607)
  347 compressed objects within 4 object streams
