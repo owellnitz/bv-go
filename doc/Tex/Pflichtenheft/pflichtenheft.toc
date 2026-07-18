@@ -1,9 +1,0 @@
-\select@language {german}
-\contentsline {chapter}{\numberline {1}Zielbestimmung}{3}{chapter.1}
-\contentsline {section}{\numberline {1.1}Musskriterien}{3}{section.1.1}
-\contentsline {section}{\numberline {1.2}Abgrenzungskriterien}{3}{section.1.2}
-\contentsline {chapter}{\numberline {2}Umgebung}{4}{chapter.2}
-\contentsline {section}{\numberline {2.1}Software}{4}{section.2.1}
-\contentsline {chapter}{\numberline {3}Funktionalit"at}{5}{chapter.3}
-\contentsline {chapter}{\numberline {4}Daten}{6}{chapter.4}
-\contentsline {chapter}{\numberline {5}Benutzungsoberfl\IeC {\"a}che}{7}{chapter.5}
